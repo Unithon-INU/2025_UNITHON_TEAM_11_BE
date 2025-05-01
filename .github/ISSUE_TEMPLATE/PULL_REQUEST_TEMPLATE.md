@@ -1,7 +1,7 @@
 ---
 name: ☃️ PR 템플릿
 about: "❄️ 템플릿 양식 "
-title: "[Feat]"
+title: ""
 labels: ''
 assignees: ''
 
