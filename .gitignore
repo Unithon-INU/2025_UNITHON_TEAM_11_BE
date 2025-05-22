@@ -41,5 +41,8 @@ out/
 .DS_Store
 *DS_Store
 
+# Image Logo
+FringLogo.png
+
 # Application Properties
 src/main/resources/application.yml
