@@ -1,7 +1,8 @@
-package Uniton.Fring.domain.farm;
+package Uniton.Fring.domain.cart.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "farm")
-public class Farm {
+@Table(name = "cart")
+public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,13 +21,19 @@ public class Farm {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
 
-    private String location;
-
-    private String description;
+    private int quantity;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Builder
+    private Cart(Long memberId, Long productId, int quantity) {
+        this.memberId = memberId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.createdAt = LocalDateTime.now();
+    }
 }

@@ -1,6 +1,5 @@
 package Uniton.Fring.domain.farmProduct;
 
-import Uniton.Fring.domain.farm.Farm;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,9 +18,8 @@ public class FarmProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "farm_id", nullable = false)
-    private Farm farm;
+    @Column(name = "farm_id", nullable = false)
+    private Long farmId;
 
     @Column(nullable = false)
     private String name;
