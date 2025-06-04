@@ -1,7 +1,7 @@
 name: Fring Server CI & CD
 
 on:
-  push:
+  pull:
     branches: [ "main" ]
 
 jobs:
