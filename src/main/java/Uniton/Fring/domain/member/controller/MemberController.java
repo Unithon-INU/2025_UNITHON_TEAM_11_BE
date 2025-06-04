@@ -1,23 +1,29 @@
 package Uniton.Fring.domain.member.controller;
 
+import Uniton.Fring.domain.member.api.MemberApiSpecification;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.service.MemberService;
+import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 public class MemberController implements MemberApiSpecification {
 
     private final MemberService memberService;
@@ -34,6 +40,12 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(loginRequestDto));
     }
 
+//    // 비밀번호 변경 ( 이메일 인증 후 호출 )
+//    @PutMapping("/password")
+//    public ResponseEntity<Boolean> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
+//        return ResponseEntity.status(HttpStatus.OK).body(memberService.updatePassword(updatePasswordRequestDto));
+//    }
+
     // 토큰 재발급
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDto> refresh(@Valid @RequestBody JwtTokenRequestDto jwtTokenRequestDto) {
@@ -46,6 +58,12 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.checkEmailDuplicated(email));
     }
 
+    // 아이디 중복 확인
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Boolean> checkUsernameDuplicated(@PathVariable String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.checkUsernameDuplicated(username));
+    }
+
     // 닉네임 중복 확인
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
@@ -54,13 +72,29 @@ public class MemberController implements MemberApiSpecification {
 
     // 회원탈퇴
     @DeleteMapping
-    public ResponseEntity<Boolean> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.deleteMember(userDetails.getMember(),deleteMemberRequestDto));
+    public ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto) {
+        memberService.deleteMember(userDetails.getMember(),deleteMemberRequestDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // ROLE 농부로 변경
-    @PutMapping
-    public  ResponseEntity<Boolean> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.changeToFarmer(userDetails.getMember()));
+    @PutMapping("/role")
+    public ResponseEntity<Void> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        memberService.changeToFarmer(userDetails.getMember());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 유저 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchMemberResponseDto>> searchMember(
+            @RequestParam String keyword,
+            @PageableDefault(size = 10) Pageable pageable) {  // <- Pageable은 springframework import
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, pageable));
+    }
+
+    // 유저 랭킹
+    @GetMapping("/ranking")
+    public ResponseEntity<List<SearchMemberResponseDto>> getRankingRecipeMember() {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
     }
 }

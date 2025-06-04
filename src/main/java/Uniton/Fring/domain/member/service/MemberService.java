@@ -7,6 +7,10 @@ import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
+import Uniton.Fring.domain.recipe.dto.res.BestRecipeResponseDto;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
+import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.JwtTokenProvider;
@@ -15,12 +19,19 @@ import Uniton.Fring.global.security.jwt.RefreshToken;
 import Uniton.Fring.global.security.jwt.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,21 +47,16 @@ public class MemberService {
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
 
-        log.info("[회원가입 요청] email={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getNickname());
-
-        if (!signupRequestDto.getPassword().equals(signupRequestDto.getPasswordCheck())) {
-            log.warn("[회원가입 실패] 비밀번호 불일치: email={}", signupRequestDto.getEmail());
-            throw new CustomException(ErrorCode.PASSWORD_NOT_CORRECT);
-        }
+        log.info("[회원가입 요청] email={}, username={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getUsername(), signupRequestDto.getNickname());
 
         Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()));
 
         memberRepository.save(member);
 
-        log.info("[회원가입 완료] memberId={}, email={}", member.getId(), member.getEmail());
+        log.info("[회원가입 완료] memberId={}, username={}, email={}", member.getId(),member.getUsername(), member.getEmail());
 
         return SignupResponseDto.builder()
-                .email(member.getEmail())
+                .username(member.getUsername())
                 .nickname(member.getNickname())
                 .build();
     }
@@ -58,20 +64,20 @@ public class MemberService {
     @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
-        log.info("[로그인 요청] email={}", loginRequestDto.getEmail());
+        log.info("[로그인 요청] username={}", loginRequestDto.getUsername());
 
-        Member member = memberRepository.findByEmail(loginRequestDto.getEmail())
+        Member member = memberRepository.findByUsername(loginRequestDto.getUsername())
                 .orElseThrow(() -> {
-                    log.warn("[로그인 실패] 사용자 없음: email={}", loginRequestDto.getEmail());
+                    log.warn("[로그인 실패] 사용자 없음: username={}", loginRequestDto.getUsername());
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
-            log.warn("[로그인 실패] 비밀번호 불일치: email={}", loginRequestDto.getEmail());
+            log.warn("[로그인 실패] 비밀번호 불일치: username={}", loginRequestDto.getUsername());
             throw new CustomException(ErrorCode.PASSWORD_NOT_CORRECT);
         }
 
-        log.info("[로그인 성공] email={}", member.getEmail());
+        log.info("[로그인 성공] username={}", member.getUsername());
 
         // 인증 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthenticationToken();
@@ -83,7 +89,7 @@ public class MemberService {
 
         // 인증 상태 확인
         if (!authentication.isAuthenticated()) {
-            log.error("[로그인 실패] 인증 실패: email={}", loginRequestDto.getEmail());
+            log.error("[로그인 실패] 인증 실패: username={}", loginRequestDto.getUsername());
             throw new CustomException(ErrorCode.LOGIN_FAILED);
         }
 
@@ -93,6 +99,11 @@ public class MemberService {
 
         return loginResponseDto;
     }
+
+//    public Boolean updatePassword(@Valid UpdatePasswordRequestDto updatePasswordRequestDto) {
+//
+//
+//    }
 
     @Transactional
     public LoginResponseDto refresh(JwtTokenRequestDto jwtTokenRequestDto) {
@@ -145,6 +156,18 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    public Boolean checkUsernameDuplicated(String username) {
+
+        log.info("[아이디 중복 확인] username={}", username);
+
+        if (memberRepository.existsByUsername(username)) {
+            log.warn("[중복 아이디] username={}", username);
+            throw new CustomException(ErrorCode.USERNAME_DUPLICATED);
+        }
+        return true;
+    }
+
+    @Transactional(readOnly = true)
     public Boolean checkNicknameDuplicated(String nickname) {
 
         log.info("[닉네임 중복 확인] nickname={}", nickname);
@@ -157,7 +180,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Boolean deleteMember(Member member, DeleteMemberRequestDto deleteMemberRequestDto) {
+    public void deleteMember(Member member, DeleteMemberRequestDto deleteMemberRequestDto) {
 
         log.info("[회원 탈퇴 요청 시작] email={}}", member.getEmail());
 
@@ -177,11 +200,10 @@ public class MemberService {
         memberRepository.delete(memberToDelete);
 
         log.info("[회원 탈퇴 완료] nickname: {}, email={}", memberToDelete.getNickname(), memberToDelete.getEmail());
-        return true;
     }
 
     @Transactional
-    public Boolean changeToFarmer(Member member) {
+    public void changeToFarmer(Member member) {
 
         log.info("[회원 ROLE 농부로 변경 요청] email={}", member.getEmail());
 
@@ -194,6 +216,35 @@ public class MemberService {
         newMember.changeRoleToFarmer();
 
         log.info("[회원 ROLE 농부로 변경 완료] email={}", member.getEmail());
-        return true;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SearchMemberResponseDto> searchMember(String keyword, Pageable pageable) {
+
+        log.info("[레시피 유저 검색 요청] keyword={}", keyword);
+
+        Page<Member> members = memberRepository.findByNicknameContaining(keyword, pageable);
+
+        List<SearchMemberResponseDto> searchMemberResponseDtos = members.stream()
+                .map(member -> SearchMemberResponseDto.builder().member(member).build()).toList();
+
+        log.info("[레시피 유저 검색 요청 성공] keyword={}", keyword);
+
+        return searchMemberResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SearchMemberResponseDto> getRankingRecipeMember() {
+
+        log.info("[레시피 유저 랭킹 조회 요청]");
+
+        List<Member> members =  memberRepository.find5ByOrderByLikeDesc();
+
+        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = members.stream()
+                .map(member -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+
+        log.info("[레시피 유저 랭킹 조회 성공]");
+
+        return ;
     }
 }

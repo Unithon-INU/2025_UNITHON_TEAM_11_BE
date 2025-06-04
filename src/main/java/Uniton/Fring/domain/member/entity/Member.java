@@ -30,6 +30,15 @@ public class Member {
     private String password;
 
     @Column(nullable = false)
+    private String introduction;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private Integer like;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
@@ -37,6 +46,7 @@ public class Member {
         this.nickname = signupRequestDto.getNickname();
         this.email = signupRequestDto.getEmail();
         this.password = encodedPassword;
+        this.introduction = signupRequestDto.getIntroduction();
         this.role = MemberRole.CONSUMER;
     }
 
