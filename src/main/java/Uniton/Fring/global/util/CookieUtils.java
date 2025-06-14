@@ -1,4 +1,4 @@
-package Uniton.Fring.global.security.oauth2.util;
+package Uniton.Fring.global.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;

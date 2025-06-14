@@ -5,7 +5,7 @@ import Uniton.Fring.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestR
 import Uniton.Fring.global.security.oauth2.service.CustomOAuth2UserService;
 import Uniton.Fring.global.security.oauth2.service.OAuth2UserPrincipal;
 import Uniton.Fring.global.security.oauth2.user.OAuth2UserUnlinkManager;
-import Uniton.Fring.global.security.oauth2.util.CookieUtils;
+import Uniton.Fring.global.util.CookieUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

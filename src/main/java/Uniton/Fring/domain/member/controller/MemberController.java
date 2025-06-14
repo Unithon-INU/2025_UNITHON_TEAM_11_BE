@@ -92,9 +92,9 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, pageable));
     }
 
-    // 유저 랭킹
-    @GetMapping("/ranking")
-    public ResponseEntity<List<SearchMemberResponseDto>> getRankingRecipeMember() {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
-    }
+//    // 유저 랭킹
+//    @GetMapping("/ranking")
+//    public ResponseEntity<List<SearchMemberResponseDto>> getRankingRecipeMember() {
+//        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
+//    }
 }

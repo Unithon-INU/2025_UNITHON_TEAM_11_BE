@@ -21,7 +21,7 @@ public class MailService {
     private RedisUtil redisUtil;
     private int authNumber;
 
-    @Value("${mail.username}")
+    @Value("${spring.mail.username}")
     private String fromEmail;
 
     public void makeRandomNumber() {

@@ -1,6 +1,6 @@
 package Uniton.Fring.global.security.oauth2;
 
-import Uniton.Fring.global.security.oauth2.util.CookieUtils;
+import Uniton.Fring.global.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

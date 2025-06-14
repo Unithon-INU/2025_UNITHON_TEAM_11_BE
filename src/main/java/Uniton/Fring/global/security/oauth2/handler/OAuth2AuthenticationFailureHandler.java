@@ -1,7 +1,7 @@
 package Uniton.Fring.global.security.oauth2.handler;
 
 import Uniton.Fring.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import Uniton.Fring.global.security.oauth2.util.CookieUtils;
+import Uniton.Fring.global.util.CookieUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

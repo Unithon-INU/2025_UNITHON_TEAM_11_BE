@@ -4,13 +4,10 @@ import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
-import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
-import Uniton.Fring.domain.recipe.dto.res.BestRecipeResponseDto;
-import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
-import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.JwtTokenProvider;
@@ -29,9 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -233,18 +227,18 @@ public class MemberService {
         return searchMemberResponseDtos;
     }
 
-    @Transactional(readOnly = true)
-    public List<SearchMemberResponseDto> getRankingRecipeMember() {
-
-        log.info("[레시피 유저 랭킹 조회 요청]");
-
-        List<Member> members =  memberRepository.find5ByOrderByLikeDesc();
-
-        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = members.stream()
-                .map(member -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
-
-        log.info("[레시피 유저 랭킹 조회 성공]");
-
-        return ;
-    }
+//    @Transactional(readOnly = true)
+//    public List<SearchMemberResponseDto> getRankingRecipeMember() {
+//
+//        log.info("[레시피 유저 랭킹 조회 요청]");
+//
+//        List<Member> members =  memberRepository.find5ByOrderByLikeDesc();
+//
+//        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = members.stream()
+//                .map(member -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+//
+//        log.info("[레시피 유저 랭킹 조회 성공]");
+//
+//        return ;
+//    }
 }
