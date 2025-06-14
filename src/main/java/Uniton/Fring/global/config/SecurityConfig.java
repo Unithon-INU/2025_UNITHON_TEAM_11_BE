@@ -54,11 +54,12 @@ public class SecurityConfig {
 
                 // 요청 권한 설정 ( 해당 엔드포인트에 대해서는 허용 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/member/signup", "/api/member/login",
-                                "/api/member/email/**", "/api/member/nickname/**,",
-                                "/api/member/login/oauth2/**",
-                                "/swagger-ui/**", "/v3/api-docs/**",
-                                "/favicon.ico").permitAll()
+                        .requestMatchers("/api/members/signup", "/api/members/login",
+                                "/api/members/email/**", "/api/members/nickname/**,",
+                                "/api/members/login/oauth2/**",
+                                "/api/mails/**",
+                                "/swagger-ui/**", "/v3/api-docs/**","/favicon.ico"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 

@@ -27,11 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // 인증을 건너뛰고 다음 필터로 넘어갈 URI 지정
-        if (requestURI.startsWith("/api/member/signup")
-                || requestURI.startsWith("/api/member/login")
-                || requestURI.startsWith("/api/member/email")
-                || requestURI.startsWith("/api/member/nickname")
-                || requestURI.startsWith("/api/member/login/oauth2")
+        if (requestURI.startsWith("/api/members/signup")
+                || requestURI.startsWith("/api/members/login")
+                || requestURI.startsWith("/api/members/email")
+                || requestURI.startsWith("/api/members/nickname")
+                || requestURI.startsWith("/api/members/login/oauth2")
+                || requestURI.startsWith("/api/mails")
                 || requestURI.startsWith("/swagger-ui")
                 || requestURI.startsWith("/v3/api-docs")
                 || requestURI.startsWith("/favicon.ico")) {

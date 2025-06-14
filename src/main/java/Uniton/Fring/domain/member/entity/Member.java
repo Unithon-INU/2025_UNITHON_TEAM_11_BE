@@ -29,14 +29,25 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = true)
+    private String introduction;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private Integer likeCount = 0;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     public Member(SignupRequestDto signupRequestDto, String encodedPassword) {
-        this.nickname = signupRequestDto.getNickname();
         this.email = signupRequestDto.getEmail();
+        this.username = signupRequestDto.getUsername();
         this.password = encodedPassword;
+        this.nickname = signupRequestDto.getNickname();
+        this.introduction = signupRequestDto.getIntroduction();
         this.role = MemberRole.CONSUMER;
     }
 

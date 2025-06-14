@@ -28,8 +28,26 @@ public enum ErrorCode {
     LOGIN_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 이메일입니다."),
     PASSWORD_NOT_CORRECT(HttpStatus.BAD_REQUEST, 400, "비밀번호가 일치하지 않습니다."),
     EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "이메일이 중복되었습니다."),
+    USERNAME_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "아이디가 중복되었습니다."),
     NICKNAME_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "닉네임이 중복되었습니다."),
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 401, "로그인이 실패하였습니다.");
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 401, "로그인이 실패하였습니다."),
+
+    // Mail
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "이메일 전송 실패"),
+    EMAIL_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, 400, "이메일 검증 실패"),
+    EMAIL_AUTH_NUMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, 400, "인증 번호가 유효하지 않습니다."),
+    EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, 400, "이메일이 일치하지 않습니다."),
+
+    // Product
+    Product_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품을 찾을 수 없습니다."),
+
+    // Recipe
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),
+    RECIPE_STEP_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피 순서를 찾을 수 없습니다."),
+    RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피를 수정할 권한이 없는 멤버입니다."),
+
+    // Purchase
+    PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;

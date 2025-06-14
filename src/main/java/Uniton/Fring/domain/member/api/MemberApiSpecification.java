@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.member.controller;
+package Uniton.Fring.domain.member.api;
 
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
@@ -108,7 +108,7 @@ public interface MemberApiSpecification {
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
     )
-    ResponseEntity<Boolean> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto);
+    ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto);
 
     @Operation(
             summary = "멤버 ROLE을 농부로 변경",
@@ -120,5 +120,5 @@ public interface MemberApiSpecification {
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
     )
-    ResponseEntity<Boolean> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails);
+    ResponseEntity<Void> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails);
 }

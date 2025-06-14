@@ -39,7 +39,7 @@ public class JwtTokenProvider implements InitializingBean {
 
     private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret, UserDetailsServiceImpl userDetailsService) {
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secret, UserDetailsServiceImpl userDetailsService) {
         this.secret = secret;
 
         this.accessTokenValidityInSeconds = 2 * 60 * 60 * 1000L;
@@ -114,7 +114,7 @@ public class JwtTokenProvider implements InitializingBean {
         } catch (SignatureException e) {
             // 서명 불일치
             throw new CustomException(ErrorCode.JWT_SIGNATURE);
-        } catch (MalformedJwtException e){
+        } catch (MalformedJwtException e) {
             // 구조 문제
             throw new CustomException(ErrorCode.JWT_MALFORMED);
         } catch (ExpiredJwtException e) {
