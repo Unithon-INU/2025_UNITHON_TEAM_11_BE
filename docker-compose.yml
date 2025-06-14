@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   spring-app:
-    container_name: spring-server
+    container_name: Fring-server
     image: ${DOCKER_USERNAME}/Fring-server:latest
     ports:
       - "80:8080"
