@@ -28,7 +28,7 @@ jobs:
           spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
           spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
+          spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.username: ${{ secrets.MAIL_USERNAME }}
           spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
 
