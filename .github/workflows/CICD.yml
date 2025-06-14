@@ -80,7 +80,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/fring-server:latest
             
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
-            echo "REDIS_PASSWORD=${{ secrets.REDIS_HOST }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
 
             if [ "$(docker ps -aq -f name=spring-server)" ]; then
