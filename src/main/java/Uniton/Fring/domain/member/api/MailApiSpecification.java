@@ -3,7 +3,6 @@ package Uniton.Fring.domain.member.api;
 import Uniton.Fring.domain.member.dto.req.EmailCheckDto;
 import Uniton.Fring.domain.member.dto.req.EmailRequestDto;
 import Uniton.Fring.domain.member.dto.res.EmailResponseDto;
-import Uniton.Fring.global.exception.ErrorResponseEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,11 +27,7 @@ public interface MailApiSpecification {
                                     schema = @Schema(implementation = EmailResponseDto.class)
                             )
                     ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "이메일 전송 실패",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))
-                    )
+                    @ApiResponse(responseCode = "500", description = "이메일 전송 실패")
             }
     )
     ResponseEntity<EmailResponseDto> sendMail(@RequestBody @Valid EmailRequestDto emailRequestDto);
@@ -48,16 +43,8 @@ public interface MailApiSpecification {
                                     schema = @Schema(implementation = EmailResponseDto.class)
                             )
                     ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "인증 번호가 유효하지 않습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "이메일이 일치하지 않습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))
-                    )
+                    @ApiResponse(responseCode = "400",description = "인증 번호가 유효하지 않습니다."),
+                    @ApiResponse(responseCode = "400", description = "이메일이 일치하지 않습니다.")
             }
     )
     ResponseEntity<EmailResponseDto> verifyMail(@RequestBody @Valid EmailCheckDto emailCheckDto);

@@ -1,6 +1,5 @@
 package Uniton.Fring.domain.recipe.controller;
 
-import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.domain.recipe.dto.req.RecipeRequestDto;
 import Uniton.Fring.domain.recipe.dto.res.BestRecipeResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
@@ -20,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/recipes")
-public class RecipeController {
+public class RecipeController implements RecipeApiSpecification{
 
     private final RecipeService recipeService;
 

@@ -7,7 +7,6 @@ import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
 import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
-import Uniton.Fring.global.exception.ErrorResponseEntity;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,8 +41,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = SignupResponseDto.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
     )
     ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto);
@@ -60,12 +58,9 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = LoginResponseDto.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-                    @ApiResponse(responseCode = "401", description = "로그인 실패 - 잘못된 자격 증명",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다."),
+                    @ApiResponse(responseCode = "401", description = "로그인 실패 - 잘못된 자격 증명")
             }
     )
     ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto);
@@ -82,12 +77,9 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = LoginResponseDto.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "420", description = "만료된 리프레시 토큰입니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-                    @ApiResponse(responseCode = "404", description = "리프레시 토큰 조회 실패",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-                    @ApiResponse(responseCode = "400", description = "리프레시 토큰 불일치",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "420", description = "만료된 리프레시 토큰입니다."),
+                    @ApiResponse(responseCode = "404", description = "리프레시 토큰 조회 실패"),
+                    @ApiResponse(responseCode = "400", description = "리프레시 토큰 불일치")
             }
     )
     ResponseEntity<LoginResponseDto> refresh(@Valid @RequestBody JwtTokenRequestDto jwtTokenRequestDto);
@@ -102,8 +94,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = Boolean.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "이메일이 중복되었습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "400", description = "이메일이 중복되었습니다.")
             }
     )
     ResponseEntity<Boolean> checkEmailDuplicated(@PathVariable String email);
@@ -118,8 +109,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = Boolean.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "아이디가 중복되었습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "400", description = "아이디가 중복되었습니다.")
             }
     )
     ResponseEntity<Boolean> checkUsernameDuplicated(@PathVariable String username);
@@ -134,8 +124,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = Boolean.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "닉네임이 중복되었습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "400", description = "닉네임이 중복되었습니다.")
             }
     )
     ResponseEntity<Boolean> checkNicknameDuplicated(@PathVariable String nickname);
@@ -150,10 +139,8 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = Boolean.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
     )
     ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto);
@@ -168,8 +155,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = Boolean.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
+                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.")
             }
     )
     ResponseEntity<Void> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails);
@@ -191,11 +177,7 @@ public interface MemberApiSpecification {
                                     schema = @Schema(implementation = SearchMemberResponseDto.class, type = "array")
                             )
                     ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청 파라미터 (예: keyword 누락, 잘못된 page/size 형식 등)",
-                            content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))
-                    )
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터 (예: keyword 누락, 잘못된 page/size 형식 등)")
             }
     )
     ResponseEntity<List<SearchMemberResponseDto>> searchMember(
