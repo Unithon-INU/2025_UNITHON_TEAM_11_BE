@@ -39,7 +39,7 @@ public interface MemberApiSpecification {
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
     )
-    ResponseEntity<SignupResponseDto> signup(@RequestPart("signupRequestDto") @Valid SignupRequestDto signupRequestDto,
+    ResponseEntity<SignupResponseDto> signup(@RequestPart @Valid SignupRequestDto signupRequestDto,
                                              @RequestPart(value = "image", required = false) MultipartFile multipartFile);
 
     @Operation(
