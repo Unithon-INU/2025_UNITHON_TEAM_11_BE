@@ -30,7 +30,7 @@ public class MemberController implements MemberApiSpecification {
 
     // 회원가입
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SignupResponseDto> signup(@RequestPart("signupRequestDto") @Valid SignupRequestDto signupRequestDto,
+    public ResponseEntity<SignupResponseDto> signup(@RequestPart @Valid SignupRequestDto signupRequestDto,
                                                     @RequestPart(value = "image", required = false) MultipartFile multipartFile) {
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupRequestDto, multipartFile));
     }

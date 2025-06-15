@@ -43,6 +43,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// Json
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+
 	// Mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
