@@ -11,7 +11,6 @@ import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,34 +35,16 @@ public interface MemberApiSpecification {
     @Operation(
             summary = "회원가입 [ JWT ❌ ]",
             description = "회원가입을 진행합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            ),
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "회원가입 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = SignupResponseDto.class)
-                            )
-                    ),
+                    @ApiResponse(responseCode = "201", description = "회원가입 성공"),
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
-    )
-    @Parameters({
-            @Parameter(
-                    name = "signupRequestDto",
-                    description = "회원가입 요청 데이터",
-                    required = true,
-                    schema = @Schema(implementation = SignupRequestDto.class)
-            ),
-            @Parameter(
-                    name = "image",
-                    description = "프로필 이미지 파일 (선택)",
-                    required = false,
-                    schema = @Schema(type = "string", format = "binary")
             )
-    })
-    ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto,
-                                                    @RequestPart(value = "image", required = false) MultipartFile multipartFile);
+    ResponseEntity<SignupResponseDto> signup(@RequestPart("signupRequestDto") @Valid SignupRequestDto signupRequestDto,
+                                             @RequestPart(value = "image", required = false) MultipartFile multipartFile);
 
     @Operation(
             summary = "로그인 [ JWT ❌ ]",

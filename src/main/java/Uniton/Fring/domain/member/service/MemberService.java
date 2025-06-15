@@ -1,5 +1,8 @@
 package Uniton.Fring.domain.member.service;
 
+import Uniton.Fring.domain.Product.Product;
+import Uniton.Fring.domain.Product.ProductRepository;
+import Uniton.Fring.domain.Product.SimpleProductResponseDto;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
@@ -39,6 +42,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final ProductRepository productRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
@@ -278,15 +282,15 @@ public class MemberService {
 
                 break;
             case FARMER:
-//                log.info("[생산자 유저 정보 조회]");
-//                List<Product> recipes = recipeRepository.findByMemberId(memberId);
-//
-//                List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
-//                        .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
-//
-//                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtos);
-//
-//                break;
+                log.info("[생산자 유저 정보 조회]");
+                List<Product> products = productRepository.findByMemberId(memberId);
+
+                List<SimpleProductResponseDto> simpleProductResponseDtos = products.stream()
+                        .map(product -> SimpleProductResponseDto.builder().product(product).build()).toList();
+
+                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleProductResponseDtos);
+
+                break;
         }
 
         log.info("[유저 정보 조회 성공]");
