@@ -233,7 +233,7 @@ public class MemberService {
 
         log.info("[유저 랭킹 조회 요청]");
 
-        List<Member> members =  memberRepository.find5ByOrderByLikeCountDesc();
+        List<Member> members =  memberRepository.findTop5ByOrderByLikeCountDesc();
 
         List<MemberRankingResponseDto> memberRankingResponseDtos = members.stream()
                 .map(member -> MemberRankingResponseDto.builder().member(member).build()).toList();
