@@ -15,7 +15,7 @@ public class MultipartJackson2HttpMessageConverter extends AbstractJackson2HttpM
         super(objectMapper, MediaType.APPLICATION_OCTET_STREAM);
     }
 
-    // 읽기 가능한지 판단 (클래스 + MediaType)
+    // 읽기 가능한지 판단 (클래스+MediaType)
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         if (mediaType == null) return false;
