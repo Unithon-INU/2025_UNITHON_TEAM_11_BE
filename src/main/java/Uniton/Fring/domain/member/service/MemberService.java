@@ -3,10 +3,7 @@ package Uniton.Fring.domain.member.service;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
-import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
-import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
-import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
-import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
+import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.global.exception.CustomException;
@@ -251,6 +248,12 @@ public class MemberService {
 
         return memberRankingResponseDtos;
     }
+
+//    @Transactional(readOnly = true)
+//    public MemberInfoResponseDto getMemberInfo(String memberId) {
+//
+//        log.info("[]");
+//    }
 
     public String saveImageLocally(MultipartFile multipartFile) {
         String uploadDir = "./uploads/"; // 상대 경로 (또는 절대 경로로도 가능)

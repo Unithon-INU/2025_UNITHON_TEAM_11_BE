@@ -4,11 +4,8 @@ import Uniton.Fring.domain.member.api.MemberApiSpecification;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
-import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
-import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
-import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
+import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.domain.member.service.MemberService;
-import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -104,7 +101,7 @@ public class MemberController implements MemberApiSpecification {
 
 //    // 유저 정보 조회
 //    @GetMapping("{memberId}")
-//    public ResponseEntity<> getMemberInfo(@PathVariable String memberId) {
+//    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable String memberId) {
 //        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId));
 //    }
 }

@@ -30,6 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (requestURI.startsWith("/api/members/signup")
                 || requestURI.startsWith("/api/members/login")
                 || requestURI.startsWith("/api/members/email")
+                || requestURI.startsWith("/api/members/username")
                 || requestURI.startsWith("/api/members/nickname")
                 || requestURI.startsWith("/api/members/login/oauth2")
                 || requestURI.startsWith("/api/mails")
