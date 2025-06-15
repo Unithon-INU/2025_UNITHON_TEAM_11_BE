@@ -6,6 +6,9 @@ import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
+import Uniton.Fring.domain.recipe.entity.Recipe;
+import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.JwtTokenProvider;
@@ -35,6 +38,7 @@ import java.util.UUID;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RecipeRepository recipeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
@@ -249,11 +253,46 @@ public class MemberService {
         return memberRankingResponseDtos;
     }
 
-//    @Transactional(readOnly = true)
-//    public MemberInfoResponseDto getMemberInfo(String memberId) {
+    @Transactional(readOnly = true)
+    public MemberInfoResponseDto getMemberInfo(Long memberId) {
+
+        log.info("[유저 정보 조회 요청]");
+
+        Member member = memberRepository.findById(memberId)
+                        .orElseThrow(() -> {
+                            log.warn("[유저 정보 조회 실패] 사용자 없음");
+                            return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+                        });
+
+        MemberInfoResponseDto memberInfoResponseDto = new MemberInfoResponseDto();
+
+        switch (member.getRole()) {
+            case CONSUMER:
+                log.info("[소비자 유저 정보 조회]");
+                List<Recipe> recipes = recipeRepository.findByMemberId(memberId);
+
+                List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
+                        .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+
+                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtos);
+
+                break;
+            case FARMER:
+//                log.info("[생산자 유저 정보 조회]");
+//                List<Product> recipes = recipeRepository.findByMemberId(memberId);
 //
-//        log.info("[]");
-//    }
+//                List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
+//                        .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+//
+//                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtos);
+//
+//                break;
+        }
+
+        log.info("[유저 정보 조회 성공]");
+
+        return memberInfoResponseDto;
+    }
 
     public String saveImageLocally(MultipartFile multipartFile) {
         String uploadDir = "./uploads/"; // 상대 경로 (또는 절대 경로로도 가능)

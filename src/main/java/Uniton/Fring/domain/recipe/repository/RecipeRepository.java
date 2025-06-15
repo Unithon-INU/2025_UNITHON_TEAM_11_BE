@@ -11,4 +11,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findTop10ByOrderByRatingDesc();
 
     Page<Recipe> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    List<Recipe> findByMemberId(Long memberId);
 }

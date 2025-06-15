@@ -1,7 +1,7 @@
 package Uniton.Fring.domain.cart.service;
 
 import Uniton.Fring.domain.cart.repository.CartRepository;
-import Uniton.Fring.domain.farmProduct.FarmProductRepository;
+import Uniton.Fring.domain.Product.ProductRepository;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final FarmProductRepository farmProductRepository;
+    private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
 

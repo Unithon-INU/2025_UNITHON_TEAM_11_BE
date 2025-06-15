@@ -30,7 +30,7 @@ public class MemberController implements MemberApiSpecification {
 
     // 회원가입
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto,
+    public ResponseEntity<SignupResponseDto> signup(@RequestPart("signupRequestDto") @Valid SignupRequestDto signupRequestDto,
                                                     @RequestPart(value = "image", required = false) MultipartFile multipartFile) {
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupRequestDto, multipartFile));
     }
@@ -99,9 +99,9 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
     }
 
-//    // 유저 정보 조회
-//    @GetMapping("{memberId}")
-//    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable String memberId) {
-//        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId));
-//    }
+    // 유저 정보 조회
+    @GetMapping("{memberId}")
+    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId));
+    }
 }

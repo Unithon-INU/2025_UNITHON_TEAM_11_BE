@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.review;
 
-import Uniton.Fring.domain.farmProduct.FarmProduct;
+import Uniton.Fring.domain.Product.Product;
 import Uniton.Fring.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -25,7 +25,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private FarmProduct product;
+    private Product product;
 
     private int rating;
 
