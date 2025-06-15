@@ -15,9 +15,10 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowCredentials(false);
+        configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://2025-unithon-team-11-fe.vercel.app"
         ));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
