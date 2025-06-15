@@ -63,7 +63,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                         .access( new WebExpressionAuthorizationManager(
-                                "hasIpAddress('219.248.253.212') or hasIpAddress('172.30.1.100') or hasIpAddress('172.30.1.65')"
+                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85')"
                         ))
                         .anyRequest().authenticated()
                 )
