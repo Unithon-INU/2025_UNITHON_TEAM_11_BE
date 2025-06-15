@@ -42,12 +42,13 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    public Member(SignupRequestDto signupRequestDto, String encodedPassword) {
+    public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
         this.username = signupRequestDto.getUsername();
         this.password = encodedPassword;
         this.nickname = signupRequestDto.getNickname();
         this.introduction = signupRequestDto.getIntroduction();
+        this.imageUrl = imageUrl;
         this.role = MemberRole.CONSUMER;
     }
 

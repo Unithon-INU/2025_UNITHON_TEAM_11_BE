@@ -25,8 +25,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -40,11 +44,16 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
+    public SignupResponseDto signup(SignupRequestDto signupRequestDto, MultipartFile multipartFile) {
 
         log.info("[회원가입 요청] email={}, username={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getUsername(), signupRequestDto.getNickname());
 
-        Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()));
+        String imageUrl = null;
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            imageUrl = saveImageLocally(multipartFile);
+        }
+
+        Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()), imageUrl);
 
         memberRepository.save(member);
 
@@ -241,5 +250,26 @@ public class MemberService {
         log.info("[레시피 유저 랭킹 조회 성공]");
 
         return memberRankingResponseDtos;
+    }
+
+    public String saveImageLocally(MultipartFile multipartFile) {
+        String uploadDir = "./uploads/"; // 상대 경로 (또는 절대 경로로도 가능)
+        String originalFilename = multipartFile.getOriginalFilename();
+        String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
+
+        File destinationFile = new File(uploadDir + uniqueFilename);
+
+        try {
+            // 디렉토리가 없으면 생성
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            multipartFile.transferTo(destinationFile); // 저장
+            return "/uploads/" + uniqueFilename; // 프론트에서 접근할 수 있도록 경로 리턴
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패", e);
+        }
     }
 }

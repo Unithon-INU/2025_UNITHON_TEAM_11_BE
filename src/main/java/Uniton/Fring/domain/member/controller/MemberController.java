@@ -16,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,9 +32,10 @@ public class MemberController implements MemberApiSpecification {
     private final MemberService memberService;
 
     // 회원가입
-    @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupRequestDto));
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto,
+                                                    @RequestPart(value = "image", required = false) MultipartFile multipartFile) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupRequestDto, multipartFile));
     }
 
     // 로그인
@@ -98,4 +101,10 @@ public class MemberController implements MemberApiSpecification {
     public ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember() {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
     }
+
+//    // 유저 정보 조회
+//    @GetMapping("{memberId}")
+//    public ResponseEntity<> getMemberInfo(@PathVariable String memberId) {
+//        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId));
+//    }
 }
