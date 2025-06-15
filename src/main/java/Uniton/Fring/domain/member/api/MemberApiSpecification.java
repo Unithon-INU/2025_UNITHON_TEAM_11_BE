@@ -37,11 +37,12 @@ public interface MemberApiSpecification {
             summary = "회원가입 [ JWT ❌ ]",
             description = "회원가입을 진행합니다.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
                     content = @Content(
                             mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                             encoding = {
-                                    @Encoding(name = "signupRequestDto", contentType = "application/json"),
-                                    @Encoding(name = "image", contentType = "application/octet-stream")
+                                    @Encoding(name = "signupRequestDto", contentType = MediaType.APPLICATION_JSON_VALUE),
+                                    @Encoding(name = "image", contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE)
                             }
                     )
             ),
