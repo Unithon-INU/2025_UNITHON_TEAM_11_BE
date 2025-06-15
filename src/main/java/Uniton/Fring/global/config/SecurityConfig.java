@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -55,11 +56,15 @@ public class SecurityConfig {
                 // 요청 권한 설정 ( 해당 엔드포인트에 대해서는 허용 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/members/signup", "/api/members/login",
-                                "/api/members/email/**", "/api/members/nickname/**,",
+                                "/api/members/email/**", "/api/members/nickname/**",
                                 "/api/members/login/oauth2/**",
                                 "/api/mails/**",
-                                "/swagger-ui/**", "/v3/api-docs/**","/favicon.ico"
+                                "/favicon.ico"
                         ).permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                        .access( new WebExpressionAuthorizationManager(
+                                "hasIpAddress('219.248.253.212') or hasIpAddress('172.30.1.100') or hasIpAddress('172.30.1.65')"
+                        ))
                         .anyRequest().authenticated()
                 )
 
