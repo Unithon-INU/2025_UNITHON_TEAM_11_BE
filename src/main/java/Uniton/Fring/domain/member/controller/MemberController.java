@@ -5,6 +5,7 @@ import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.service.MemberService;
 import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
@@ -92,9 +93,9 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, pageable));
     }
 
-//    // 유저 랭킹
-//    @GetMapping("/ranking")
-//    public ResponseEntity<List<SearchMemberResponseDto>> getRankingRecipeMember() {
-//        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
-//    }
+    // 유저 랭킹
+    @GetMapping("/ranking")
+    public ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember() {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
+    }
 }

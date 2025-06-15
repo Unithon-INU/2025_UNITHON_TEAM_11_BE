@@ -4,6 +4,7 @@ import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
 import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.global.exception.ErrorResponseEntity;
@@ -36,7 +37,10 @@ public interface MemberApiSpecification {
                     @ApiResponse(
                             responseCode = "200",
                             description = "회원가입 성공",
-                            content = @Content(schema = @Schema(implementation = SignupResponseDto.class))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SignupResponseDto.class)
+                            )
                     ),
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
@@ -51,7 +55,10 @@ public interface MemberApiSpecification {
                     @ApiResponse(
                             responseCode = "200",
                             description = "로그인 성공",
-                            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = LoginResponseDto.class)
+                            )
                     ),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
@@ -67,8 +74,14 @@ public interface MemberApiSpecification {
             summary = "토큰 재발급",
             description = "Refresh Token을 재발급 합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "새로운 리프레시 토큰 반환",
-                            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "새로운 리프레시 토큰 반환",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = LoginResponseDto.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "420", description = "만료된 리프레시 토큰입니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
                     @ApiResponse(responseCode = "404", description = "리프레시 토큰 조회 실패",
@@ -84,7 +97,11 @@ public interface MemberApiSpecification {
             description = "이메일이 이미 존재하는지 확인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "사용 가능 여부 반환",
-                            content = @Content(schema = @Schema(implementation = Boolean.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "400", description = "이메일이 중복되었습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
@@ -96,7 +113,11 @@ public interface MemberApiSpecification {
             description = "아이디가 이미 존재하는지 확인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "사용 가능 여부 반환",
-                            content = @Content(schema = @Schema(implementation = Boolean.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "400", description = "아이디가 중복되었습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
@@ -108,7 +129,11 @@ public interface MemberApiSpecification {
             description = "닉네임이 이미 존재하는지 확인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "사용 가능 여부 반환",
-                            content = @Content(schema = @Schema(implementation = Boolean.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "400", description = "닉네임이 중복되었습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
@@ -120,7 +145,11 @@ public interface MemberApiSpecification {
             description = "회원 탈퇴를 진행합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공 여부 반환",
-                            content = @Content(schema = @Schema(implementation = Boolean.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
@@ -134,7 +163,11 @@ public interface MemberApiSpecification {
             description = "회원의 ROLE을 농부로 변경합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공 여부 반환",
-                            content = @Content(schema = @Schema(implementation = Boolean.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class)))
             }
@@ -169,6 +202,19 @@ public interface MemberApiSpecification {
             @RequestParam String keyword,
             @PageableDefault(size = 10) Pageable pageable);
 
-//    @Operation()
-//    ResponseEntity<List<SearchMemberResponseDto>> getRankingRecipeMember();
+    @Operation(
+            summary = "유저 랭킹 조회",
+            description = "유저를 좋아요 수 기준으로 상위 5위까지 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "유저 랭킹 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MemberRankingResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember();
 }

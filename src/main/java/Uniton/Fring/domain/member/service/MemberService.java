@@ -4,6 +4,7 @@ import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
 import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
@@ -227,18 +228,18 @@ public class MemberService {
         return searchMemberResponseDtos;
     }
 
-//    @Transactional(readOnly = true)
-//    public List<SearchMemberResponseDto> getRankingRecipeMember() {
-//
-//        log.info("[레시피 유저 랭킹 조회 요청]");
-//
-//        List<Member> members =  memberRepository.find5ByOrderByLikeDesc();
-//
-//        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = members.stream()
-//                .map(member -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
-//
-//        log.info("[레시피 유저 랭킹 조회 성공]");
-//
-//        return ;
-//    }
+    @Transactional(readOnly = true)
+    public List<MemberRankingResponseDto> getRankingRecipeMember() {
+
+        log.info("[유저 랭킹 조회 요청]");
+
+        List<Member> members =  memberRepository.find5ByOrderByLikeCountDesc();
+
+        List<MemberRankingResponseDto> memberRankingResponseDtos = members.stream()
+                .map(member -> MemberRankingResponseDto.builder().member(member).build()).toList();
+
+        log.info("[레시피 유저 랭킹 조회 성공]");
+
+        return memberRankingResponseDtos;
+    }
 }

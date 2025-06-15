@@ -18,7 +18,7 @@ public class CorsConfig {
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "https://2025-unithon-team-11-fe.vercel.app"
+                "https://fring.vercel.app"
         ));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

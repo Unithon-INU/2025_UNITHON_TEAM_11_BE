@@ -34,7 +34,6 @@ public enum ErrorCode {
 
     // Mail
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "이메일 전송 실패"),
-    EMAIL_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, 400, "이메일 검증 실패"),
     EMAIL_AUTH_NUMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, 400, "인증 번호가 유효하지 않습니다."),
     EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, 400, "이메일이 일치하지 않습니다."),
 
