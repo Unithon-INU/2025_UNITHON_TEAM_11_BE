@@ -65,7 +65,7 @@ public class SecurityConfig {
 //                        .access( new WebExpressionAuthorizationManager(
 //                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85')"
 //                        ))
-//                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
 
                 // 예외 처리 설정
