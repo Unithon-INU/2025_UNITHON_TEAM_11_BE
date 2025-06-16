@@ -83,14 +83,14 @@ jobs:
             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
 
-            if [ "$(docker ps -aq -f name=spring-server)" ]; then
-              docker stop spring-server
-              docker rm spring-server
+            if [ "$(docker ps -aq -f name=Fring-server)" ]; then
+              docker stop Fring-server
+              docker rm Fring-server
             fi
 
-            if [ "$(docker ps -aq -f name=inffy-redis)" ]; then
-              docker stop inffy-redis
-              docker rm inffy-redis
+            if [ "$(docker ps -aq -f name=Fring-redis)" ]; then
+              docker stop Fring-redis
+              docker rm Fring-redis
             fi
 
             docker-compose up -d
