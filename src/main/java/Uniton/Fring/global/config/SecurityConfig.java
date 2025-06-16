@@ -61,11 +61,11 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/swagger-ui/**", "/v3/api-docs/**"
                         ).permitAll()
+                        .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
 //                        .access( new WebExpressionAuthorizationManager(
 //                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85')"
 //                        ))
-                        .anyRequest().authenticated()
                 )
 
                 // 예외 처리 설정
