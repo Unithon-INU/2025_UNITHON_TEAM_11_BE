@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,7 @@ public class MemberController implements MemberApiSpecification {
     private final MemberService memberService;
 
     // 회원가입
-    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/signup", consumes = {"multipart/form-data", "multipart/form-data;charset=UTF-8"})
     public ResponseEntity<SignupResponseDto> signup(@RequestPart @Valid SignupRequestDto signupRequestDto,
                                                     @RequestPart(value = "image", required = false) MultipartFile multipartFile) {
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupRequestDto, multipartFile));
