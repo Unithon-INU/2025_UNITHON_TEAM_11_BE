@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -59,13 +58,14 @@ public class SecurityConfig {
                                 "/api/members/username/**","/api/members/email/**", "/api/members/nickname/**",
                                 "/api/members/login/oauth2/**",
                                 "/api/mails/**",
-                                "/favicon.ico"
+                                "/favicon.ico",
+                                "/swagger-ui/**", "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
-                        .access( new WebExpressionAuthorizationManager(
-                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85') or hasIpAddress('175.198.195.141')"
-                        ))
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+//                        .access( new WebExpressionAuthorizationManager(
+//                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85')"
+//                        ))
+//                        .anyRequest().authenticated()
                 )
 
                 // 예외 처리 설정
