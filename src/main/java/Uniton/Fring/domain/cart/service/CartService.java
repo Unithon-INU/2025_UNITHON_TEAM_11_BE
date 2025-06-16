@@ -1,7 +1,7 @@
 package Uniton.Fring.domain.cart.service;
 
 import Uniton.Fring.domain.cart.repository.CartRepository;
-import Uniton.Fring.domain.Product.ProductRepository;
+import Uniton.Fring.domain.product.ProductRepository;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
