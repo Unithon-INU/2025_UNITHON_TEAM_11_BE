@@ -12,6 +12,7 @@ import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
+import Uniton.Fring.global.s3.S3Service;
 import Uniton.Fring.global.security.jwt.JwtTokenProvider;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.RefreshToken;
@@ -28,16 +29,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final S3Service s3Service;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
     private final ProductRepository productRepository;
@@ -47,13 +47,17 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto, MultipartFile multipartFile) {
+    public SignupResponseDto signup(SignupRequestDto signupRequestDto, MultipartFile image) {
 
         log.info("[회원가입 요청] email={}, username={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getUsername(), signupRequestDto.getNickname());
 
         String imageUrl = null;
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            imageUrl = saveImageLocally(multipartFile);
+        if (image != null && !image.isEmpty()) {
+            try {
+                imageUrl = s3Service.upload(image, "profileImages");
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+            }
         }
 
         Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()), imageUrl);
@@ -294,26 +298,5 @@ public class MemberService {
         log.info("[유저 정보 조회 성공]");
 
         return memberInfoResponseDto;
-    }
-
-    public String saveImageLocally(MultipartFile multipartFile) {
-        String uploadDir = "/home/ubuntu/images/";
-        String originalFilename = multipartFile.getOriginalFilename();
-        String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
-
-        File destinationFile = new File(uploadDir + uniqueFilename);
-
-        try {
-            // 디렉토리가 없으면 생성
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            multipartFile.transferTo(destinationFile); // 저장
-            return "/uploads/" + uniqueFilename; // 프론트에서 접근할 수 있도록 경로 리턴
-        } catch (IOException e) {
-            throw new RuntimeException("이미지 저장 실패", e);
-        }
     }
 }
