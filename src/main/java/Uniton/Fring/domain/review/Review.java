@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.review;
 
-import Uniton.Fring.domain.product.Product;
+import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.member.dto.res;
 
-import Uniton.Fring.domain.product.SimpleProductResponseDto;
+import Uniton.Fring.domain.product.dto.SimpleProductResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;

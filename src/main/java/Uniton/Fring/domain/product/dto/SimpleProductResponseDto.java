@@ -1,5 +1,6 @@
-package Uniton.Fring.domain.product;
+package Uniton.Fring.domain.product.dto;
 
+import Uniton.Fring.domain.product.entity.Product;
 import lombok.Builder;
 import lombok.Getter;
 

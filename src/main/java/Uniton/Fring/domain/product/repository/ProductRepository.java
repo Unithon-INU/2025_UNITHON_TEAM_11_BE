@@ -1,5 +1,6 @@
-package Uniton.Fring.domain.product;
+package Uniton.Fring.domain.product.repository;
 
+import Uniton.Fring.domain.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
