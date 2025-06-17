@@ -14,6 +14,8 @@ services:
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: always
+    pull_policy: always
 
   redis:
     container_name: Fring-redis
