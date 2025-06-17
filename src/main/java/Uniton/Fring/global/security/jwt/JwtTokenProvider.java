@@ -1,6 +1,7 @@
 package Uniton.Fring.global.security.jwt;
 
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
@@ -62,6 +63,10 @@ public class JwtTokenProvider implements InitializingBean {
         Date accessTime = new Date(now + this.accessTokenValidityInSeconds);
         Date refreshTime = new Date(now + this.refreshTokenValidityInSeconds);
 
+        // 멤버 객체 꺼내기
+        UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+        Member member = userDetails.getMember();
+
         // JWT 토큰 빌더
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
@@ -78,6 +83,10 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
 
         return LoginResponseDto.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .imageUrl(member.getImageUrl())
+                .introduction(member.getIntroduction())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .accessTokenExpires(this.accessTokenValidityInSeconds - 5000)
