@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 public class MultipartJackson2HttpMessageConverter extends AbstractJackson2HttpMessageConverter {
 
      // "Content-Type: multipart/form-data" 헤더를 지원하는 HTTP 요청 변환기
+    //  multipart/form-data 요청 중 JSON 파트를 Jackson을 이용해 변환
     public MultipartJackson2HttpMessageConverter(ObjectMapper objectMapper) {
         super(objectMapper, MediaType.APPLICATION_OCTET_STREAM);
     }

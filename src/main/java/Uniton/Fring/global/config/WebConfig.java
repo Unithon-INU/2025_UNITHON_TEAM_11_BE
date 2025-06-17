@@ -26,6 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // 컨버터 리스트에 사용자 정의 컨버터 추가
+        // multipart/form-data 안의 JSON 처리 시, 만든 사용자 정의 컨버터가 동작
         converters.add(multipartJackson2HttpMessageConverter);
     }
 }
