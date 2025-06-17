@@ -93,4 +93,5 @@ jobs:
               docker rm Fring-redis
             fi
 
-            docker-compose up -d
+            docker-compose up -d --pull always --force-recreate
+            docker image prune -f

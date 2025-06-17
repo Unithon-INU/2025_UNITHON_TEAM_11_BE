@@ -1,12 +1,12 @@
 package Uniton.Fring.domain.member.service;
 
-import Uniton.Fring.domain.product.ProductRepository;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.product.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
@@ -297,7 +297,7 @@ public class MemberService {
     }
 
     public String saveImageLocally(MultipartFile multipartFile) {
-        String uploadDir = "./uploads/"; // 상대 경로 (또는 절대 경로로도 가능)
+        String uploadDir = "/home/ubuntu/images/";
         String originalFilename = multipartFile.getOriginalFilename();
         String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
 
