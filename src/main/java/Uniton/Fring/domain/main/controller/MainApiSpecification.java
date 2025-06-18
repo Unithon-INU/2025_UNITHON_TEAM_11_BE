@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public interface MainApiSpecification {
 
     @Operation(
-            summary = "메인 페이지 응답",
+            summary = "메인 페이지",
             description = "메인 페이지의 상품과 레시피 정보들을 반환합니다.",
             responses = {
                     @ApiResponse(
@@ -32,7 +32,7 @@ public interface MainApiSpecification {
     ResponseEntity<MainResponseDto> mainInfo(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
     @Operation(
-            summary = "장터 메인 페이지 응답",
+            summary = "장터 메인 페이지",
             description = "장터 메인 페이지의 상품 정보들을 반환합니다.",
             responses = {
                     @ApiResponse(
@@ -48,7 +48,7 @@ public interface MainApiSpecification {
     ResponseEntity<MainProductResponseDto> mainProductInfo(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
     @Operation(
-            summary = "레시피 메인 페이지 응답",
+            summary = "레시피 메인 페이지",
             description = "레시피 메인 페이지의 레시피 정보들을 반환합니다.",
             responses = {
                     @ApiResponse(

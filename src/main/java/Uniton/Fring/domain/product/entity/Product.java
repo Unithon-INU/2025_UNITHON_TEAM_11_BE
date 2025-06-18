@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "farm_product")
+@Table(name = "product")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "farm_id", nullable = false)
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
 
     @Column(nullable = false)
