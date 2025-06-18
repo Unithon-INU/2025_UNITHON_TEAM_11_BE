@@ -76,9 +76,15 @@ public class MainService {
                     return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
                 }).toList();
 
-        log.info("[메인] 특별한 날 레시피 목록 응답 생성");
-        Integer reviewCount = reviewRepository.countByRecipeId(specialRecipe.getId());
-        SpecialRecipeResponseDto specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
+        SpecialRecipeResponseDto specialRecipeResponseDto;
+        if (specialRecipe != null) {
+            log.info("[메인] 특별한 날 레시피 목록 응답 생성");
+            Integer reviewCount = reviewRepository.countByRecipeId(specialRecipe.getId());
+            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
+        } else {
+            log.info("[메인] 특별한 날 레시피 목록이 존재하지 않습니다.");
+            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().build();
+        }
 
         log.info("[메인 페이지 정보 응답]");
 
@@ -172,9 +178,15 @@ public class MainService {
                     return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
                 }).toList();
 
-        log.info("[메인] 특별한 날 레시피 목록 응답 생성");
-        Integer reviewCount = reviewRepository.countByRecipeId(specialRecipe.getId());
-        SpecialRecipeResponseDto specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
+        SpecialRecipeResponseDto specialRecipeResponseDto;
+        if (specialRecipe != null) {
+            log.info("[레시피 메인] 특별한 날 레시피 목록 응답 생성");
+            Integer reviewCount = reviewRepository.countByRecipeId(specialRecipe.getId());
+            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
+        } else {
+            log.info("[레시피 메인] 특별한 날 레시피 목록이 존재하지 않습니다.");
+            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().build();
+        }
 
         log.info("[레시피 메인 페이지 정보 응답]");
 
