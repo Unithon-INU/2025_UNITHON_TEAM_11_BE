@@ -55,8 +55,8 @@ public class SecurityConfig {
                 // 요청 권한 설정 ( 해당 엔드포인트에 대해서는 허용 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SIGNUP_URIS).permitAll()
-                        .requestMatchers(SWAGGER_URIS).authenticated()
-                        .requestMatchers(VIEW_URIS).authenticated()
+                        .requestMatchers(SWAGGER_URIS).permitAll()
+                        .requestMatchers(VIEW_URIS).permitAll()
                         .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
 //                        .access( new WebExpressionAuthorizationManager(
