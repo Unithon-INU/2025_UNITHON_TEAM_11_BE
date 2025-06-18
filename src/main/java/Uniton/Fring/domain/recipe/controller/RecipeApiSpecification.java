@@ -1,7 +1,6 @@
 package Uniton.Fring.domain.recipe.controller;
 
 import Uniton.Fring.domain.recipe.dto.req.RecipeRequestDto;
-import Uniton.Fring.domain.recipe.dto.res.BestRecipeResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
@@ -40,12 +39,12 @@ public interface RecipeApiSpecification {
     ResponseEntity<RecipeInfoResponseDto> getRecipe(@PathVariable Long recipeId);
 
     @Operation(
-            summary = "레시피 목록 조회",
-            description = "레시피 목록을 조회합니다. (기본값: 레시피 6개)",
+            summary = "요즘 핫한 레시피 더보기 조회",
+            description = "요즘 핫한 레시피 더보기 목록을 조회합니다. (레시피 10개)",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "레시피 목록 조회 성공",
+                            description = "요즘 핫한 레시피 더보기 목록 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = SimpleRecipeResponseDto.class, type = "array")
@@ -53,7 +52,23 @@ public interface RecipeApiSpecification {
                     )
             }
     )
-    ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@PageableDefault(size = 6) Pageable pageable);
+    ResponseEntity<List<SimpleRecipeResponseDto>> getBestRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
+            summary = "전체 레시피 목록 조회 (지금 올라온 레시피)",
+            description = "전체 레시피 목록을 조회합니다. (기본값: 레시피 8개)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "전체 레시피 목록 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleRecipeResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault(size = 8) Pageable pageable);
 
     @Operation(
             summary = "레시피 추가",
@@ -106,21 +121,4 @@ public interface RecipeApiSpecification {
             }
     )
     ResponseEntity<Void> deleteRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long recipeId);
-
-    @Operation(
-            summary = "평점이 좋은 레시피 상위 10개 반환",
-            description = "평점을 기준으로 정렬해 상위 10개의 레시피를 반환합니다.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "상위 10개 레시피 조회 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BestRecipeResponseDto.class, type = "array")
-                            )
-                    ),
-                    @ApiResponse(responseCode = "404", description = "맴버를 찾을 수 없습니다.")
-            }
-    )
-    ResponseEntity<List<BestRecipeResponseDto>> getBestRecipe();
 }

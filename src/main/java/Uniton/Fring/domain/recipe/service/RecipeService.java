@@ -1,10 +1,8 @@
 package Uniton.Fring.domain.recipe.service;
 
-import Uniton.Fring.domain.member.entity.Member;
-import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.like.RecipeLikeRepository;
 import Uniton.Fring.domain.recipe.dto.req.RecipeRequestDto;
 import Uniton.Fring.domain.recipe.dto.req.RecipeStepRequestDto;
-import Uniton.Fring.domain.recipe.dto.res.BestRecipeResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.RecipeStepResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
@@ -12,6 +10,7 @@ import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.entity.RecipeStep;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.recipe.repository.RecipeStepRepository;
+import Uniton.Fring.domain.review.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
@@ -24,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +31,8 @@ public class RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeStepRepository recipeStepRepository;
-    private final MemberRepository memberRepository;
+    private final RecipeLikeRepository recipeLikeRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
     public RecipeInfoResponseDto getRecipe(Long recipeId) {
@@ -59,18 +56,61 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleRecipeResponseDto> getRecipeList(Pageable pageable) {
+    public List<SimpleRecipeResponseDto> getBestRecipeList(UserDetailsImpl userDetails) {
 
-        log.info("[레시피 목록 요청]");
+        log.info("[요즘 핫한 레시피 더보기 요청]");
 
-        Page<Recipe> recipes = recipeRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
 
-        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
-                .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+        List<Recipe> bestRecipes = recipeRepository.findTop10ByOrderByRatingDesc();
 
-        log.info("[레시피 목록 조회 성공]");
+        List<SimpleRecipeResponseDto> bestRecipeResponseDtos = bestRecipes.stream()
+                .map(recipe -> {
+                    Boolean isLikedRecipe = null;
+                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
 
-        return simpleRecipeResponseDtos;
+                    if (memberId != null) {
+                        isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
+                    }
+
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                }).toList();
+
+        log.info("[요즘 핫한 레시피 더보기 성공]");
+
+        return bestRecipeResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleRecipeResponseDto> getRecipeList(UserDetailsImpl userDetails, Pageable pageable) {
+
+        log.info("[전체 레시피 목록 요청]");
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
+        Page<Recipe> recentRecipes = recipeRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        List<SimpleRecipeResponseDto> recentRecipeResponseDtos = recentRecipes.stream()
+                .map(recipe -> {
+                    Boolean isLikedRecipe = null;
+                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
+
+                    if (memberId != null) {
+                        isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
+                    }
+
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                }).toList();
+
+        log.info("[전체 레시피 목록 조회 성공]");
+
+        return recentRecipeResponseDtos;
     }
 
     @Transactional
@@ -149,36 +189,5 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
 
         log.info("[레시피 삭제 성공] recipeId={}", recipeId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<BestRecipeResponseDto> getBestRecipe() {
-
-        log.info("[평점 기준 상위 10개 레시피 조회 요청]");
-
-        List<Recipe> recipes = recipeRepository.findTop10ByOrderByRatingDesc();
-
-        // distinct()를 통해 중복되는 회원 ID를 제거하여, 회원 조회 쿼리의 중복 실행을 막음
-        List<Long> memberIds = recipes.stream().map(Recipe::getMemberId).distinct().toList();
-
-        // 회원 ID 리스트를 이용해 회원 정보를 한 번에 DB에서 조회
-        // 조회된 Member 객체들을 회원 ID를 키로, Member 객체를 값으로 하는 Map으로 변환
-        Map<Long, Member> memberMap = memberRepository.findAllById(memberIds).stream()
-                .collect(Collectors.toMap(Member::getId, Function.identity()));
-
-        log.info("[응답 객체 생성] 각각 멤버의 닉네임 조회");
-        List<BestRecipeResponseDto> bestRecipeResponseDtos = recipes.stream()
-                .map(recipe -> {
-                    Member member = memberMap.get(recipe.getMemberId());
-                    if (member == null) {
-                        throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-                    }
-
-                    return BestRecipeResponseDto.builder().recipes(recipe).nickname(member.getNickname()).build();
-                }).toList();
-
-        log.info("[평점 기준 상위 10개 레시피 조회 성공]");
-
-        return bestRecipeResponseDtos;
     }
 }
