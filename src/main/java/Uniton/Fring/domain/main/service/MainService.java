@@ -15,8 +15,6 @@ import Uniton.Fring.domain.recipe.dto.res.SpecialRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.ReviewRepository;
-import Uniton.Fring.global.exception.CustomException;
-import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +49,7 @@ public class MainService {
         List<Product> saleProducts = productRepository.findTop5ByOrderByDiscountRateDesc();
         List<Recipe> bestRecipes = recipeRepository.findTop5ByOrderByRatingDesc();
         Recipe specialRecipe = recipeRepository.findTop1ByTitleContainingOrderByCreatedAtDesc("특별")
-                .orElseThrow(() -> {
-                    log.warn("특별한 날 레시피 조회 실패");
-                    return new CustomException(ErrorCode.RECIPE_NOT_FOUND);
-                });
+                .orElse(null);
 
         log.info("[메인] 특가 농수산물 목록 응답 생성");
         List<SimpleProductResponseDto> simpleProductResponseDtos = saleProducts.stream()
@@ -145,10 +140,7 @@ public class MainService {
         List<Member> members = memberRepository.findTop5ByOrderByLikeCountDesc();
         List<Recipe> newRecipes = recipeRepository.findTop5ByOrderByCreatedAtDesc();
         Recipe specialRecipe = recipeRepository.findTop1ByTitleContainingOrderByCreatedAtDesc("특별")
-                .orElseThrow(() -> {
-                    log.warn("특별한 날 레시피 조회 실패");
-                    return new CustomException(ErrorCode.RECIPE_NOT_FOUND);
-                });
+                .orElse(null);
 
         log.info("[레시피 메인] 핫한 레시피 목록 응답 생성");
         List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = bestRecipes.stream()
