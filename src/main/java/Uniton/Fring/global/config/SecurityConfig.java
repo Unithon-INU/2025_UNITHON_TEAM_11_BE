@@ -54,13 +54,9 @@ public class SecurityConfig {
 
                 // 요청 권한 설정 ( 해당 엔드포인트에 대해서는 허용 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/members/signup", "/api/members/login",
-                                "/api/members/username/**","/api/members/email/**", "/api/members/nickname/**",
-                                "/api/members/login/oauth2/**",
-                                "/api/mails/**",
-                                "/favicon.ico",
-                                "/swagger-ui/**", "/v3/api-docs/**"
-                        ).permitAll()
+                        .requestMatchers(SIGNUP_URIS).permitAll()
+                        .requestMatchers(SWAGGER_URIS).authenticated()
+                        .requestMatchers(VIEW_URIS).authenticated()
                         .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
 //                        .access( new WebExpressionAuthorizationManager(
@@ -92,4 +88,24 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    private static final String[] SIGNUP_URIS = {
+            "/api/members/signup",
+            "/api/members/login",
+            "/api/members/username/**",
+            "/api/members/email/**",
+            "/api/members/nickname/**",
+            "/api/members/login/oauth2/**",
+            "/api/mails/**"
+    };
+
+    private static final String[] SWAGGER_URIS = {
+            "/favicon.ico",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
+
+    private static final String[] VIEW_URIS = {
+            "/api/main/**",
+    };
 }

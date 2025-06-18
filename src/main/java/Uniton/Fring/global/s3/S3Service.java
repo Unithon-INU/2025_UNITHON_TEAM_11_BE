@@ -3,6 +3,7 @@ package Uniton.Fring.global.s3;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class S3Service {
     private String putS3(File uploadFile, String fileName) {
 
         // PublicRead 권한으로 upload
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
 
         // File의 URL return
         return amazonS3Client.getUrl(bucket, fileName).toString();

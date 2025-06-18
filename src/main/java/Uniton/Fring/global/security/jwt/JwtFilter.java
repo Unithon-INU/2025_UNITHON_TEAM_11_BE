@@ -26,24 +26,12 @@ public class JwtFilter extends OncePerRequestFilter {
         // 요청 URI 정보 저장
         String requestURI = request.getRequestURI();
 
-        // 인증을 건너뛰고 다음 필터로 넘어갈 URI 지정
-        if (requestURI.startsWith("/api/members/signup")
-                || requestURI.startsWith("/api/members/login")
-                || requestURI.startsWith("/api/members/email")
-                || requestURI.startsWith("/api/members/username")
-                || requestURI.startsWith("/api/members/nickname")
-                || requestURI.startsWith("/api/members/login/oauth2")
-                || requestURI.startsWith("/api/mails")
-                || requestURI.startsWith("/swagger-ui")
-                || requestURI.startsWith("/v3/api-docs")
-                || requestURI.startsWith("/favicon.ico")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // JWT 토큰이 존재하고 유효하면 인증 객체를 SecurityContext에 저장
-        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-
+        if (!StringUtils.hasText(jwt)) {
+            // JWT가 아예 없음 = 비회원 접근일 수 있음
+            System.out.println("No JWT provided, URI: " + requestURI);
+        }
+        else if (jwtTokenProvider.validateToken(jwt)) {
             // 토큰 기반 인증 정보 생성
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
 
@@ -51,7 +39,8 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             System.out.println("Security Context : " + authentication.getName() + "\nURI : " + requestURI );
-        } else {
+        }
+        else {
             System.out.println("Invalid JWT, URI : " + requestURI);
         }
 
