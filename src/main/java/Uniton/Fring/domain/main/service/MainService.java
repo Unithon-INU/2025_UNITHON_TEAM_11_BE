@@ -83,7 +83,7 @@ public class MainService {
             specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
         } else {
             log.info("[메인] 특별한 날 레시피 목록이 존재하지 않습니다.");
-            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().build();
+            specialRecipeResponseDto = new SpecialRecipeResponseDto();
         }
 
         log.info("[메인 페이지 정보 응답]");
@@ -185,7 +185,7 @@ public class MainService {
             specialRecipeResponseDto = SpecialRecipeResponseDto.builder().recipe(specialRecipe).commentCount(reviewCount).build();
         } else {
             log.info("[레시피 메인] 특별한 날 레시피 목록이 존재하지 않습니다.");
-            specialRecipeResponseDto = SpecialRecipeResponseDto.builder().build();
+            specialRecipeResponseDto = new SpecialRecipeResponseDto();
         }
 
         log.info("[레시피 메인 페이지 정보 응답]");
