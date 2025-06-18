@@ -3,7 +3,6 @@ package Uniton.Fring.global.s3;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,6 +28,10 @@ public class S3Service {
 
     // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+
+        log.info("[s3] 파일 업로드 요청");
+        System.out.println("Tmp dir: " + System.getProperty("java.io.tmpdir"));
+        System.out.println("Original filename: " + multipartFile.getOriginalFilename());
 
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new CustomException(ErrorCode.FILE_CONVERT_FAIL));
@@ -49,7 +53,7 @@ public class S3Service {
     private String putS3(File uploadFile, String fileName) {
 
         // PublicRead 권한으로 upload
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
 
         // File의 URL return
         return amazonS3Client.getUrl(bucket, fileName).toString();
@@ -69,21 +73,26 @@ public class S3Service {
 
     public Optional<File> convert(MultipartFile multipartFile) throws IOException {
 
-        // 기존 파일 이름으로 새로운 File 객체 생성
-        // 해당 객체는 프로그램이 실행되는 로컬 디렉토리(루트 디렉토리)에 위치하게 됨
-        File convertFile = new File(multipartFile.getOriginalFilename());
+        // 원본 파일 확장자 가져오기
+        String originalFilename = multipartFile.getOriginalFilename();
+        String extension = "";
 
-        if (convertFile.createNewFile()){ // 해당 경로에 파일이 없을 경우, 새 파일 생성
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
 
+        // UUID + 확장자 조합으로 새로운 파일명 생성
+        String uuidFileName = UUID.randomUUID().toString() + extension;
+
+        File convertFile = new File(System.getProperty("java.io.tmpdir") + "/" + uuidFileName);
+
+        if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-
-                // multipartFile의 내용을 byte로 가져와서 write
                 fos.write(multipartFile.getBytes());
             }
             return Optional.of(convertFile);
         }
 
-        // 새파일이 성공적으로 생성되지 않았다면, 비어있는 Optional 객체를 반환
         return Optional.empty();
     }
 }

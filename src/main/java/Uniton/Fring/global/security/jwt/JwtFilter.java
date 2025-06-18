@@ -27,11 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // JWT 토큰이 존재하고 유효하면 인증 객체를 SecurityContext에 저장
-        if (!StringUtils.hasText(jwt)) {
-            // JWT가 아예 없음 = 비회원 접근일 수 있음
-            System.out.println("No JWT provided, URI: " + requestURI);
-        }
-        else if (jwtTokenProvider.validateToken(jwt)) {
+        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+
             // 토큰 기반 인증 정보 생성
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
 
@@ -39,8 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             System.out.println("Security Context : " + authentication.getName() + "\nURI : " + requestURI );
-        }
-        else {
+        } else {
             System.out.println("Invalid JWT, URI : " + requestURI);
         }
 
