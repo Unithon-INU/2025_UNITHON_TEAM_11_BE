@@ -1,17 +1,15 @@
-package Uniton.Fring.domain.review;
+package Uniton.Fring.domain.like;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review")
-public class Review {
+@Table(name = "recipe_like")
+public class RecipeLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,19 +18,6 @@ public class Review {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
-
     @Column(name = "recipe_id", nullable = false)
     private Long recipeId;
-
-    private int rating;
-
-    private String content;
-
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
 }

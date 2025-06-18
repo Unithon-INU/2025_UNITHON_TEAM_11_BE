@@ -29,6 +29,12 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    // 10% 할인일 경우 값은 0.1
+    @Column(name = "discount_rate", nullable = false)
+    private Double discountRate = 0.0;
+
+    private Double rating;
+
     private int stock;
 
     private String category;

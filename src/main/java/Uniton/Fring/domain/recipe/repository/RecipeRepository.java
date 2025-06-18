@@ -6,11 +6,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+
+    List<Recipe> findByMemberId(Long memberId);
+
+    List<Recipe> findTop5ByOrderByRatingDesc();
+
+    List<Recipe> findTop5ByOrderByCreatedAtDesc();
+
     List<Recipe> findTop10ByOrderByRatingDesc();
 
     Page<Recipe> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<Recipe> findByMemberId(Long memberId);
+    Optional<Recipe> findTop1ByTitleContainingOrderByCreatedAtDesc(String keyword);
 }

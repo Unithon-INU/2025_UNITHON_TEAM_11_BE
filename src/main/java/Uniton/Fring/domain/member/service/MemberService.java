@@ -277,10 +277,10 @@ public class MemberService {
                 log.info("[소비자 유저 정보 조회]");
                 List<Recipe> recipes = recipeRepository.findByMemberId(memberId);
 
-                List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
+                List<SimpleRecipeResponseDto> simpleRecipeResponseDtons = recipes.stream()
                         .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
 
-                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtos);
+                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtons);
 
                 break;
             case FARMER:

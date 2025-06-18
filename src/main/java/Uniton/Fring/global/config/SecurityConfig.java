@@ -11,6 +11,7 @@ import Uniton.Fring.global.security.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -56,7 +57,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SIGNUP_URIS).permitAll()
                         .requestMatchers(SWAGGER_URIS).permitAll()
-                        .requestMatchers(VIEW_URIS).permitAll()
+                        .requestMatchers(HttpMethod.GET, VIEW_URIS).permitAll()
                         .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
 //                        .access( new WebExpressionAuthorizationManager(
@@ -107,5 +108,7 @@ public class SecurityConfig {
 
     private static final String[] VIEW_URIS = {
             "/api/main/**",
+            "/api/recipes/**",
+            "/api/products/**",
     };
 }
