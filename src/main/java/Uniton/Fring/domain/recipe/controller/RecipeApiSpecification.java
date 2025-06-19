@@ -5,6 +5,7 @@ import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,6 +58,9 @@ public interface RecipeApiSpecification {
     @Operation(
             summary = "전체 레시피 목록 조회 (지금 올라온 레시피)",
             description = "전체 레시피 목록을 조회합니다. (기본값: 레시피 8개)",
+            parameters = {
+                    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
+            },
             responses = {
                     @ApiResponse(
                             responseCode = "200",
