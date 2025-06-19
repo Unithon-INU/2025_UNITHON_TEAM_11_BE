@@ -95,6 +95,7 @@ public class RecipeService {
         }
 
         Page<Recipe> recentRecipes = recipeRepository.findAllByOrderByCreatedAtDesc(pageable);
+        log.info("레시피 8개 조회 완료");
 
         List<SimpleRecipeResponseDto> recentRecipeResponseDtos = recentRecipes.stream()
                 .map(recipe -> {
