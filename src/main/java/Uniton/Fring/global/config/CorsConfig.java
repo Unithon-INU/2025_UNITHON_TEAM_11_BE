@@ -17,7 +17,7 @@ public class CorsConfig {
 
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(List.of(
-                "http://43.201.57.241",
+                "https://43.201.57.241.nip.io",
                 "http://localhost:3000",
                 "https://fring.vercel.app"
         ));
