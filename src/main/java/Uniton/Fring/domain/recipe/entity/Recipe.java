@@ -24,8 +24,10 @@ public class Recipe {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "image_url")
@@ -33,13 +35,16 @@ public class Recipe {
 
     private Double rating;
 
+    @Column(name = "head_count", nullable = false)
     private int headCount;
 
+    @Column(name = "cooking_time", nullable = false)
     private String cookingTime;
 
+    @Column(nullable = false)
     private String difficulty;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @ElementCollection
@@ -80,5 +85,10 @@ public class Recipe {
         this.createdAt = LocalDateTime.now();
         this.ingredients = recipeRequestDto.getIngredients();
         this.sauces = recipeRequestDto.getSauces();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }

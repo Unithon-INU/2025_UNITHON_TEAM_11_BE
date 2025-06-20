@@ -41,7 +41,7 @@ public enum ErrorCode {
     EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, 400, "이메일이 일치하지 않습니다."),
 
     // Product
-    Product_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품을 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품을 찾을 수 없습니다."),
 
     // Recipe
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),

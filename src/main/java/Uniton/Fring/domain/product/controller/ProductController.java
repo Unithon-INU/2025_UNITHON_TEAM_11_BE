@@ -1,13 +1,18 @@
 package Uniton.Fring.domain.product.controller;
 
+import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.service.ProductService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +25,11 @@ public class ProductController implements ProductApiSpecification {
 
     private final ProductService productService;
 
-    // 상품 조회
+    // 농수산 상세 정보 조회
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @PageableDefault(size = 3, sort = "likeCount", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(userDetails, productId, pageable));
+    }
 
     // 추천 농수산 더보기 조회
     @GetMapping("/best")
@@ -34,9 +43,22 @@ public class ProductController implements ProductApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getFrequentProductList(userDetails));
     }
 
-    // 상품 추가
-
-    // 상품 수정
-
-    // 상품 삭제
+//    // 상품 추가
+//    @PostMapping
+//    public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
+//        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto));
+//    }
+//
+//    // 상품 수정
+//    @PutMapping("/{productId}")
+//    public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto) {
+//        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto));
+//    }
+//
+//    // 상품 삭제
+//    @DeleteMapping("/{productId}")
+//    public ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId) {
+//        productService.deleteProduct(userDetails, productId);
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//    }
 }

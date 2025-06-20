@@ -5,7 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,19 +21,40 @@ public class Review {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "product_id", nullable = false)
+    @Column(name = "product_id", nullable = true)
     private Long productId;
 
-    @Column(name = "recipe_id", nullable = false)
+    @Column(name = "recipe_id", nullable = true)
     private Long recipeId;
 
-    private int rating;
-
+    @Column(nullable = false)
     private String content;
 
+    @ElementCollection
+    @CollectionTable(name = "review_image", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrls;
+
+    @Column(nullable = false)
+    private Double rating;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDate updatedAt;
+
+    @Column(nullable = false)
+    private Integer likeCount = 0;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDate.now();
+    }
 }

@@ -265,13 +265,12 @@ public class MemberService {
         log.info("[유저 정보 조회 요청]");
 
         Member member = memberRepository.findById(memberId)
-                        .orElseThrow(() -> {
-                            log.warn("[유저 정보 조회 실패] 사용자 없음");
-                            return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-                        });
+                .orElseThrow(() -> {
+                    log.warn("[유저 정보 조회 실패] 사용자 없음");
+                    return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+                });
 
-        MemberInfoResponseDto memberInfoResponseDto = new MemberInfoResponseDto();
-
+        MemberInfoResponseDto memberInfoResponseDto = null;
         switch (member.getRole()) {
             case CONSUMER:
                 log.info("[소비자 유저 정보 조회]");
@@ -280,7 +279,7 @@ public class MemberService {
                 List<SimpleRecipeResponseDto> simpleRecipeResponseDtons = recipes.stream()
                         .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
 
-                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleRecipeResponseDtons);
+                memberInfoResponseDto = MemberInfoResponseDto.fromConsumer(member, simpleRecipeResponseDtons);
 
                 break;
             case FARMER:

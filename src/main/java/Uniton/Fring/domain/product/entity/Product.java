@@ -24,7 +24,14 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(name = "description_image_url")
+    private String descriptionImageUrl;
 
     @Column(nullable = false)
     private BigDecimal price;
@@ -33,14 +40,32 @@ public class Product {
     @Column(name = "discount_rate", nullable = false)
     private Double discountRate = 0.0;
 
+    @Column(nullable = false)
     private Double rating;
 
+    @Column(nullable = false)
     private int stock;
 
-    private String category;
+    @Column(nullable = false)
+    private String deliveryCompany;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Column(nullable = false)
+    private Long deliveryFee;
+
+    @Column(nullable = false)
+    private String deliverySchedule;
+
+    @Column(nullable = false)
+    private String packaging;
+
+    @Column(nullable = false)
+    private String unit;
+
+    @Column(nullable = false)
+    private String volume;
+
+    @Column(nullable = false)
+    private String expirationDate;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
