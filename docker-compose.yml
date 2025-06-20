@@ -4,8 +4,7 @@ services:
   spring-app:
     container_name: Fring-server
     image: ${DOCKER_USERNAME}/fring-server:latest
-    ports:
-      - "80:8080"
+    ports: []
     depends_on:
       - redis
     networks:
