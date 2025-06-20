@@ -16,19 +16,25 @@ import java.util.List;
 public class ProductInfoResponseDto {
 
     @Schema(description = "농장", example = "고릴라 농장")
-    private final MemberInfoResponseDto farm;
+    private final MemberInfoResponseDto member;
+
+    @Schema(description = "찜 여부", example = "true")
+    private final Boolean isLiked;
 
     @Schema(description = "상품명", example = "계란 30구, 1판")
     private final String name;
 
-    @Schema(description = "상품 설명", example = "차돌박이를 이용한 구수한 된장찌개 레시피입니다.")
-    private final ProductDescriptionResponseDto description;
+    @Schema(description = "상품 설명", example = "맛돌이 토종 달걀입니다. 아주 맛있어요.")
+    private final String description;
 
-    @Schema(description = "상품 후기", example = "차돌박이를 이용한 구수한 된장찌개 레시피입니다.")
+    @Schema(description = "상품 후기", example = "~~~")
     private final List<ReviewResponseDto> reviews;
 
     @Schema(description = "상품 대표 이미지 URL", example = "https://fring-s3.s3.ap-northeast-2.amazonaws.com/products/image.jpg")
-    private final String imageUrl;
+    private final String mainImageUrl;
+
+    @Schema(description = "상품 추가 이미지 URL", example = "https://fring-s3.s3.ap-northeast-2.amazonaws.com/products/image.jpg")
+    private final List<String> descriptionImageUrls;
 
     @Schema(description = "상품 평점", example = "4.7")
     private final Double rating;
@@ -48,26 +54,35 @@ public class ProductInfoResponseDto {
     @Schema(description = "배송일정", example = "1/23(월) 이내 출발 예정")
     private final String deliverySchedule;
 
-    @Schema(description = "연관 농수산품 목록", example = "꿀당근, 꿀멜론, 꿀")
-    private final List<SimpleProductResponseDto> relatedProducts;
-
-    @Schema(description = "포장", example = "일단포장함")
-    private final String packaging;
-
-    @Schema(description = "판매단위", example = "1판")
-    private final String unit;
+    @Schema(description = "총 수량", example = "1판, 30알")
+    private final int totalStock;
 
     @Schema(description = "중량/용량", example = "100kg")
     private final String volume;
 
+    @Schema(description = "원산지", example = "경기도 프링시 프링구")
+    private final String origin;
+
+    @Schema(description = "수확 시기", example = "2025-01-15")
+    private final String harvestPeriod;
+
     @Schema(description = "소비기한", example = "냄새나기 전까지")
     private final String expirationDate;
 
+    @Schema(description = "연관 농수산품 목록", example = "꿀당근, 꿀멜론, 꿀")
+    private final List<SimpleProductResponseDto> relatedProducts;
+
+    @Schema(description = "보관 방법", example = "알아서 잘 보관한다.")
+    private final String packaging;
+
+    @Schema(description = "기타 설명", example = "무농약으로 재배되어 안심하고 드실 수 있습니다.")
+    private final String additionalInfo;
+
     @Schema(description = "총 리뷰수", example = "1234")
-    private int totalReviewCount;
+    private Integer totalReviewCount;
 
     @Schema(description = "총 사진 수", example = "24")
-    private int totalImageCount;
+    private Integer totalImageCount;
 
     @Schema(description = "리뷰에 달린 사진들 (5개)", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
     private List<String> recentImageUrls;
@@ -77,25 +92,30 @@ public class ProductInfoResponseDto {
     @Builder
     private ProductInfoResponseDto(Product product,
                                    MemberInfoResponseDto memberInfoResponseDto,
-                                   ProductDescriptionResponseDto productDescriptionResponseDto,
+                                   Boolean isLiked,
                                    List<ReviewResponseDto> reviews,
-                                   Integer totalReviewCount, int totalImageCount,
+                                   Integer totalReviewCount, Integer totalImageCount,
                                    List<String> recentImageUrls) {
-        this.farm = memberInfoResponseDto;
+        this.member = memberInfoResponseDto;
+        this.isLiked = isLiked;
         this.name = product.getName();
-        this.description = productDescriptionResponseDto;
+        this.description = product.getDescription();
         this.reviews = reviews;
-        this.imageUrl = product.getImageUrl();
+        this.mainImageUrl = product.getMainImageUrl();
+        this.descriptionImageUrls = product.getDescriptionImageUrl();
         this.rating = product.getRating();
         this.price = product.getPrice();
         this.salePrice = product.getPrice().multiply(BigDecimal.valueOf(1 - product.getDiscountRate()));
         this.deliveryCompany = product.getDeliveryCompany();
         this.deliveryFee = product.getDeliveryFee();
         this.deliverySchedule = product.getDeliverySchedule();
+        this.totalStock = product.getTotalStock();
+        this.volume = product.getVolume();
+        this.origin = product.getOrigin();
+        this.harvestPeriod = product.getHarvestPeriod();
         this.relatedProducts = new ArrayList<>();
         this.packaging = product.getPackaging();
-        this.unit = product.getUnit();
-        this.volume = product.getVolume();
+        this.additionalInfo = product.getAdditionalInfo();
         this.expirationDate = product.getExpirationDate();
         this.totalReviewCount = totalReviewCount;
         this.totalImageCount = totalImageCount;

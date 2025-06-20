@@ -3,7 +3,8 @@ package Uniton.Fring.domain.product.service;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
-import Uniton.Fring.domain.product.dto.res.ProductDescriptionResponseDto;
+import Uniton.Fring.domain.product.dto.req.AddProductRequestDto;
+import Uniton.Fring.domain.product.dto.req.UpdateProductRequestDto;
 import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
@@ -15,6 +16,7 @@ import Uniton.Fring.domain.review.ReviewRepository;
 import Uniton.Fring.domain.review.ReviewResponseDto;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
+import Uniton.Fring.global.s3.S3Service;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +45,7 @@ public class ProductService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final PurchaseRepository purchaseRepository;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -68,9 +74,6 @@ public class ProductService {
 
         // 작성자 정보
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
-
-        // 설명 DTO
-        ProductDescriptionResponseDto productDescriptionResponseDto = ProductDescriptionResponseDto.builder().product(product).build();
 
         // 리뷰 페이지 조회
         Page<Review> reviewPage = reviewRepository.findByProductId(productId, pageable);
@@ -127,7 +130,6 @@ public class ProductService {
         return ProductInfoResponseDto.builder()
                 .product(product)
                 .memberInfoResponseDto(memberInfoResponseDto)
-                .productDescriptionResponseDto(productDescriptionResponseDto)
                 .reviews(reviewResponseDtoList)
                 .totalReviewCount(totalReviewCount)
                 .totalImageCount(totalImageCount)
@@ -191,35 +193,108 @@ public class ProductService {
         return frequentProductResponseDtos;
     }
 
-//    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
-//
-//        log.info("[농수산품 추가 요청]");
-//
-//        Member member = userDetails.getMember();
-//
-//
-//
-//        log.info("[농수산품 추가 성공]");
-//
-//        return ProductInfoResponseDto
-//    }
-//
-//    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto) {
-//
-//        log.info("[농수산품 수정 요청]");
-//
-//        Member member = userDetails.getMember();
-//
-//        log.info("[농수산품 수정 성공]");
-//
-//        return ProductInfoResponseDto
-//    }
+    @Transactional
+    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails,
+                                             AddProductRequestDto addProductRequestDto,
+                                             List<MultipartFile> images) {
 
+        log.info("[농수산품 추가 요청]");
+
+        String mainImageUrl;
+        List<String> descriptionImages = new ArrayList<>();
+        try {
+            mainImageUrl = s3Service.upload(images.get(0), "products");
+
+            for (int i = 1; i < images.size(); i++) {
+                String url = s3Service.upload(images.get(i), "productDescriptions");
+                descriptionImages.add(url);
+            }
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+        }
+
+        Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, descriptionImages);
+
+        productRepository.save(product);
+
+        log.info("[농수산품 추가 성공]");
+
+        return ProductInfoResponseDto.builder()
+                .product(product)
+                .isLiked(false)
+                .reviews(new ArrayList<>())
+                .totalReviewCount(0)
+                .totalImageCount(0)
+                .recentImageUrls(new ArrayList<>())
+                .build();
+    }
+
+    @Transactional
+    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId,
+                                                UpdateProductRequestDto updateProductRequestDto,
+                                                List<MultipartFile> images) {
+
+        log.info("[농수산품 수정 요청]");
+
+        Member member = userDetails.getMember();
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("[농수산품 수정 실패] 상품 없음: productId={}", productId);
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        if (!product.getMemberId().equals(member.getId())) {
+            log.warn("[농수산품 수정 실패] 사용자 권한 없음: memberId={}, productOwnerId={}", member.getId(), product.getMemberId());
+            throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
+        }
+
+        String mainImageUrl;
+        List<String> descriptionImages = new ArrayList<>();
+        try {
+            mainImageUrl = s3Service.upload(images.get(0), "products");
+
+            for (int i = 1; i < images.size(); i++) {
+                String url = s3Service.upload(images.get(i), "productDescriptions");
+                descriptionImages.add(url);
+            }
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+        }
+
+        product.updateProduct(updateProductRequestDto , mainImageUrl, descriptionImages);
+
+        log.info("[농수산품 수정 성공]");
+
+        return ProductInfoResponseDto.builder()
+                .product(product)
+                .isLiked(null)
+                .reviews(null)
+                .totalReviewCount(null)
+                .totalImageCount(null)
+                .recentImageUrls(null)
+                .build();
+    }
+
+    @Transactional
     public void deleteProduct(UserDetailsImpl userDetails, Long productId) {
 
         log.info("[농수산품 삭제 요청]");
 
         Member member = userDetails.getMember();
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("[농수산품 삭제 실패] 상품 없음: productId={}", productId);
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        if (!product.getMemberId().equals(member.getId())) {
+            log.warn("[농수산품 삭제 실패] 사용자 권한 없음: memberId={}, productOwnerId={}", member.getId(), product.getMemberId());
+            throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
+        }
+
+        productRepository.delete(product);
 
         log.info("[농수산품 삭제 성공]");
     }

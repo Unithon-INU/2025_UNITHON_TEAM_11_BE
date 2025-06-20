@@ -1,13 +1,76 @@
 package Uniton.Fring.domain.product.dto.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Schema(description = "상품 정보 수정 요청 DTO ")
 public class UpdateProductRequestDto {
 
+    @NotBlank
+    @Schema(description = "상품 이름", example = "유기농 브로콜리, 500g, 1봉")
+    private String name;
 
+    @NotBlank
+    @Schema(description = "요약 설명", example = "신선하고 건강한 유기농 브로콜리입니다.")
+    private String description;
+
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false)
+    @Schema(description = "상품 가격", example = "8700")
+    private BigDecimal price;
+
+    @Schema(description = "총 수량", example = "1판, 30알")
+    private int totalStock;
+
+    @NotBlank
+    @Schema(description = "중량/용량", example = "100kg")
+    private String volume;
+
+    @NotNull
+    @Min(0)
+    @Max(100)
+    @Schema(description = "할인율 (%)", example = "10")
+    private Integer discountRatePercent;
+
+    @Schema(description = "상품 옵션")
+    private List<ProductOptionRequestDto> options;
+
+    @NotBlank
+    @Schema(description = "택배사", example = "프링택배")
+    private String deliveryCompany;
+
+    @NotNull
+    @Min(0)
+    @Schema(description = "배송비", example = "2500")
+    private Long deliveryFee;
+
+    @NotBlank
+    @Schema(description = "배송 일정", example = "주문일 기준 1일내 발송")
+    private String deliverySchedule;
+
+    @NotBlank
+    @Schema(description = "원산지", example = "경기도 프링시 프링구")
+    private String origin;
+
+    @NotBlank
+    @Schema(description = "수확 시기", example = "2025-01-15")
+    private String harvestPeriod;
+
+    @NotBlank
+    @Schema(description = "소비기한", example = "1개월")
+    private String expirationDate;
+
+    @NotBlank
+    @Schema(description = "보관 방법", example = "알아서 잘 보관한다.")
+    private String packaging;
+
+    @Schema(description = "기타 설명", example = "무농약으로 재배되어 안심하고 드실 수 있습니다.")
+    private String additionalInfo;
 }

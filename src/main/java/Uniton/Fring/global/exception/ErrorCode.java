@@ -27,7 +27,7 @@ public enum ErrorCode {
     VALIDATION_FAILED(HttpStatus.BAD_GATEWAY, 400, "요청한 값이 올바르지 않습니다."),
 
     // Member
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "맴버를 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "회원을 찾을 수 없습니다."),
     LOGIN_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 이메일입니다."),
     PASSWORD_NOT_CORRECT(HttpStatus.BAD_REQUEST, 400, "비밀번호가 일치하지 않습니다."),
     EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "이메일이 중복되었습니다."),
@@ -42,11 +42,12 @@ public enum ErrorCode {
 
     // Product
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품을 찾을 수 없습니다."),
+    PRODUCT_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "상품에 접근할 권한이 없는 회원입니다."),
 
     // Recipe
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),
     RECIPE_STEP_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피 순서를 찾을 수 없습니다."),
-    RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피에 접근할 권한이 없는 멤버입니다."),
+    RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피에 접근할 권한이 없는 회원입니다."),
 
     // Purchase
     PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다."),

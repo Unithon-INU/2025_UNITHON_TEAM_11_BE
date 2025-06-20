@@ -6,11 +6,13 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.service.ProductService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -39,17 +41,21 @@ public class ProductController implements ProductApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getFrequentProductList(userDetails));
     }
 
-//    // 농수산품 추가
-//    @PostMapping
-//    public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
-//        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto));
-//    }
-//
-//    // 농수산품 수정
-//    @PutMapping("/{productId}")
-//    public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto) {
-//        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto));
-//    }
+    // 농수산품 추가
+    @PostMapping
+    public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                             @RequestPart @Valid AddProductRequestDto addProductRequestDto,
+                                                             @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto, images));
+    }
+
+    // 농수산품 수정
+    @PutMapping("/{productId}")
+    public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId,
+                                                                @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto,
+                                                                @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto, images));
+    }
 
     // 농수산품 삭제
     @DeleteMapping("/{productId}")

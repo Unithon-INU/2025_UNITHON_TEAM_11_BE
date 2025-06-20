@@ -1,5 +1,7 @@
 package Uniton.Fring.domain.product.controller;
 
+import Uniton.Fring.domain.product.dto.req.AddProductRequestDto;
+import Uniton.Fring.domain.product.dto.req.UpdateProductRequestDto;
 import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
@@ -9,10 +11,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,7 +36,10 @@ public interface ProductApiSpecification {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductInfoResponseDto.class)
                             )
-                    )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없습니다."),
+
             }
     )
     ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @RequestParam(defaultValue = "0") int page);
@@ -68,37 +76,46 @@ public interface ProductApiSpecification {
     )
     ResponseEntity<List<SimpleProductResponseDto>> getFrequentProductList(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
-//    @Operation(
-//            summary = "농수산품 추가",
-//            description = "농수산 상품을 추가합니다.",
-//            responses = {
-//                    @ApiResponse(
-//                            responseCode = "200",
-//                            description = "메인 페이지 응답 성공",
-//                            content = @Content(
-//                                    mediaType = "application/json",
-//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
-//                            )
-//                    )
-//            }
-//    )
-//    ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto);
-//
-//    @Operation(
-//            summary = "농수산품 수정",
-//            description = "본인이 올린 농수산 상품 정보를 수정합니다.",
-//            responses = {
-//                    @ApiResponse(
-//                            responseCode = "200",
-//                            description = "메인 페이지 응답 성공",
-//                            content = @Content(
-//                                    mediaType = "application/json",
-//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
-//                            )
-//                    )
-//            }
-//    )
-//    ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto);
+    @Operation(
+            summary = "농수산품 추가",
+            description = "농수산 상품을 추가합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "메인 페이지 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "파일 변환에 실패했습니다.")
+            }
+    )
+    ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                             @RequestPart @Valid AddProductRequestDto addProductRequestDto,
+                                                             @RequestPart(value = "images", required = true) List<MultipartFile> images);
+
+    @Operation(
+            summary = "농수산품 수정",
+            description = "본인이 올린 농수산 상품 정보를 수정합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "메인 페이지 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "파일 변환에 실패했습니다."),
+                    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "403", description = "상품에 접근할 권한이 없는 회원입니다.")
+
+            }
+    )
+    ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId,
+                                                          @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto,
+                                                          @RequestPart(value = "images", required = true) List<MultipartFile> images);
 
     @Operation(
             summary = "농수산품 삭제",
@@ -111,7 +128,9 @@ public interface ProductApiSpecification {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductInfoResponseDto.class)
                             )
-                    )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "403", description = "상품에 접근할 권한이 없는 회원입니다.")
             }
     )
     ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId);

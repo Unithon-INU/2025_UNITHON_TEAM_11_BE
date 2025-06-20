@@ -35,7 +35,7 @@ public class SimpleProductResponseDto {
         this.name = product.getName();
         this.price = product.getPrice();
         this.salePrice = product.getPrice().multiply(BigDecimal.valueOf(1 - product.getDiscountRate()));
-        this.image = product.getImageUrl();
+        this.image = product.getMainImageUrl();
         this.isLiked = isLiked;
     }
 }
