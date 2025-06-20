@@ -4,6 +4,7 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +24,7 @@ public interface ProductApiSpecification {
     @Operation(
             summary = "농수산 상세 정보 조회",
             description = "농수산 상품 정보를 상세 조회합니다. \n (기본값) 리뷰 정렬 기준: 3개, 좋아요 순 (최신순 정렬 시 &sort=createdAt,desc 파라미터 필요)",
+            parameters = @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -67,5 +69,53 @@ public interface ProductApiSpecification {
             }
     )
     ResponseEntity<List<SimpleProductResponseDto>> getFrequentProductList(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+//    @Operation(
+//            summary = "농수산품 추가",
+//            description = "농수산 상품을 추가합니다.",
+//            responses = {
+//                    @ApiResponse(
+//                            responseCode = "200",
+//                            description = "메인 페이지 응답 성공",
+//                            content = @Content(
+//                                    mediaType = "application/json",
+//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+//                            )
+//                    )
+//            }
+//    )
+//    ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto);
+//
+//    @Operation(
+//            summary = "농수산품 수정",
+//            description = "본인이 올린 농수산 상품 정보를 수정합니다.",
+//            responses = {
+//                    @ApiResponse(
+//                            responseCode = "200",
+//                            description = "메인 페이지 응답 성공",
+//                            content = @Content(
+//                                    mediaType = "application/json",
+//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+//                            )
+//                    )
+//            }
+//    )
+//    ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto);
+//
+//    @Operation(
+//            summary = "농수산품 삭제",
+//            description = "본인이 올린 농수산 상품을 삭제합니다.",
+//            responses = {
+//                    @ApiResponse(
+//                            responseCode = "200",
+//                            description = "메인 페이지 응답 성공",
+//                            content = @Content(
+//                                    mediaType = "application/json",
+//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+//                            )
+//                    )
+//            }
+//    )
+//    ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId);
 }
 

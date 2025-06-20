@@ -58,9 +58,7 @@ public interface RecipeApiSpecification {
     @Operation(
             summary = "전체 레시피 목록 조회 (지금 올라온 레시피)",
             description = "전체 레시피 목록을 조회합니다. (기본값: 레시피 8개)",
-            parameters = {
-                    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
-            },
+            parameters = @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             responses = {
                     @ApiResponse(
                             responseCode = "200",

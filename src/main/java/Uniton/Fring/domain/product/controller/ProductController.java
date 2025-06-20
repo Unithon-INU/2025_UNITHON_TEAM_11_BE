@@ -25,7 +25,7 @@ public class ProductController implements ProductApiSpecification {
 
     private final ProductService productService;
 
-    // 농수산 상세 정보 조회
+    // 농수산품상세 정보 조회
     @GetMapping("/{productId}")
     public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @PageableDefault(size = 3, sort = "likeCount", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(userDetails, productId, pageable));
@@ -43,19 +43,19 @@ public class ProductController implements ProductApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getFrequentProductList(userDetails));
     }
 
-//    // 상품 추가
+//    // 농수산품 추가
 //    @PostMapping
 //    public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
 //        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto));
 //    }
 //
-//    // 상품 수정
+//    // 농수산품 수정
 //    @PutMapping("/{productId}")
 //    public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto) {
 //        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto));
 //    }
 //
-//    // 상품 삭제
+//    // 농수산품 삭제
 //    @DeleteMapping("/{productId}")
 //    public ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId) {
 //        productService.deleteProduct(userDetails, productId);

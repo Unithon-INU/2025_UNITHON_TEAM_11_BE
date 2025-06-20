@@ -188,12 +188,12 @@ public class ProductService {
         return frequentProductResponseDtos;
     }
 
-//    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, ) {
+//    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
 //
 //
 //    }
 //
-//    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId) {
+//    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto) {
 //
 //
 //    }
