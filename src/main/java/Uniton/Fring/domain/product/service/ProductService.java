@@ -211,6 +211,8 @@ public class ProductService {
 //        Member member = userDetails.getMember();
 //
 //        log.info("[농수산품 수정 성공]");
+//
+//        return ProductInfoResponseDto
 //    }
 
     public void deleteProduct(UserDetailsImpl userDetails, Long productId) {

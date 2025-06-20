@@ -60,16 +60,16 @@ public class AddProductRequestDto {
     private String deliverySchedule;
 
     @NotBlank
-    @Schema(description = "원산지", example = "1/23(월) 이내 출발 예정")
-    private String deliverySchedule;
+    @Schema(description = "원산지", example = "제주도")
+    private String origin;
 
     @NotBlank
-    @Schema(description = "재배 방식", example = "1/23(월) 이내 출발 예정")
-    private String deliverySchedule;
+    @Schema(description = "재배 방식", example = "무농약 재배")
+    private String farmingMethod;
 
     @NotBlank
-    @Schema(description = "수확 시기", example = "1/23(월) 이내 출발 예정")
-    private String deliverySchedule;
+    @Schema(description = "수확 시기", example = "2025년 6월 초 수확")
+    private String harvestPeriod;
 
     @NotBlank
     @Schema(description = "포장 정보", example = "일단포장함")
