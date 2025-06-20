@@ -10,8 +10,6 @@ import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -89,8 +87,8 @@ public class MemberController implements MemberApiSpecification {
     @GetMapping("/search")
     public ResponseEntity<List<SearchMemberResponseDto>> searchMember(
             @RequestParam String keyword,
-            @PageableDefault(size = 10) Pageable pageable) {  // <- Pageable은 springframework import
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, pageable));
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, page));
     }
 
     // 유저 랭킹

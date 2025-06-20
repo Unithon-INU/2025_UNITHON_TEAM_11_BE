@@ -10,12 +10,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -70,7 +69,7 @@ public interface RecipeApiSpecification {
                     )
             }
     )
-    ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault(size = 8) Pageable pageable);
+    public ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "레시피 추가",

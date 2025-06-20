@@ -16,8 +16,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -159,11 +157,10 @@ public interface MemberApiSpecification {
 
     @Operation(
             summary = "유저 검색",
-            description = "검색어(keyword)를 이용해 유저를 페이징 형태로 검색합니다.",
+            description = "검색어(keyword)를 이용해 유저를 페이징 형태로 검색합니다. (기본 size = 10)",
             parameters = {
                     @Parameter(name = "keyword", description = "검색어", required = true),
-                    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
-                    @Parameter(name = "size", description = "페이지 크기", example = "10")
+                    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
             },
             responses = {
                     @ApiResponse(
@@ -179,7 +176,7 @@ public interface MemberApiSpecification {
     )
     ResponseEntity<List<SearchMemberResponseDto>> searchMember(
             @RequestParam String keyword,
-            @PageableDefault(size = 10) Pageable pageable);
+            @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "유저 랭킹 조회",

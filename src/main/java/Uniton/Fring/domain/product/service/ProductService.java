@@ -41,9 +41,13 @@ public class ProductService {
     private final ReviewRepository reviewRepository;
     private final PurchaseRepository purchaseRepository;
 
-    public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
 
         log.info("[농수산 상세 조회 요청]");
+
+        // 리뷰 페이지
+        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "likeCount"));
 
         Long memberId;
         if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
@@ -162,7 +166,6 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<SimpleProductResponseDto> getFrequentProductList(UserDetailsImpl userDetails) {
 
-
         log.info("[자주 구매한 농수산품 더보기 조회 요청]");
 
         Long memberId;
@@ -190,16 +193,32 @@ public class ProductService {
 
 //    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
 //
+//        log.info("[농수산품 추가 요청]");
 //
+//        Member member = userDetails.getMember();
+//
+//
+//
+//        log.info("[농수산품 추가 성공]");
+//
+//        return ProductInfoResponseDto
 //    }
 //
 //    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto) {
 //
+//        log.info("[농수산품 수정 요청]");
 //
+//        Member member = userDetails.getMember();
+//
+//        log.info("[농수산품 수정 성공]");
 //    }
-//
-//    public void deleteProduct(UserDetailsImpl userDetails, Long productId) {
-//
-//
-//    }
+
+    public void deleteProduct(UserDetailsImpl userDetails, Long productId) {
+
+        log.info("[농수산품 삭제 요청]");
+
+        Member member = userDetails.getMember();
+
+        log.info("[농수산품 삭제 성공]");
+    }
 }

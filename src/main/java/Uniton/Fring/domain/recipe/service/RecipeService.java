@@ -17,7 +17,9 @@ import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,16 +87,18 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleRecipeResponseDto> getRecipeList(UserDetailsImpl userDetails, Pageable pageable) {
+    public List<SimpleRecipeResponseDto> getRecipeList(UserDetailsImpl userDetails, int page) {
 
         log.info("[전체 레시피 목록 요청]");
+
+        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Long memberId;
         if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
             memberId = null;
         }
 
-        Page<Recipe> recentRecipes = recipeRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Recipe> recentRecipes = recipeRepository.findAll(pageable);
         log.info("레시피 8개 조회 완료");
 
         List<SimpleRecipeResponseDto> recentRecipeResponseDtos = recentRecipes.stream()

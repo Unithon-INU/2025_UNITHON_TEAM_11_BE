@@ -6,8 +6,6 @@ import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.service.RecipeService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,8 +34,8 @@ public class RecipeController implements RecipeApiSpecification{
 
     // 전체 레시피 목록 조회 (지금 올라온 레시피)
     @GetMapping("/list")
-    public ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault(size = 8) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(recipeService.getRecipeList(userDetails, pageable));
+    public ResponseEntity<List<SimpleRecipeResponseDto>> getRecipeList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeService.getRecipeList(userDetails, page));
     }
 
     // 레시피 추가

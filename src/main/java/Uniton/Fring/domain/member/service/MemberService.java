@@ -20,6 +20,7 @@ import Uniton.Fring.global.security.jwt.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -230,9 +231,12 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<SearchMemberResponseDto> searchMember(String keyword, Pageable pageable) {
+    public List<SearchMemberResponseDto> searchMember(String keyword, int page) {
 
         log.info("[레시피 유저 검색 요청] keyword={}", keyword);
+
+        // Pageable은 springframework import
+        Pageable pageable = PageRequest.of(page, 10);
 
         Page<Member> members = memberRepository.findByNicknameContaining(keyword, pageable);
 

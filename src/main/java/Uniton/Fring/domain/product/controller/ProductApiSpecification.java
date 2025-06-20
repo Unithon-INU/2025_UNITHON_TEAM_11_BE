@@ -9,12 +9,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public interface ProductApiSpecification {
 
     @Operation(
             summary = "농수산 상세 정보 조회",
-            description = "농수산 상품 정보를 상세 조회합니다. \n (기본값) 리뷰 정렬 기준: 3개, 좋아요 순 (최신순 정렬 시 &sort=createdAt,desc 파라미터 필요)",
+            description = "농수산 상품 정보를 상세 조회합니다. \n 리뷰는 기본적으로 좋아요 순으로 3개가 반환됩니다. (최신순 정렬은 &sort=createdAt,desc 사용)",
             parameters = @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             responses = {
                     @ApiResponse(
@@ -36,7 +34,7 @@ public interface ProductApiSpecification {
                     )
             }
     )
-    ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @PageableDefault(size = 3, sort = "likeCount", direction = Sort.Direction.DESC) Pageable pageable);
+    ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "추천 농수산 더보기 조회",
@@ -101,21 +99,21 @@ public interface ProductApiSpecification {
 //            }
 //    )
 //    ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, UpdateProductRequestDto updateProductRequestDto);
-//
-//    @Operation(
-//            summary = "농수산품 삭제",
-//            description = "본인이 올린 농수산 상품을 삭제합니다.",
-//            responses = {
-//                    @ApiResponse(
-//                            responseCode = "200",
-//                            description = "메인 페이지 응답 성공",
-//                            content = @Content(
-//                                    mediaType = "application/json",
-//                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
-//                            )
-//                    )
-//            }
-//    )
-//    ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId);
+
+    @Operation(
+            summary = "농수산품 삭제",
+            description = "본인이 올린 농수산 상품을 삭제합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "메인 페이지 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId);
 }
 
