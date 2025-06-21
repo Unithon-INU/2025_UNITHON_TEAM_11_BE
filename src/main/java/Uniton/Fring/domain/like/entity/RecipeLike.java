@@ -1,7 +1,8 @@
-package Uniton.Fring.domain.like;
+package Uniton.Fring.domain.like.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,10 @@ public class RecipeLike {
 
     @Column(name = "recipe_id", nullable = false)
     private Long recipeId;
+
+    @Builder
+    private RecipeLike(Long memberId, Long recipeId) {
+        this.memberId = memberId;
+        this.recipeId = recipeId;
+    }
 }

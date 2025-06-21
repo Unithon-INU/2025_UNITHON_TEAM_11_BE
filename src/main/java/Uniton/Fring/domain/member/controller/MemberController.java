@@ -99,7 +99,4 @@ public class MemberController implements MemberApiSpecification {
                                                                @RequestParam(defaultValue = "0") int page) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(userDetails, memberId, page));
     }
-
-    // 좋아요
-
 }

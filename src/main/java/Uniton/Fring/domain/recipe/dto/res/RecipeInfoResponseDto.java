@@ -25,6 +25,9 @@ public class RecipeInfoResponseDto {
     @Schema(description = "좋아요 수", example = "1235")
     private final Integer likeCount;
 
+    @Schema(description = "레시피 아이디", example = "1")
+    private final Long id;
+
     @Schema(description = "레시피 제목", example = "차돌된장찌개")
     private final String title;
 
@@ -82,6 +85,7 @@ public class RecipeInfoResponseDto {
         this.member = member;
         this.isLiked = isLiked;
         this.likeCount = recipe.getLikeCount();
+        this.id = recipe.getId();
         this.title = recipe.getTitle();
         this.content = recipe.getContent();
         this.imageUrl = recipe.getImageUrl();

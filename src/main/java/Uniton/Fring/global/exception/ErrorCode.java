@@ -35,6 +35,9 @@ public enum ErrorCode {
     NICKNAME_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "닉네임이 중복되었습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 401, "로그인이 실패하였습니다."),
 
+    // Like
+    INVALID_LIKE_TARGET(HttpStatus.BAD_REQUEST, 400, "잘못된 좋아요 대상입니다."),
+
     // Mail
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "이메일 전송 실패"),
     EMAIL_AUTH_NUMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, 400, "인증 번호가 유효하지 않습니다."),
@@ -49,6 +52,9 @@ public enum ErrorCode {
     RECIPE_STEP_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피 순서를 찾을 수 없습니다."),
     RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피에 접근할 권한이 없는 회원입니다."),
     STEP_IMAGE_COUNT_MISMATCH(HttpStatus.BAD_REQUEST, 400, "레시피 단계 수와 이미지 수가 일치하지 않습니다."),
+
+    // Review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "리뷰를 찾을 수 없습니다."),
 
     // Purchase
     PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다."),

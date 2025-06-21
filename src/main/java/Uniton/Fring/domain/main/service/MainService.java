@@ -1,7 +1,7 @@
 package Uniton.Fring.domain.main.service;
 
-import Uniton.Fring.domain.like.MemberLikeRepository;
-import Uniton.Fring.domain.like.RecipeLikeRepository;
+import Uniton.Fring.domain.like.repository.MemberLikeRepository;
+import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.main.dto.MainProductResponseDto;
 import Uniton.Fring.domain.main.dto.MainRecipeResponseDto;
 import Uniton.Fring.domain.main.dto.MainResponseDto;

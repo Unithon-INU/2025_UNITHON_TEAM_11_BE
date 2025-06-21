@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.member.service;
 
-import Uniton.Fring.domain.like.MemberLikeRepository;
+import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;

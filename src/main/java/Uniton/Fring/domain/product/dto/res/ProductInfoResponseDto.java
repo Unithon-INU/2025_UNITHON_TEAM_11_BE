@@ -21,6 +21,9 @@ public class ProductInfoResponseDto {
     @Schema(description = "찜 여부", example = "true")
     private final Boolean isLiked;
 
+    @Schema(description = "상품 아이디", example = "1")
+    private final Long id;
+
     @Schema(description = "상품명", example = "계란 30구, 1판")
     private final String name;
 
@@ -98,6 +101,7 @@ public class ProductInfoResponseDto {
                                    List<String> recentImageUrls) {
         this.member = memberInfoResponseDto;
         this.isLiked = isLiked;
+        this.id = product.getId();
         this.name = product.getName();
         this.description = product.getDescription();
         this.reviews = reviews;
