@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.member.service;
 
+import Uniton.Fring.domain.like.MemberLikeRepository;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
@@ -13,13 +14,11 @@ import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
+import Uniton.Fring.domain.review.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
-import Uniton.Fring.global.security.jwt.JwtTokenProvider;
-import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
-import Uniton.Fring.global.security.jwt.RefreshToken;
-import Uniton.Fring.global.security.jwt.RefreshTokenRepository;
+import Uniton.Fring.global.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -46,10 +45,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
     private final ProductRepository productRepository;
+    private final ReviewRepository reviewRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberLikeRepository memberLikeRepository;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto, MultipartFile image) {
@@ -240,40 +241,66 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<SearchMemberResponseDto> searchMember(String keyword, int page) {
+    public List<SimpleMemberResponseDto> searchMember(UserDetailsImpl userDetails, String keyword, int page) {
 
         log.info("[레시피 유저 검색 요청] keyword={}", keyword);
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
 
         // Pageable은 springframework import
         Pageable pageable = PageRequest.of(page, 10);
 
         Page<Member> members = memberRepository.findByNicknameContaining(keyword, pageable);
 
-        List<SearchMemberResponseDto> searchMemberResponseDtos = members.stream()
-                .map(member -> SearchMemberResponseDto.builder().member(member).build()).toList();
+        List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
+                .map(member -> {
+                    Boolean isLikedMember = null;
+
+                    if (memberId != null) {
+                        isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+                    }
+
+                    return SimpleMemberResponseDto.builder().member(member).isLikedMember(isLikedMember).build();
+                }).toList();
 
         log.info("[레시피 유저 검색 요청 성공] keyword={}", keyword);
 
-        return searchMemberResponseDtos;
+        return simpleMemberResponseDtos;
     }
 
     @Transactional(readOnly = true)
-    public List<MemberRankingResponseDto> getRankingRecipeMember() {
+    public List<SimpleMemberResponseDto> getRankingRecipeMember(UserDetailsImpl userDetails) {
 
         log.info("[유저 랭킹 조회 요청]");
 
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
         List<Member> members =  memberRepository.findTop5ByOrderByLikeCountDesc();
 
-        List<MemberRankingResponseDto> memberRankingResponseDtos = members.stream()
-                .map(member -> MemberRankingResponseDto.builder().member(member).build()).toList();
+        List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
+                .map(member -> {
+                    Boolean isLikedMember = null;
+
+                    if (memberId != null) {
+                        isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+                    }
+
+                    return SimpleMemberResponseDto.builder().member(member).likeCount(member.getLikeCount()).isLikedMember(isLikedMember).build();
+                }).toList();
 
         log.info("[레시피 유저 랭킹 조회 성공]");
 
-        return memberRankingResponseDtos;
+        return simpleMemberResponseDtos;
     }
 
     @Transactional(readOnly = true)
-    public MemberInfoResponseDto getMemberInfo(Long memberId, int page) {
+    public MemberInfoResponseDto getMemberInfo(UserDetailsImpl userDetails, Long memberId, int page) {
 
         log.info("[유저 정보 조회 요청]");
 
@@ -283,13 +310,27 @@ public class MemberService {
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
 
+        Long mineMemberId;
+        if (userDetails != null) { mineMemberId = userDetails.getMember().getId(); } else {
+            mineMemberId = null;
+        }
+
         // 평점 기준 정렬
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "rating"));
 
         // 레시피 목록, 개수 조회
         Page<Recipe> recipes = recipeRepository.findByMemberId(memberId, pageable);
         List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
-                .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+                .map(recipe -> {
+                    Boolean isLikedRecipe = null;
+                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
+
+                    if (mineMemberId != null) {
+                        isLikedRecipe = recipeRepository.existsByMemberIdAndId(memberId, recipe.getId());
+                    }
+
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                }).toList();
         int recipeCount = (int) recipes.getTotalElements();
 
         // 소비자 유저 정보 조회
@@ -301,8 +342,15 @@ public class MemberService {
         // 농부 유저 정보 조회
         Page<Product> products = productRepository.findByMemberId(memberId, pageable);
         List<SimpleProductResponseDto> simpleProductResponseDtos = products.stream()
-                .map(product -> SimpleProductResponseDto.builder().product(product).build())
-                .toList();
+                .map(product -> {
+                    Boolean isLikedProduct = null;
+
+                    if (mineMemberId != null) {
+                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                    }
+
+                    return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
+                }).toList();
         int productCount = (int) products.getTotalElements();
 
         log.info("[농부 유저 정보 조회 성공]");

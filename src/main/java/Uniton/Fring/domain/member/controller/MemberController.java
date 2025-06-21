@@ -79,21 +79,24 @@ public class MemberController implements MemberApiSpecification {
 
     // 유저 검색
     @GetMapping("/search")
-    public ResponseEntity<List<SearchMemberResponseDto>> searchMember(
+    public ResponseEntity<List<SimpleMemberResponseDto>> searchMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(keyword, page));
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(userDetails, keyword, page));
     }
 
     // 유저 랭킹
     @GetMapping("/ranking")
-    public ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember() {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember());
+    public ResponseEntity<List<SimpleMemberResponseDto>> getRankingRecipeMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember(userDetails));
     }
 
     // 유저 정보 조회
     @GetMapping("{memberId}")
-    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId, @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId, page));
+    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                               @PathVariable Long memberId,
+                                                               @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(userDetails, memberId, page));
     }
 }

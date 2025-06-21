@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.main.dto;
 
-import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
+import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SpecialRecipeResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +24,7 @@ public class MainRecipeResponseDto {
             "{\"memberId\": 1, \"nickname\": \"핑크솔트123\", \"imageUrl\": \"http://example.com/image.jpg\", \"likeCount\": 42}," +
             "{\"memberId\": 2, \"nickname\": \"그린허브456\", \"imageUrl\": \"http://example.com/image2.jpg\", \"likeCount\": 38}" +
             "]")
-    private final List<MemberRankingResponseDto> memberRankingResponseDtos;
+    private final List<SimpleMemberResponseDto> simpleMemberResponseDtos;
 
     @Schema(description = "최신 레시피 목록", example = "[" +
             "{\"id\": 3, \"title\": \"간단한 계란 볶음밥\", \"image\": \"https://fring-s3.s3.ap-northeast-2.amazonaws.com/recipes/friedrice.jpg\", \"time\": \"10분\", \"rating\": 4.6, \"isLiked\": true, \"comment\": 5}," +

@@ -160,13 +160,14 @@ public interface MemberApiSpecification {
                             description = "유저 검색 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SearchMemberResponseDto.class, type = "array")
+                                    schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
                             )
                     ),
                     @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터 (예: keyword 누락, 잘못된 page/size 형식 등)")
             }
     )
-    ResponseEntity<List<SearchMemberResponseDto>> searchMember(
+    ResponseEntity<List<SimpleMemberResponseDto>> searchMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page);
 
@@ -179,12 +180,12 @@ public interface MemberApiSpecification {
                             description = "유저 랭킹 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = MemberRankingResponseDto.class, type = "array")
+                                    schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
                             )
                     )
             }
     )
-    ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember();
+    ResponseEntity<List<SimpleMemberResponseDto>> getRankingRecipeMember(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
     @Operation(
             summary = "유저 정보 조회",
@@ -201,5 +202,7 @@ public interface MemberApiSpecification {
                     @ApiResponse(responseCode = "200", description = "회원을 찾을 수 없습니다."),
             }
     )
-    ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId, @RequestParam(defaultValue = "0") int page);
+    ResponseEntity<MemberInfoResponseDto> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable Long memberId,
+                                                        @RequestParam(defaultValue = "0") int page);
 }

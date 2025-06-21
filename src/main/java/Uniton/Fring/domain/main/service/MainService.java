@@ -1,10 +1,11 @@
 package Uniton.Fring.domain.main.service;
 
+import Uniton.Fring.domain.like.MemberLikeRepository;
 import Uniton.Fring.domain.like.RecipeLikeRepository;
 import Uniton.Fring.domain.main.dto.MainProductResponseDto;
 import Uniton.Fring.domain.main.dto.MainRecipeResponseDto;
 import Uniton.Fring.domain.main.dto.MainResponseDto;
-import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
+import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
@@ -32,8 +33,9 @@ public class MainService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final RecipeRepository recipeRepository;
-    private final RecipeLikeRepository recipeLikeRepository;
     private final ReviewRepository reviewRepository;
+    private final RecipeLikeRepository recipeLikeRepository;
+    private final MemberLikeRepository memberLikeRepository;
 
     @Transactional(readOnly = true)
     public MainResponseDto mainInfo(UserDetailsImpl userDetails) {
@@ -162,8 +164,16 @@ public class MainService {
                 }).toList();
 
         log.info("[레시피 메인] 요리 선생님 추천 목록 응답 생성");
-        List<MemberRankingResponseDto> memberRankingResponseDtos = members.stream()
-                .map(member -> MemberRankingResponseDto.builder().member(member).build()).toList();
+        List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
+                .map(member -> {
+                    Boolean isLikedMember = null;
+
+                    if (memberId != null) {
+                        isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+                    }
+
+                    return SimpleMemberResponseDto.builder().member(member).isLikedMember(isLikedMember).build();
+                }).toList();
 
         log.info("[레시피 메인] 최신 레시피 목록 응답 생성");
         List<SimpleRecipeResponseDto> newRecipeResponseDtos = newRecipes.stream()
@@ -191,7 +201,7 @@ public class MainService {
         log.info("[레시피 메인 페이지 정보 응답]");
 
         return MainRecipeResponseDto.builder()
-                .simpleRecipeResponseDtos(simpleRecipeResponseDtos).memberRankingResponseDtos(memberRankingResponseDtos)
+                .simpleRecipeResponseDtos(simpleRecipeResponseDtos).simpleMemberResponseDtos(simpleMemberResponseDtos)
                 .newRecipeResponseDtos(newRecipeResponseDtos).specialRecipeResponseDto(specialRecipeResponseDto).build();
     }
 }
