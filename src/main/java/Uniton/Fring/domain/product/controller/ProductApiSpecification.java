@@ -122,7 +122,7 @@ public interface ProductApiSpecification {
             description = "본인이 올린 농수산 상품을 삭제합니다.",
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
+                            responseCode = "204",
                             description = "농수산품 삭제 성공"
                     ),
                     @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없습니다."),

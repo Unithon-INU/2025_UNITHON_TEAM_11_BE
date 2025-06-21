@@ -49,7 +49,7 @@ public class Product {
     private Double rating;
 
     @Column(nullable = false)
-    private int totalStock;
+    private String totalStock;
 
     @Column(nullable = false)
     private String deliveryCompany;

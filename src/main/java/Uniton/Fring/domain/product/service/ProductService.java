@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,6 +72,11 @@ public class ProductService {
                     log.warn("[회원 정보 조회 실패] 회원 없음: memberId={}", product.getMemberId());
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
+
+        Boolean isLikedProduct = null;
+        if (memberId != null) {
+            isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+        }
 
         // 작성자 정보
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
@@ -130,6 +136,7 @@ public class ProductService {
         return ProductInfoResponseDto.builder()
                 .product(product)
                 .memberInfoResponseDto(memberInfoResponseDto)
+                .isLiked(isLikedProduct)
                 .reviews(reviewResponseDtoList)
                 .totalReviewCount(totalReviewCount)
                 .totalImageCount(totalImageCount)
@@ -200,18 +207,11 @@ public class ProductService {
 
         log.info("[농수산품 추가 요청]");
 
-        String mainImageUrl;
-        List<String> descriptionImages = new ArrayList<>();
-        try {
-            mainImageUrl = s3Service.upload(images.get(0), "products");
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
-            for (int i = 1; i < images.size(); i++) {
-                String url = s3Service.upload(images.get(i), "productDescriptions");
-                descriptionImages.add(url);
-            }
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-        }
+        Pair<String, List<String>> imageData = uploadProductImages(images);
+        String mainImageUrl = imageData.getFirst();
+        List<String> descriptionImages = imageData.getSecond();
 
         Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, descriptionImages);
 
@@ -221,6 +221,7 @@ public class ProductService {
 
         return ProductInfoResponseDto.builder()
                 .product(product)
+                .memberInfoResponseDto(memberInfoResponseDto)
                 .isLiked(false)
                 .reviews(new ArrayList<>())
                 .totalReviewCount(0)
@@ -249,18 +250,9 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
         }
 
-        String mainImageUrl;
-        List<String> descriptionImages = new ArrayList<>();
-        try {
-            mainImageUrl = s3Service.upload(images.get(0), "products");
-
-            for (int i = 1; i < images.size(); i++) {
-                String url = s3Service.upload(images.get(i), "productDescriptions");
-                descriptionImages.add(url);
-            }
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-        }
+        Pair<String, List<String>> imageData = uploadProductImages(images);
+        String mainImageUrl = imageData.getFirst();
+        List<String> descriptionImages = imageData.getSecond();
 
         product.updateProduct(updateProductRequestDto , mainImageUrl, descriptionImages);
 
@@ -297,5 +289,25 @@ public class ProductService {
         productRepository.delete(product);
 
         log.info("[농수산품 삭제 성공]");
+    }
+
+    private Pair<String, List<String>> uploadProductImages(List<MultipartFile> images) {
+        String mainImageUrl = null;
+        List<String> descriptionImages = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            try {
+                mainImageUrl = s3Service.upload(images.get(0), "products");
+
+                for (int i = 1; i < images.size(); i++) {
+                    String url = s3Service.upload(images.get(i), "productDescriptions");
+                    descriptionImages.add(url);
+                }
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+            }
+        }
+
+        return Pair.of(mainImageUrl, descriptionImages);
     }
 }

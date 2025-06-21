@@ -14,11 +14,11 @@ import java.util.List;
 public class UpdateProductRequestDto {
 
     @NotBlank
-    @Schema(description = "상품 이름", example = "유기농 브로콜리, 500g, 1봉")
+    @Schema(description = "상품 이름", example = "계란 30구, 1판")
     private String name;
 
     @NotBlank
-    @Schema(description = "요약 설명", example = "신선하고 건강한 유기농 브로콜리입니다.")
+    @Schema(description = "요약 설명", example = "맛돌이 토종 달걀입니다. 아주 맛있어요.")
     private String description;
 
     @NotNull
@@ -27,16 +27,16 @@ public class UpdateProductRequestDto {
     private BigDecimal price;
 
     @Schema(description = "총 수량", example = "1판, 30알")
-    private int totalStock;
+    private String totalStock;
 
     @NotBlank
-    @Schema(description = "중량/용량", example = "100kg")
+    @Schema(description = "중량/용량", example = "30kg")
     private String volume;
 
     @NotNull
     @Min(0)
     @Max(100)
-    @Schema(description = "할인율 (%)", example = "10")
+    @Schema(description = "할인율 (%)", example = "30")
     private Integer discountRatePercent;
 
     @Schema(description = "상품 옵션")

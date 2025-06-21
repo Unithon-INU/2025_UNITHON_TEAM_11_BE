@@ -27,7 +27,7 @@ public class AddProductRequestDto {
     private BigDecimal price;
 
     @Schema(description = "총 수량", example = "1판, 30알")
-    private int totalStock;
+    private String totalStock;
 
     @NotBlank
     @Schema(description = "중량/용량", example = "30kg")
@@ -36,7 +36,7 @@ public class AddProductRequestDto {
     @NotNull
     @Min(0)
     @Max(100)
-    @Schema(description = "할인율 (%)", example = "10")
+    @Schema(description = "할인율 (%)", example = "30")
     private Integer discountRatePercent;
 
     @Schema(description = "상품 옵션")

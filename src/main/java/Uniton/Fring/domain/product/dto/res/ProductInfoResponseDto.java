@@ -55,7 +55,7 @@ public class ProductInfoResponseDto {
     private final String deliverySchedule;
 
     @Schema(description = "총 수량", example = "1판, 30알")
-    private final int totalStock;
+    private final String totalStock;
 
     @Schema(description = "중량/용량", example = "100kg")
     private final String volume;
