@@ -78,7 +78,7 @@ public interface ProductApiSpecification {
 
     @Operation(
             summary = "농수산품 추가",
-            description = "농수산 상품을 추가합니다.",
+            description = "농수산 상품을 추가합니다. \n 첫 번째 배열의 사진이 상품의 메인 이미지로 선택됩니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -97,7 +97,7 @@ public interface ProductApiSpecification {
 
     @Operation(
             summary = "농수산품 수정",
-            description = "본인이 올린 농수산 상품 정보를 수정합니다.",
+            description = "본인이 올린 농수산 상품 정보를 수정합니다. \n 첫 번째 배열의 사진이 상품의 메인 이미지로 선택됩니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

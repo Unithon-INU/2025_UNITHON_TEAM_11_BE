@@ -9,6 +9,7 @@ import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class ProductController implements ProductApiSpecification {
     }
 
     // 농수산품 추가
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @RequestPart @Valid AddProductRequestDto addProductRequestDto,
                                                              @RequestPart(value = "images", required = true) List<MultipartFile> images) {
@@ -50,7 +51,7 @@ public class ProductController implements ProductApiSpecification {
     }
 
     // 농수산품 수정
-    @PutMapping("/{productId}")
+    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId,
                                                                 @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto,
                                                                 @RequestPart(value = "images", required = true) List<MultipartFile> images) {
