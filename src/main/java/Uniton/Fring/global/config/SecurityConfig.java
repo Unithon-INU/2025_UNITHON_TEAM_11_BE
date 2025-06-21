@@ -91,11 +91,11 @@ public class SecurityConfig {
     }
 
     private static final String[] SIGNUP_URIS = {
-            "/api/members/signup",
-            "/api/members/login",
-            "/api/members/username/**",
-            "/api/members/email/**",
-            "/api/members/nickname/**",
+            "/api/auth/signup",
+            "/api/auth/login",
+            "/api/auth/username/**",
+            "/api/auth/email/**",
+            "/api/auth/nickname/**",
             "/api/members/login/oauth2/**",
             "/api/mails/**"
     };
