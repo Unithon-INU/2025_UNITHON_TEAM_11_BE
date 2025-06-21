@@ -33,6 +33,8 @@ public class Recipe {
     @Column(name = "image_url")
     private String imageUrl;
 
+    private Integer likeCount = 0;
+
     private Double rating;
 
     @Column(name = "head_count", nullable = false)
@@ -60,11 +62,12 @@ public class Recipe {
     private Map<String, String> sauces = new LinkedHashMap<>();
 
     @Builder
-    private Recipe(Long memberId, RecipeRequestDto recipeRequestDto) {
+    private Recipe(Long memberId, RecipeRequestDto recipeRequestDto, String mainImageUrl) {
         this.memberId = memberId;
         this.title = recipeRequestDto.getTitle();
         this.content = recipeRequestDto.getContent();
-        this.imageUrl = recipeRequestDto.getImageUrl();
+        this.imageUrl = mainImageUrl;
+        this.likeCount = 0;
         this.rating = recipeRequestDto.getRating();
         this.headCount = recipeRequestDto.getHeadCount();
         this.cookingTime = recipeRequestDto.getCookingTime();
@@ -74,10 +77,10 @@ public class Recipe {
         this.sauces = recipeRequestDto.getSauces();
     }
 
-    public void updateRecipe(RecipeRequestDto recipeRequestDto) {
+    public void updateRecipe(RecipeRequestDto recipeRequestDto, String mainImageUrl) {
         this.title = recipeRequestDto.getTitle();
         this.content = recipeRequestDto.getContent();
-        this.imageUrl = recipeRequestDto.getImageUrl();
+        this.imageUrl = mainImageUrl;
         this.rating = recipeRequestDto.getRating();
         this.headCount = recipeRequestDto.getHeadCount();
         this.cookingTime = recipeRequestDto.getCookingTime();

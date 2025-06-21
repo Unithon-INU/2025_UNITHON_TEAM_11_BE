@@ -2,7 +2,7 @@ package Uniton.Fring.domain.product.dto.res;
 
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
-import Uniton.Fring.domain.review.ReviewResponseDto;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

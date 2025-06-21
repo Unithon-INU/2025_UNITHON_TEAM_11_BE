@@ -14,7 +14,7 @@ import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
-import Uniton.Fring.domain.review.ReviewRepository;
+import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;

@@ -18,9 +18,6 @@ public class RecipeRequestDto {
     @Schema(description = "레시피 내용", example = "재료 손질부터 끓이기까지 상세 과정")
     private String content;
 
-    @Schema(description = "레시피 대표 이미지 URL", example = "http://example.com/image.jpg")
-    private String imageUrl;
-
     @Schema(description = "레시피 평점", example = "4.5")
     private Double rating;
 

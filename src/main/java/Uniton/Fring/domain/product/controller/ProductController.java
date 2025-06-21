@@ -26,7 +26,8 @@ public class ProductController implements ProductApiSpecification {
 
     // 농수산품상세 정보 조회
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                             @PathVariable Long productId, @RequestParam(defaultValue = "0") int page) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(userDetails, productId, page));
     }
 

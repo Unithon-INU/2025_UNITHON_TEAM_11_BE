@@ -26,7 +26,7 @@ public interface ProductApiSpecification {
 
     @Operation(
             summary = "농수산 상세 정보 조회",
-            description = "농수산 상품 정보를 상세 조회합니다. \n 리뷰는 기본적으로 좋아요 순으로 3개가 반환됩니다. (최신순 정렬은 &sort=createdAt,desc 사용)",
+            description = "농수산 상품 정보를 상세 조회합니다. <br>리뷰는 기본적으로 좋아요 순으로 3개가 반환됩니다. <br>(최신순 정렬은 &sort=createdAt,desc 사용)",
             parameters = @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             responses = {
                     @ApiResponse(
@@ -97,7 +97,7 @@ public interface ProductApiSpecification {
 
     @Operation(
             summary = "농수산품 수정",
-            description = "본인이 올린 농수산 상품 정보를 수정합니다. \n 첫 번째 배열의 사진이 상품의 메인 이미지로 선택됩니다.",
+            description = "본인이 올린 농수산 상품 정보를 수정합니다. <br>첫 번째 배열의 사진이 상품의 메인 이미지로 선택됩니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

@@ -1,5 +1,6 @@
-package Uniton.Fring.domain.review;
+package Uniton.Fring.domain.review.repository;
 
+import Uniton.Fring.domain.review.entity.Review;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     int countByRecipeId(Long recipeId);
 
     Page<Review> findByProductId(Long productId, Pageable pageable);
+    Page<Review> findByRecipeId(Long recipeId, Pageable pageable);
 
     int countByProductId(Long productId);
 

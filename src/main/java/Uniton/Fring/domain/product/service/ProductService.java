@@ -11,9 +11,9 @@ import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.purchase.Purchase;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
-import Uniton.Fring.domain.review.Review;
-import Uniton.Fring.domain.review.ReviewRepository;
-import Uniton.Fring.domain.review.ReviewResponseDto;
+import Uniton.Fring.domain.review.entity.Review;
+import Uniton.Fring.domain.review.repository.ReviewRepository;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
@@ -222,7 +222,7 @@ public class ProductService {
         return ProductInfoResponseDto.builder()
                 .product(product)
                 .memberInfoResponseDto(memberInfoResponseDto)
-                .isLiked(false)
+                .isLiked(null)
                 .reviews(new ArrayList<>())
                 .totalReviewCount(0)
                 .totalImageCount(0)

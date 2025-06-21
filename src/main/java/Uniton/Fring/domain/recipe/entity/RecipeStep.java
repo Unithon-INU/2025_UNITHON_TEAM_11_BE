@@ -26,10 +26,10 @@ public class RecipeStep {
     private Long recipeId;
 
     @Builder
-    private RecipeStep(RecipeStepRequestDto recipeStepRequestDto, Long recipeId) {
+    private RecipeStep(RecipeStepRequestDto recipeStepRequestDto, String imageUrl, Long recipeId) {
         this.stepOrder = recipeStepRequestDto.getStepOrder();
         this.description = recipeStepRequestDto.getDescription();
-        this.imageUrl = recipeStepRequestDto.getImageUrl();
+        this.imageUrl = imageUrl;
         this.recipeId = recipeId;
     }
 }

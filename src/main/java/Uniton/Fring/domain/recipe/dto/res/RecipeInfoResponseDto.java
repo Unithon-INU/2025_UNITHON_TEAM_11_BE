@@ -1,6 +1,9 @@
 package Uniton.Fring.domain.recipe.dto.res;
 
+import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
+import Uniton.Fring.domain.review.dto.res.CommentResponseDto;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +15,15 @@ import java.util.Map;
 @Getter
 @Schema(description = "레시피 상세 정보 응답 DTO")
 public class RecipeInfoResponseDto {
+
+    @Schema(description = "리뷰 작성자", example = "365일 다이어터")
+    private final MemberInfoResponseDto member;
+
+    @Schema(description = "좋아요 여부", example = "true")
+    private final Boolean isLiked;
+
+    @Schema(description = "좋아요 수", example = "1235")
+    private final Integer likeCount;
 
     @Schema(description = "레시피 제목", example = "차돌된장찌개")
     private final String title;
@@ -46,8 +58,30 @@ public class RecipeInfoResponseDto {
     @Schema(description = "요리 순서 목록")
     private final List<RecipeStepResponseDto> steps;
 
+    @Schema(description = "레시피 후기", example = "~~~")
+    private final List<ReviewResponseDto> reviews;
+
+    @Schema(description = "총 리뷰수", example = "1234")
+    private final Integer totalReviewCount;
+
+    @Schema(description = "리뷰에 달린 사진들 (5개)", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
+    private final List<String> recentImageUrls;
+
+    @Schema(description = "레시피 댓글", example = "~~~")
+    private final List<CommentResponseDto> comments;
+
     @Builder
-    private RecipeInfoResponseDto(Recipe recipe, List<RecipeStepResponseDto> recipeStep) {
+    private RecipeInfoResponseDto(MemberInfoResponseDto member,
+                                  Boolean isLiked,
+                                  Recipe recipe,
+                                  List<RecipeStepResponseDto> recipeStep,
+                                  List<ReviewResponseDto> reviews,
+                                  Integer totalReviewCount,
+                                  List<String> recentImageUrls,
+                                  List<CommentResponseDto> comments) {
+        this.member = member;
+        this.isLiked = isLiked;
+        this.likeCount = recipe.getLikeCount();
         this.title = recipe.getTitle();
         this.content = recipe.getContent();
         this.imageUrl = recipe.getImageUrl();
@@ -59,5 +93,9 @@ public class RecipeInfoResponseDto {
         this.ingredients = recipe.getIngredients();
         this.sauces = recipe.getSauces();
         this.steps = recipeStep;
+        this.reviews = reviews;
+        this.totalReviewCount = totalReviewCount;
+        this.recentImageUrls = recentImageUrls;
+        this.comments = comments;
     }
 }

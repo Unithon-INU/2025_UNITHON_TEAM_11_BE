@@ -28,7 +28,7 @@ public class SimpleMemberResponseDto {
     private final Boolean isLikedMember;
 
     @Builder
-    private SimpleMemberResponseDto(Member member,Integer likeCount, Boolean isLikedMember) {
+    private SimpleMemberResponseDto(Member member, Integer likeCount, Boolean isLikedMember) {
         this.memberId = member.getId();
         this.nickname = member.getNickname();
         this.imageUrl = member.getImageUrl();

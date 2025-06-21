@@ -5,11 +5,13 @@ import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.service.RecipeService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,10 +22,11 @@ public class RecipeController implements RecipeApiSpecification{
 
     private final RecipeService recipeService;
 
-    // 레시피 조회
+    // 레시피 상세 조회
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeInfoResponseDto> getRecipe(@PathVariable Long recipeId) {
-        return ResponseEntity.status(HttpStatus.OK).body(recipeService.getRecipe(recipeId));
+    public ResponseEntity<RecipeInfoResponseDto> getRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                           @PathVariable Long recipeId, @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeService.getRecipe(userDetails, recipeId, page));
     }
 
     // 요즘 핫한 레시피 더보기 조회
@@ -40,14 +43,19 @@ public class RecipeController implements RecipeApiSpecification{
 
     // 레시피 추가
     @PostMapping
-    public ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RecipeRequestDto recipeRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(recipeService.addRecipe(userDetails, recipeRequestDto));
+    public ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                           @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                           @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(recipeService.addRecipe(userDetails, recipeRequestDto, images));
     }
 
     // 레시피 수정
     @PutMapping("/{recipeId}")
-    public ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RecipeRequestDto recipeRequestDto, @PathVariable Long recipeId) {
-        return ResponseEntity.status(HttpStatus.OK).body(recipeService.updateRecipe(userDetails, recipeRequestDto, recipeId));
+    public ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              @PathVariable Long recipeId,
+                                                              @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                              @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeService.updateRecipe(userDetails, recipeId, recipeRequestDto, images));
     }
 
     // 레시피 삭제

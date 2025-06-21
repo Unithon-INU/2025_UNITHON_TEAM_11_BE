@@ -48,6 +48,7 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),
     RECIPE_STEP_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피 순서를 찾을 수 없습니다."),
     RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피에 접근할 권한이 없는 회원입니다."),
+    STEP_IMAGE_COUNT_MISMATCH(HttpStatus.BAD_REQUEST, 400, "레시피 단계 수와 이미지 수가 일치하지 않습니다."),
 
     // Purchase
     PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다."),

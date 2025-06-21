@@ -1,6 +1,7 @@
-package Uniton.Fring.domain.review;
+package Uniton.Fring.domain.review.dto.res;
 
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
+import Uniton.Fring.domain.review.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

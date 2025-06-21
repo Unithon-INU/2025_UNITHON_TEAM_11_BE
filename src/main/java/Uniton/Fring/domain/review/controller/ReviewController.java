@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.review;
+package Uniton.Fring.domain.review.controller;
 
 public class ReviewController {
 
