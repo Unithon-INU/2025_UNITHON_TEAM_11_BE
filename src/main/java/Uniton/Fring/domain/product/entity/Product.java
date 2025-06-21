@@ -35,7 +35,7 @@ public class Product {
 
     @ElementCollection
     @CollectionTable(name = "product_description_image", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
+    @Column(name = "description_image_url")
     private List<String> descriptionImageUrl;
 
     @Column(nullable = false)
