@@ -93,7 +93,7 @@ public class MemberController implements MemberApiSpecification {
 
     // 유저 정보 조회
     @GetMapping("{memberId}")
-    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId));
+    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId, @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberInfo(memberId, page));
     }
 }

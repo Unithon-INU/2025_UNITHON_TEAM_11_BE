@@ -31,19 +31,29 @@ public class MemberInfoResponseDto {
     @Schema(description = "회원이 등록한 레시피 목록", implementation = SimpleRecipeResponseDto.class)
     private final List<SimpleRecipeResponseDto> recipes;
 
+    @Schema(description = "작성한 레시피 수", example = "4")
+    private final Integer recipeCount;
+
     @Schema(description = "회원이 등록한 농산물 목록", implementation = SimpleProductResponseDto.class)
     private final List<SimpleProductResponseDto> products;
 
+    @Schema(description = "등록한 상품 수", example = "4")
+    private final Integer productCount;
+
     @Builder
     private MemberInfoResponseDto(Long memberId, String imageUrl, String nickname, String introduction,
-                                 Integer likeCount, List<SimpleRecipeResponseDto> recipes, List<SimpleProductResponseDto> products) {
+                                 Integer likeCount,
+                                  List<SimpleRecipeResponseDto> recipes, Integer recipeCount,
+                                  List<SimpleProductResponseDto> products, Integer productCount) {
         this.memberId = memberId;
         this.imageUrl = imageUrl;
         this.nickname = nickname;
         this.introduction = introduction;
         this.likeCount = likeCount;
         this.recipes = recipes;
+        this.recipeCount = recipeCount;
         this.products = products;
+        this.productCount = productCount;
     }
 
     public static MemberInfoResponseDto fromMember(Member member) {
@@ -58,7 +68,7 @@ public class MemberInfoResponseDto {
                 .build();
     }
 
-    public static MemberInfoResponseDto fromConsumer(Member member, List<SimpleRecipeResponseDto> recipes) {
+    public static MemberInfoResponseDto fromConsumer(Member member, List<SimpleRecipeResponseDto> recipes, Integer recipeCount) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -66,19 +76,25 @@ public class MemberInfoResponseDto {
                 .introduction(member.getIntroduction())
                 .likeCount(member.getLikeCount())
                 .recipes(recipes)
+                .recipeCount(recipeCount)
                 .products(null)
+                .productCount(null)
                 .build();
     }
 
-    public static MemberInfoResponseDto fromFarmer(Member member, List<SimpleProductResponseDto> products) {
+    public static MemberInfoResponseDto fromFarmer(Member member,
+                                                   List<SimpleRecipeResponseDto> recipes, Integer recipeCount,
+                                                   List<SimpleProductResponseDto> products, Integer productCount) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
                 .nickname(member.getNickname())
                 .introduction(member.getIntroduction())
                 .likeCount(member.getLikeCount())
-                .recipes(null)
+                .recipes(recipes)
+                .recipeCount(recipeCount)
                 .products(products)
+                .productCount(productCount)
                 .build();
     }
 

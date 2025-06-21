@@ -5,7 +5,10 @@ import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.domain.member.entity.Member;
+import Uniton.Fring.domain.member.enums.MemberRole;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
+import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
@@ -22,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -269,7 +273,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberInfoResponseDto getMemberInfo(Long memberId) {
+    public MemberInfoResponseDto getMemberInfo(Long memberId, int page) {
 
         log.info("[유저 정보 조회 요청]");
 
@@ -279,32 +283,29 @@ public class MemberService {
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
 
-        MemberInfoResponseDto memberInfoResponseDto = null;
-        switch (member.getRole()) {
-            case CONSUMER:
-                log.info("[소비자 유저 정보 조회]");
-                List<Recipe> recipes = recipeRepository.findByMemberId(memberId);
+        // 평점 기준 정렬
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "rating"));
 
-                List<SimpleRecipeResponseDto> simpleRecipeResponseDtons = recipes.stream()
-                        .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+        // 레시피 목록, 개수 조회
+        Page<Recipe> recipes = recipeRepository.findByMemberId(memberId, pageable);
+        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
+                .map(recipe -> SimpleRecipeResponseDto.builder().recipe(recipe).build()).toList();
+        int recipeCount = (int) recipes.getTotalElements();
 
-                memberInfoResponseDto = MemberInfoResponseDto.fromConsumer(member, simpleRecipeResponseDtons);
-
-                break;
-            case FARMER:
-//                log.info("[생산자 유저 정보 조회]");
-//                List<Product> products = productRepository.findByMemberId(memberId);
-//
-//                List<SimpleProductResponseDto> simpleProductResponseDtos = products.stream()
-//                        .map(product -> SimpleProductResponseDto.builder().product(product).build()).toList();
-//
-//                memberInfoResponseDto.MemberInfoFromConsumer(member, simpleProductResponseDtos);
-//
-//                break;
+        // 소비자 유저 정보 조회
+        if (member.getRole() == MemberRole.CONSUMER) {
+            log.info("[소비자 유저 정보 조회 성공]");
+            return MemberInfoResponseDto.fromConsumer(member, simpleRecipeResponseDtos, recipeCount);
         }
 
-        log.info("[유저 정보 조회 성공]");
+        // 농부 유저 정보 조회
+        Page<Product> products = productRepository.findByMemberId(memberId, pageable);
+        List<SimpleProductResponseDto> simpleProductResponseDtos = products.stream()
+                .map(product -> SimpleProductResponseDto.builder().product(product).build())
+                .toList();
+        int productCount = (int) products.getTotalElements();
 
-        return memberInfoResponseDto;
+        log.info("[농부 유저 정보 조회 성공]");
+        return MemberInfoResponseDto.fromFarmer(member, simpleRecipeResponseDtos, recipeCount, simpleProductResponseDtos, productCount);
     }
 }

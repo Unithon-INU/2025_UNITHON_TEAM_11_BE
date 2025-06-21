@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-    List<Recipe> findByMemberId(Long memberId);
+    Page<Recipe> findByMemberId(Long memberId, Pageable pageable);
 
     List<Recipe> findTop5ByOrderByRatingDesc();
 

@@ -125,12 +125,7 @@ public interface MemberApiSpecification {
             summary = "회원 탈퇴",
             description = "회원 탈퇴를 진행합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공 여부 반환",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = Boolean.class)
-                            )
-                    ),
+                    @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공"),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다."),
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
@@ -202,8 +197,9 @@ public interface MemberApiSpecification {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = MemberInfoResponseDto.class)
                             )
-                    )
+                    ),
+                    @ApiResponse(responseCode = "200", description = "회원을 찾을 수 없습니다."),
             }
     )
-    ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId);
+    ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId, @RequestParam(defaultValue = "0") int page);
 }
