@@ -37,7 +37,7 @@ public class ReviewService {
 
         List<String> imageUrls = uploadReviewImages(images);
 
-        Review review = Review.fromProductReview(userDetails.getMember().getId(), productReviewRequestDto, imageUrls, productReviewRequestDto.getOption());
+        Review review = Review.fromProductReview(userDetails.getMember().getId(), productReviewRequestDto, imageUrls, productReviewRequestDto.getPurchase_option());
 
         reviewRepository.save(review);
 
@@ -48,7 +48,7 @@ public class ReviewService {
         return ReviewResponseDto.builder()
                 .memberInfo(memberInfoResponseDto)
                 .review(review)
-                .purchaseOption(productReviewRequestDto.getOption())
+                .purchaseOption(productReviewRequestDto.getPurchase_option())
                 .build();
     }
 
