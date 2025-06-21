@@ -85,7 +85,8 @@ public interface RecipeApiSpecification {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = RecipeInfoResponseDto.class)
                             )
-                    )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "파일 변환에 실패했습니다.")
             }
     )
     ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -104,6 +105,7 @@ public interface RecipeApiSpecification {
                                     schema = @Schema(implementation = RecipeInfoResponseDto.class)
                             )
                     ),
+                    @ApiResponse(responseCode = "500", description = "파일 변환에 실패했습니다."),
                     @ApiResponse(responseCode = "404", description = "레시피를 찾을 수 없습니다."),
                     @ApiResponse(responseCode = "403", description = "레시피에 접근할 권한이 없는 멤버입니다.")
             }
@@ -118,7 +120,7 @@ public interface RecipeApiSpecification {
             description = "본인이 작성한 레시피를 삭제합니다.",
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
+                            responseCode = "204",
                             description = "레시피 삭제 성공",
                             content = @Content(
                                     mediaType = "application/json",

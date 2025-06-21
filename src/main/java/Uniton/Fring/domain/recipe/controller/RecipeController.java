@@ -8,6 +8,7 @@ import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class RecipeController implements RecipeApiSpecification{
     }
 
     // 레시피 추가
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                            @RequestPart @Valid RecipeRequestDto recipeRequestDto,
                                                            @RequestPart(value = "images", required = true) List<MultipartFile> images) {
@@ -50,7 +51,7 @@ public class RecipeController implements RecipeApiSpecification{
     }
 
     // 레시피 수정
-    @PutMapping("/{recipeId}")
+    @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @PathVariable Long recipeId,
                                                               @RequestPart @Valid RecipeRequestDto recipeRequestDto,
