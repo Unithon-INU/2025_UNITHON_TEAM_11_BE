@@ -52,8 +52,8 @@ public class UpdateProductRequestDto {
     private Long deliveryFee;
 
     @NotBlank
-    @Schema(description = "배송 일정", example = "주문일 기준 1일내 발송")
-    private String deliverySchedule;
+    @Schema(description = "배송 일정", example = "3 -> 주문일 기준 3일내 발송을 의미")
+    private Integer deliverySchedule;
 
     @NotBlank
     @Schema(description = "원산지", example = "경기도 프링시 프링구")

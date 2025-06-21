@@ -12,9 +12,9 @@ import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.purchase.Purchase;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
-import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -82,25 +81,26 @@ public class ProductService {
 
         // 작성자 정보
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
+        log.info("[작성자 정보 응답 생성 완료]");
 
         // 리뷰 페이지 조회
         Page<Review> reviewPage = reviewRepository.findByProductId(productId, pageable);
 
         // 리뷰에서 memberId만 추출하고 중복 제거하여 리스트 생성
-        List<Long> memberIds = reviewPage.getContent().stream()
+        List<Long> reviewMemberIds = reviewPage.getContent().stream()
                 .map(Review::getMemberId)
                 .distinct()
                 .collect(Collectors.toList());
         // 리뷰에 등장하는 멤버들을 한 번에 조회
-        List<Member> members = memberRepository.findAllById(memberIds);
+        List<Member> reviewMembers = memberRepository.findAllById(reviewMemberIds);
         // 멤버 리스트를 Map 형태로 변환 (멤버ID → 멤버 객체)
-        Map<Long, Member> memberMap = members.stream()
+        Map<Long, Member> reviewMemberMap = reviewMembers.stream()
                 .collect(Collectors.toMap(Member::getId, Function.identity()));
 
         List<ReviewResponseDto> reviewResponseDtoList = reviewPage.getContent().stream()
                 .map(review -> {
                     // 해당 리뷰 작성자 정보 가져오기 (memberMap에서 꺼냄)
-                    Member reviewer = memberMap.get(review.getMemberId());
+                    Member reviewer = reviewMemberMap.get(review.getMemberId());
                     if (reviewer == null) {
                         throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                     }
@@ -122,6 +122,7 @@ public class ProductService {
                             .purchaseOption(purchaseOption).build();
                 })
                 .toList();
+        log.info("[리뷰 정보 응답 생성 완료]");
 
         int totalReviewCount = reviewRepository.countByProductId(productId);
         int totalImageCount = reviewRepository.countTotalImagesByProductId(productId);
@@ -132,6 +133,19 @@ public class ProductService {
                 .map(Review::getId)
                 .toList();
         List<String> recentImages = reviewRepository.findTopImageUrlsByReviewIds(reviewIds, recentImagePageable);
+        log.info("[최근 리뷰 정보 조회 완료]");
+
+        List<Product> bestProducts = productRepository.findTop5ByOrderByLikeCountDesc();
+        List<SimpleProductResponseDto> bestProductResponseDtos = bestProducts.stream()
+                .map(bestProduct -> {
+                    Boolean isLikedBestProduct = null;
+
+                    if (memberId != null) {
+                        isLikedBestProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, bestProduct.getId());
+                    }
+
+                    return SimpleProductResponseDto.builder().product(bestProduct).isLiked(isLikedBestProduct).build();
+                }).toList();
 
         log.info("[농수산 상세 조회 성공]");
 
@@ -143,6 +157,7 @@ public class ProductService {
                 .totalReviewCount(totalReviewCount)
                 .totalImageCount(totalImageCount)
                 .recentImageUrls(recentImages)
+                .bestProducts(bestProductResponseDtos)
                 .build();
     }
 
@@ -211,7 +226,7 @@ public class ProductService {
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
-        Pair<String, List<String>> imageData = uploadProductImages(images);
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "products", "productDescriptions");
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -252,7 +267,7 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
         }
 
-        Pair<String, List<String>> imageData = uploadProductImages(images);
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "products", "productDescriptions");
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -291,25 +306,5 @@ public class ProductService {
         productRepository.delete(product);
 
         log.info("[농수산품 삭제 성공]");
-    }
-
-    private Pair<String, List<String>> uploadProductImages(List<MultipartFile> images) {
-        String mainImageUrl = null;
-        List<String> descriptionImages = new ArrayList<>();
-
-        if (images != null && !images.isEmpty()) {
-            try {
-                mainImageUrl = s3Service.upload(images.get(0), "products");
-
-                for (int i = 1; i < images.size(); i++) {
-                    String url = s3Service.upload(images.get(i), "productDescriptions");
-                    descriptionImages.add(url);
-                }
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-            }
-        }
-
-        return Pair.of(mainImageUrl, descriptionImages);
     }
 }

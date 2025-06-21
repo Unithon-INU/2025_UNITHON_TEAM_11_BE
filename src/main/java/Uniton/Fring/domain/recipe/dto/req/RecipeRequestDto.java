@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @NoArgsConstructor
-@Schema(description = "레시피 요청 DTO")
+@Schema(description = "레시피 추가 / 수정 요청 DTO")
 public class RecipeRequestDto {
 
     @Schema(description = "레시피 제목", example = "맛있는 된장찌개")

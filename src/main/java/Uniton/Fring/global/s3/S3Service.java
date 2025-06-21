@@ -7,12 +7,15 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -94,5 +97,26 @@ public class S3Service {
         }
 
         return Optional.empty();
+    }
+
+    public Pair<String, List<String>> uploadMainAndStepImages(List<MultipartFile> images, String mainDir, String stepDir) {
+        String mainImageUrl = null;
+        List<String> stepImageUrls = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            try {
+                mainImageUrl = upload(images.get(0), mainDir);
+
+                for (int i = 1; i < images.size(); i++) {
+                    String stepUrl = upload(images.get(i), stepDir);
+                    stepImageUrls.add(stepUrl);
+                }
+
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+            }
+        }
+
+        return Pair.of(mainImageUrl, stepImageUrls);
     }
 }

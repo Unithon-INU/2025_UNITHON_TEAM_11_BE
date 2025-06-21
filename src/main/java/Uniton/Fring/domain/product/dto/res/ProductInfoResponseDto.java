@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -54,8 +53,8 @@ public class ProductInfoResponseDto {
     @Schema(description = "배송비", example = "2000원")
     private final Long deliveryFee;
 
-    @Schema(description = "배송일정", example = "1/23(월) 이내 출발 예정")
-    private final String deliverySchedule;
+    @Schema(description = "배송일정", example = "3 -> 주문일 기준 3일내 발송을 의미")
+    private final Integer deliverySchedule;
 
     @Schema(description = "총 수량", example = "1판, 30알")
     private final String totalStock;
@@ -72,9 +71,6 @@ public class ProductInfoResponseDto {
     @Schema(description = "소비기한", example = "냄새나기 전까지")
     private final String expirationDate;
 
-    @Schema(description = "연관 농수산품 목록", example = "꿀당근, 꿀멜론, 꿀")
-    private final List<SimpleProductResponseDto> relatedProducts;
-
     @Schema(description = "보관 방법", example = "알아서 잘 보관한다.")
     private final String packaging;
 
@@ -90,6 +86,9 @@ public class ProductInfoResponseDto {
     @Schema(description = "리뷰에 달린 사진들 (5개)", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
     private List<String> recentImageUrls;
 
+    @Schema(description = "인기 많은 농수산품 목록", example = "(5개) 꿀당근, 꿀멜론, 꿀")
+    private final List<SimpleProductResponseDto> bestProducts;
+
     // todo 문의?
 
     @Builder
@@ -98,7 +97,8 @@ public class ProductInfoResponseDto {
                                    Boolean isLiked,
                                    List<ReviewResponseDto> reviews,
                                    Integer totalReviewCount, Integer totalImageCount,
-                                   List<String> recentImageUrls) {
+                                   List<String> recentImageUrls,
+                                   List<SimpleProductResponseDto> bestProducts) {
         this.member = memberInfoResponseDto;
         this.isLiked = isLiked;
         this.id = product.getId();
@@ -117,12 +117,12 @@ public class ProductInfoResponseDto {
         this.volume = product.getVolume();
         this.origin = product.getOrigin();
         this.harvestPeriod = product.getHarvestPeriod();
-        this.relatedProducts = new ArrayList<>();
         this.packaging = product.getPackaging();
         this.additionalInfo = product.getAdditionalInfo();
         this.expirationDate = product.getExpirationDate();
         this.totalReviewCount = totalReviewCount;
         this.totalImageCount = totalImageCount;
         this.recentImageUrls = recentImageUrls;
+        this.bestProducts = bestProducts;
     }
 }

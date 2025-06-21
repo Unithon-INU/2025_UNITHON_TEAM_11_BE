@@ -15,10 +15,10 @@ public class LikeStatusResponseDto {
     private boolean isLiked;
 
     @Schema(description = "좋아요 수", example = "123")
-    private int likeCount;
+    private Integer likeCount;
 
     @Builder
-    private LikeStatusResponseDto(String name, boolean isLiked, int likeCount) {
+    private LikeStatusResponseDto(String name, boolean isLiked, Integer likeCount) {
         this.name = name;
         this.isLiked = isLiked;
         this.likeCount = likeCount;

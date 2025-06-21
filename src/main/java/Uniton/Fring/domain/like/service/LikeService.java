@@ -68,7 +68,7 @@ public class LikeService {
             targetMember.increaseLikeCount();
         }
 
-        int likeCount = targetMember.getLikeCount();
+        Integer likeCount = targetMember.getLikeCount();
 
         log.info("[회원 좋아요 성공]");
 
@@ -93,18 +93,23 @@ public class LikeService {
 
         if (isLiked) {
             productLikeRepository.deleteByMemberIdAndProductId(memberId, productId);
+            product.decreaseLikeCount();
         } else {
             productLikeRepository.save(ProductLike.builder()
                     .memberId(memberId)
                     .productId(productId)
                     .build());
+            product.increaseLikeCount();
         }
+
+        Integer likeCount = product.getLikeCount();
 
         log.info("[상품 좋아요 성공]");
 
         return LikeStatusResponseDto.builder()
                 .name(product.getName())
                 .isLiked(!isLiked)
+                .likeCount(likeCount)
                 .build();
     }
 
@@ -131,7 +136,7 @@ public class LikeService {
             recipe.increaseLikeCount();
         }
 
-        int likeCount = recipe.getLikeCount();
+        Integer likeCount = recipe.getLikeCount();
 
         log.info("[레시피 좋아요 성공]");
 
@@ -165,7 +170,7 @@ public class LikeService {
             review.increaseLikeCount();
         }
 
-        int likeCount = review.getLikeCount();
+        Integer likeCount = review.getLikeCount();
 
         log.info("[리뷰 좋아요 처리 완료]");
 

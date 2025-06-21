@@ -1,8 +1,42 @@
 package Uniton.Fring.domain.review.controller;
 
-public class ReviewController {
+import Uniton.Fring.domain.review.dto.req.RecipeReviewRequestDto;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
+import Uniton.Fring.domain.review.review.ReviewService;
+import Uniton.Fring.global.security.jwt.UserDetailsImpl;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-    // 리뷰 조회
+import java.util.List;
 
-    // 리뷰 생성
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/reviews")
+public class ReviewController implements ReviewApiSpecification {
+
+    private final ReviewService reviewService;
+
+    // 상품 리뷰 생성
+    @PostMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ReviewResponseDto> addProductReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              @PathVariable Long productId,
+                                                              @RequestPart @Valid RecipeReviewRequestDto recipeReviewRequestDto,
+                                                              @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.addProductReview(userDetails, productId, recipeReviewRequestDto, images));
+    }
+
+    // 레시피 리뷰 생성
+    @PostMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ReviewResponseDto> addRecipeReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                           @PathVariable Long recipeId,
+                                                           @RequestPart @Valid RecipeReviewRequestDto recipeReviewRequestDto,
+                                                           @RequestPart(value = "images", required = true) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.addRecipeReview(userDetails, recipeId, recipeReviewRequestDto, images));
+    }
 }

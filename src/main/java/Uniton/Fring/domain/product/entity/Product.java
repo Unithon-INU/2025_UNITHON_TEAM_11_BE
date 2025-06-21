@@ -58,7 +58,7 @@ public class Product {
     private Long deliveryFee;
 
     @Column(nullable = false)
-    private String deliverySchedule;
+    private Integer deliverySchedule;
 
     @Column(nullable = false)
     private String origin;
@@ -80,6 +80,9 @@ public class Product {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Integer likeCount = 0;
+
     public Product(Long memberId, AddProductRequestDto addProductRequestDto, String mainImageUrl, List<String> descriptionImages) {
         this.memberId = memberId;
         this.name = addProductRequestDto.getName();
@@ -100,6 +103,7 @@ public class Product {
         this.expirationDate = addProductRequestDto.getExpirationDate();
         this.additionalInfo = addProductRequestDto.getAdditionalInfo();
         this.createdAt = LocalDateTime.now();
+        this.likeCount = 0;
     }
 
     public void updateProduct(UpdateProductRequestDto updateProductRequestDto, String mainImageUrl, List<String> descriptionImages) {
@@ -119,5 +123,13 @@ public class Product {
         this.harvestPeriod = updateProductRequestDto.getHarvestPeriod();
         this.expirationDate = updateProductRequestDto.getExpirationDate();
         this.additionalInfo = updateProductRequestDto.getAdditionalInfo();
+    }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);
     }
 }

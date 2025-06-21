@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -247,7 +246,7 @@ public class RecipeService {
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
-        Pair<String, List<String>> imageData = uploadRecipeImages(images);
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "recipes", "recipeSteps");
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -314,7 +313,7 @@ public class RecipeService {
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
-        Pair<String, List<String>> imageData = uploadRecipeImages(images);
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "recipes", "recipeSteps");
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -375,25 +374,5 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
 
         log.info("[레시피 삭제 성공]");
-    }
-
-    private Pair<String, List<String>> uploadRecipeImages(List<MultipartFile> images) {
-        String mainImageUrl = null;
-        List<String> descriptionImages = new ArrayList<>();
-
-        if (images != null && !images.isEmpty()) {
-            try {
-                mainImageUrl = s3Service.upload(images.get(0), "recipes");
-
-                for (int i = 1; i < images.size(); i++) {
-                    String url = s3Service.upload(images.get(i), "recipeSteps");
-                    descriptionImages.add(url);
-                }
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-            }
-        }
-
-        return Pair.of(mainImageUrl, descriptionImages);
     }
 }

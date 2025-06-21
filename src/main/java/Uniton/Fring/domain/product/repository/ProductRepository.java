@@ -29,4 +29,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         ORDER BY COUNT(r) DESC
     """)
     List<Product> findTopProductsByReviewCount(Pageable pageable);
+
+    List<Product> findTop5ByOrderByLikeCountDesc();
 }
