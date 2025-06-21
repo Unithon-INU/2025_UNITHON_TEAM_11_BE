@@ -39,12 +39,6 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(loginRequestDto));
     }
 
-//    // 비밀번호 변경 ( 이메일 인증 후 호출 )
-//    @PutMapping("/password")
-//    public ResponseEntity<Boolean> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
-//        return ResponseEntity.status(HttpStatus.OK).body(memberService.updatePassword(updatePasswordRequestDto));
-//    }
-
     // 토큰 재발급
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDto> refresh(@Valid @RequestBody JwtTokenRequestDto jwtTokenRequestDto) {

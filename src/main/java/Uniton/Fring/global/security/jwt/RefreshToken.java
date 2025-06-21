@@ -19,13 +19,16 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
 
-    private String email;
+    @Column(nullable = false)
+    private String username;
+
+    @Column(nullable = false)
     private String refreshToken;
 
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -40,8 +43,8 @@ public class RefreshToken {
 
     @Builder
     private RefreshToken(Member member, String refreshToken) {
-        this.member = member;
-        this.email = member.getEmail();
+        this.memberId = member.getId();
+        this.username = member.getUsername();
         this.refreshToken = refreshToken;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/members")
+@RequestMapping("/api/mypage")
 public class MypageController implements MypageApiSpecification {
 
     private final MypageService mypageService;

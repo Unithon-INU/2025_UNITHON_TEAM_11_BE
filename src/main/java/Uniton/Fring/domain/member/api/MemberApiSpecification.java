@@ -3,10 +3,7 @@ package Uniton.Fring.domain.member.api;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
-import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
-import Uniton.Fring.domain.member.dto.res.MemberRankingResponseDto;
-import Uniton.Fring.domain.member.dto.res.SearchMemberResponseDto;
-import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
+import Uniton.Fring.domain.member.dto.res.*;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -193,4 +190,20 @@ public interface MemberApiSpecification {
             }
     )
     ResponseEntity<List<MemberRankingResponseDto>> getRankingRecipeMember();
+
+    @Operation(
+            summary = "유저 정보 조회",
+            description = "유저의 상세 정보를 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "유저 정보 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MemberInfoResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId);
 }

@@ -110,5 +110,6 @@ public class SecurityConfig {
             "/api/main/**",
             "/api/recipes/**",
             "/api/products/**",
+            "/api/members/**",
     };
 }

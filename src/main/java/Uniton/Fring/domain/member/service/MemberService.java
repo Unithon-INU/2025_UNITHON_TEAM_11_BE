@@ -73,7 +73,7 @@ public class MemberService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         log.info("[로그인 요청] username={}", loginRequestDto.getUsername());
@@ -105,17 +105,20 @@ public class MemberService {
             throw new CustomException(ErrorCode.LOGIN_FAILED);
         }
 
+        // 리프레시 토큰 존재 시 삭제
+        if (refreshTokenRepository.findByEmail(member.getEmail()).isPresent()) {
+            refreshTokenRepository.deleteByEmail(member.getEmail());
+        }
+
         // JWT 토큰 생성
         LoginResponseDto loginResponseDto = jwtTokenProvider.generateToken(authentication);
         log.info("[JWT 발급 완료] memberId={}, email={}", member.getId(), member.getEmail());
 
+        RefreshToken refreshToken = RefreshToken.builder().member(member).refreshToken(loginResponseDto.getRefreshToken()).build();
+        refreshTokenRepository.save(refreshToken);
+
         return loginResponseDto;
     }
-
-//    public Boolean updatePassword(@Valid UpdatePasswordRequestDto updatePasswordRequestDto) {
-//
-//
-//    }
 
     @Transactional
     public LoginResponseDto refresh(JwtTokenRequestDto jwtTokenRequestDto) {
