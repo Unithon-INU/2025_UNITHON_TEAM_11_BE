@@ -212,6 +212,8 @@ public class MemberService {
         }
         log.info("[비밀번호 확인 성공] 회원 탈퇴 진행 (nickname: {})", memberToDelete.getNickname());
 
+        refreshTokenRepository.deleteByMemberId(memberToDelete.getId());
+
         memberRepository.delete(memberToDelete);
 
         log.info("[회원 탈퇴 완료] nickname: {}, email={}", memberToDelete.getNickname(), memberToDelete.getEmail());
