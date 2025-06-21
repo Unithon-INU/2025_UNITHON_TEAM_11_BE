@@ -106,8 +106,8 @@ public class MemberService {
         }
 
         // 리프레시 토큰 존재 시 삭제
-        if (refreshTokenRepository.findByEmail(member.getEmail()).isPresent()) {
-            refreshTokenRepository.deleteByEmail(member.getEmail());
+        if (refreshTokenRepository.findByUsername(member.getUsername()).isPresent()) {
+            refreshTokenRepository.deleteByUsername(member.getUsername());
         }
 
         // JWT 토큰 생성
@@ -131,29 +131,29 @@ public class MemberService {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(jwtTokenRequestDto.getRefreshToken());
-        log.info("[인증 정보 추출 완료] email={}", authentication.getName());
+        log.info("[인증 정보 추출 완료] username={}", authentication.getName());
 
-        String email = authentication.getName();
-        log.info("[RefreshToken 조회 시도] email={}", email);
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(authentication.getName())
+        String username = authentication.getName();
+        log.info("[RefreshToken 조회 시도] username={}", username);
+        RefreshToken refreshToken = refreshTokenRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> {
-                    log.warn("[RefreshToken 조회 실패] 저장된 토큰 없음 (email={})", email);
+                    log.warn("[RefreshToken 조회 실패] 저장된 토큰 없음 (username={})", username);
                     return new CustomException(ErrorCode.JWT_NOT_FOUND);
                 });
 
         if (!refreshToken.getRefreshToken().equals(jwtTokenRequestDto.getRefreshToken())) {
-            log.warn("[RefreshToken 불일치] 요청 토큰과 저장 토큰이 다름 (email={})", email);
+            log.warn("[RefreshToken 불일치] 요청 토큰과 저장 토큰이 다름 (username={})", username);
             throw new CustomException(ErrorCode.JWT_NOT_MATCH);
         }
 
         log.info("[RefreshToken 일치 확인 완료] 새 AccessToken 및 RefreshToken 생성 시작");
 
         LoginResponseDto loginResponseDto = jwtTokenProvider.generateToken(authentication);
-        log.info("[AccessToken/RefreshToken 재발급 완료] email={}", email);
+        log.info("[AccessToken/RefreshToken 재발급 완료] username={}", username);
 
         RefreshToken newRefreshToken = refreshToken.updateValue(loginResponseDto.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
-        log.info("[새 RefreshToken 저장 완료] email={}", email);
+        log.info("[새 RefreshToken 저장 완료] email={}", username);
 
         return loginResponseDto;
     }
