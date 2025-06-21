@@ -67,16 +67,14 @@ public class MailService {
                         "<p><strong>인증 번호:</strong> <span style='font-size: 18px; font-weight: bold; color: #007BFF;'>" + authNumber + "</span></p>" +
                         "<br><br>" +
                         "<ul>" +
-                        "<li>이 코드는 10분 동안 유효합니다.</li>" +
+                        "<li>이 코드는 5분 동안 유효합니다.</li>" +
                         "<li>코드를 정확히 입력하지 않을 경우, 인증이 완료되지 않습니다.</li>" +
                         "</ul>" +
                         "<br><br>" +
                         "<p>인증 완료 후, Fring 서비스를 정상적으로 이용하실 수 있습니다.</p>" +
-                        "<p>문의사항이 있으시면 아래 연락처로 연락주세요.</p>" +
                         "<br><br>" +
                         "<p>감사합니다.</p>" +
-                        "<p>- Fring 운영팀</p>" +
-                        "<p>- 문의: <a href='mailto:Fring-support@inu.ac.kr'>Fring-support@inu.ac.kr</a></p>";
+                        "<p>- Fring 운영팀</p>";
 
         mailSend(setFrom, toMail, title, content);
 

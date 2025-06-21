@@ -18,5 +18,5 @@ public class EmailCheckDto {
 
     @NotBlank(message = "인증 번호가 비어있습니다.")
     @Schema(description = "사용자의 인증번호", example = "562934")
-    private String authNum;
+    private String authNumber;
 }

@@ -27,8 +27,7 @@ public class EmailConfig {
         Properties properties = new Properties();
         properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.ssl.enable", "true");
         properties.put("mail.debug", "true");
         properties.put("mail.smtp.ssl.trust", "smtp.naver.com");
         properties.put("mail.smtp.ssl.protocols", "TLSv1.2");

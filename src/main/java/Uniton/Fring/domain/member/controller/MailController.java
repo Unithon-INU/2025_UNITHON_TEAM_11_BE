@@ -30,6 +30,6 @@ public class MailController implements MailApiSpecification {
     // 이메일 인증
     @PostMapping("/verify")
     public ResponseEntity<EmailResponseDto> verifyMail(@RequestBody @Valid EmailCheckDto emailCheckDto){
-        return ResponseEntity.status(HttpStatus.OK).body(mailService.verifyMail(emailCheckDto.getEmail(), emailCheckDto.getAuthNum()));
+        return ResponseEntity.status(HttpStatus.OK).body(mailService.verifyMail(emailCheckDto.getEmail(), emailCheckDto.getAuthNumber()));
     }
 }
