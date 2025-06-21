@@ -59,14 +59,16 @@ public class LikeService {
 
         if (isLiked) {
             memberLikeRepository.deleteByMemberIdAndLikedMemberId(memberId, targetMemberId);
+            targetMember.decreaseLikeCount();
         } else {
             memberLikeRepository.save(MemberLike.builder()
                     .memberId(memberId)
                     .likedMemberId(targetMemberId)
                     .build());
+            targetMember.increaseLikeCount();
         }
 
-        int likeCount = memberLikeRepository.countByLikedMemberId(targetMemberId);
+        int likeCount = targetMember.getLikeCount();
 
         log.info("[회원 좋아요 성공]");
 
@@ -98,14 +100,11 @@ public class LikeService {
                     .build());
         }
 
-        int likeCount = productLikeRepository.countByProductId(productId);
-
         log.info("[상품 좋아요 성공]");
 
         return LikeStatusResponseDto.builder()
                 .name(product.getName())
                 .isLiked(!isLiked)
-                .likeCount(likeCount)
                 .build();
     }
 
@@ -123,14 +122,16 @@ public class LikeService {
 
         if (isLiked) {
             recipeLikeRepository.deleteByMemberIdAndRecipeId(memberId, recipeId);
+            recipe.decreaseLikeCount();
         } else {
             recipeLikeRepository.save(RecipeLike.builder()
                     .memberId(memberId)
                     .recipeId(recipeId)
                     .build());
+            recipe.increaseLikeCount();
         }
 
-        int likeCount = recipeLikeRepository.countByRecipeId(recipeId);
+        int likeCount = recipe.getLikeCount();
 
         log.info("[레시피 좋아요 성공]");
 
@@ -155,14 +156,16 @@ public class LikeService {
 
         if (isLiked) {
             reviewLikeRepository.deleteByMemberIdAndReviewId(memberId, reviewId);
+            review.decreaseLikeCount();
         } else {
             reviewLikeRepository.save(ReviewLike.builder()
                     .memberId(memberId)
                     .reviewId(reviewId)
                     .build());
+            review.increaseLikeCount();
         }
 
-        int likeCount = reviewLikeRepository.countByReviewId(reviewId);
+        int likeCount = review.getLikeCount();
 
         log.info("[리뷰 좋아요 처리 완료]");
 

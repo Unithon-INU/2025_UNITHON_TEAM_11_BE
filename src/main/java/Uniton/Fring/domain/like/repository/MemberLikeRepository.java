@@ -8,6 +8,4 @@ public interface MemberLikeRepository extends JpaRepository<MemberLike, Long> {
     boolean existsByMemberIdAndLikedMemberId(Long memberId, Long likedMemberId);
 
     void deleteByMemberIdAndLikedMemberId(Long memberId, Long targetMemberId);
-
-    int countByLikedMemberId(Long targetMemberId);
 }

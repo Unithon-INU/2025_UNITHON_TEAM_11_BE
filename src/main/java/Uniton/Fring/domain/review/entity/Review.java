@@ -57,4 +57,12 @@ public class Review {
     protected void onUpdate() {
         this.updatedAt = LocalDate.now();
     }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);
+    }
 }

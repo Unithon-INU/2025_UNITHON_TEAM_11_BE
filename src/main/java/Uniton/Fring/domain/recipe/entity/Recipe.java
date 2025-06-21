@@ -94,4 +94,12 @@ public class Recipe {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);
+    }
 }

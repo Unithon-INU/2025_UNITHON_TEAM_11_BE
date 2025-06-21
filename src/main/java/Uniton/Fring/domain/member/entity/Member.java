@@ -53,4 +53,12 @@ public class Member {
     public void changeRoleToFarmer() {
         this.role = MemberRole.FARMER;
     }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);
+    }
 }
