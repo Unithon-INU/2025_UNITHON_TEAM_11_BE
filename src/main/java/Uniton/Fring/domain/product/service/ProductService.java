@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.product.service;
 
+import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -47,6 +48,7 @@ public class ProductService {
     private final ReviewRepository reviewRepository;
     private final PurchaseRepository purchaseRepository;
     private final S3Service s3Service;
+    private final ProductLikeRepository productLikeRepository;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -75,7 +77,7 @@ public class ProductService {
 
         Boolean isLikedProduct = null;
         if (memberId != null) {
-            isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+            isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
         }
 
         // 작성자 정보
@@ -161,7 +163,7 @@ public class ProductService {
                     Boolean isLikedProduct = null;
 
                     if (memberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
@@ -189,7 +191,7 @@ public class ProductService {
                     Boolean isLikedProduct = null;
 
                     if (memberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();

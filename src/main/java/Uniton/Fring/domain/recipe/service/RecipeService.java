@@ -83,7 +83,7 @@ public class RecipeService {
 
         Boolean isLikedRecipe = null;
         if (memberId != null) {
-            isLikedRecipe = recipeRepository.existsByMemberIdAndId(memberId, recipe.getId());
+            isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
         }
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipeId);

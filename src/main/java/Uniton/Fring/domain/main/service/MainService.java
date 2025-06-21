@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.main.service;
 
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
+import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.main.dto.MainProductResponseDto;
 import Uniton.Fring.domain.main.dto.MainRecipeResponseDto;
@@ -36,6 +37,7 @@ public class MainService {
     private final ReviewRepository reviewRepository;
     private final RecipeLikeRepository recipeLikeRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final ProductLikeRepository productLikeRepository;
 
     @Transactional(readOnly = true)
     public MainResponseDto mainInfo(UserDetailsImpl userDetails) {
@@ -59,7 +61,7 @@ public class MainService {
                     Boolean isLikedProduct = null;
 
                     if (memberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
@@ -111,7 +113,7 @@ public class MainService {
                     Boolean isLikedProduct = null;
 
                     if (memberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
@@ -123,7 +125,7 @@ public class MainService {
                     Boolean isLikedProduct = null;
 
                     if (memberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();

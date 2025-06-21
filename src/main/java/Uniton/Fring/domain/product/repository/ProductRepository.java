@@ -29,6 +29,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         ORDER BY COUNT(r) DESC
     """)
     List<Product> findTopProductsByReviewCount(Pageable pageable);
-
-    Boolean existsByMemberIdAndId(Long memberId, Long productId);
 }

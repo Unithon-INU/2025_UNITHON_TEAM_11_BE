@@ -21,6 +21,4 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Page<Recipe> findAll(Pageable pageable);
 
     Optional<Recipe> findTop1ByTitleContainingOrderByCreatedAtDesc(String keyword);
-
-    Boolean existsByMemberIdAndId(Long memberId, Long recipeId);
 }

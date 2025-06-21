@@ -8,6 +8,4 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
     boolean existsByMemberIdAndProductId(Long memberId, Long productId);
 
     void deleteByMemberIdAndProductId(Long memberId, Long productId);
-
-    int countByProductId(Long productId);
 }

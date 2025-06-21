@@ -1,10 +1,15 @@
 package Uniton.Fring.domain.member.service;
 
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
+import Uniton.Fring.domain.like.repository.ProductLikeRepository;
+import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
-import Uniton.Fring.domain.member.dto.res.*;
+import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
+import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
+import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
+import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.enums.MemberRole;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -51,6 +56,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberLikeRepository memberLikeRepository;
+    private final ProductLikeRepository productLikeRepository;
+    private final RecipeLikeRepository recipeLikeRepository;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto, MultipartFile image) {
@@ -326,7 +333,7 @@ public class MemberService {
                     Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
 
                     if (mineMemberId != null) {
-                        isLikedRecipe = recipeRepository.existsByMemberIdAndId(memberId, recipe.getId());
+                        isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
                     }
 
                     return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
@@ -346,7 +353,7 @@ public class MemberService {
                     Boolean isLikedProduct = null;
 
                     if (mineMemberId != null) {
-                        isLikedProduct = productRepository.existsByMemberIdAndId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
