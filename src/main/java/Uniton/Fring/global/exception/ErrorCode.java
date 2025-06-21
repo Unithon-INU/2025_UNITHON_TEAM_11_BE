@@ -26,6 +26,9 @@ public enum ErrorCode {
     // Validation
     VALIDATION_FAILED(HttpStatus.BAD_GATEWAY, 400, "요청한 값이 올바르지 않습니다."),
 
+    // Missing Part
+    MISSING_PART(HttpStatus.BAD_REQUEST, 400, "요청에 필요한 부분이 없습니다."),
+
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "회원을 찾을 수 없습니다."),
     LOGIN_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 이메일입니다."),
@@ -55,6 +58,7 @@ public enum ErrorCode {
 
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "리뷰를 찾을 수 없습니다."),
+    ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, 400, "이미 리뷰를 작성한 레시피입니다."),
 
     // Purchase
     PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다."),

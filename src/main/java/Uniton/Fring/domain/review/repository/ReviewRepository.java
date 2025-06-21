@@ -32,4 +32,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         ORDER BY r.createdAt DESC
     """)
     List<String> findTopImageUrlsByReviewIds(@Param("reviewIds") List<Long> reviewIds, Pageable pageable);
+
+    boolean existsByMemberIdAndRecipeId(Long memberId, Long recipeId);
 }

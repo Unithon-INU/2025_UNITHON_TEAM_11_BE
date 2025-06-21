@@ -1,7 +1,10 @@
 package Uniton.Fring.domain.review.entity;
 
+import Uniton.Fring.domain.review.dto.req.ProductReviewRequestDto;
+import Uniton.Fring.domain.review.dto.req.RecipeReviewRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,13 +33,16 @@ public class Review {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private Double rating;
+
     @ElementCollection
     @CollectionTable(name = "review_image", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "image_url")
     private List<String> imageUrls;
 
-    @Column(nullable = false)
-    private Double rating;
+    @Column(name = "purchase_option", nullable = true)
+    private String purchaseOption;
 
     @Column(name = "created_at", updatable = false)
     private LocalDate createdAt;
@@ -46,6 +52,25 @@ public class Review {
 
     @Column(nullable = false)
     private Integer likeCount = 0;
+
+    @Builder
+    private Review(Long memberId, Long productId, Long recipeId, String content, Double rating, List<String> imageUrls, String purchaseOption) {
+        this.memberId = memberId;
+        this.productId = productId;
+        this.recipeId = recipeId;
+        this.content = content;
+        this.rating = rating;
+        this.imageUrls = imageUrls;
+        this.purchaseOption = purchaseOption;
+    }
+
+    public static Review fromProductReview(Long memberId, ProductReviewRequestDto dto, List<String> imageUrls, String purchaseOption) {
+        return new Review(memberId, dto.getProductId(), null, dto.getContent(), dto.getRating(), imageUrls, purchaseOption);
+    }
+
+    public static Review fromRecipeReview(Long memberId, RecipeReviewRequestDto dto, List<String> imageUrls) {
+        return new Review(memberId, null, dto.getRecipeId(), dto.getContent(), dto.getRating(), imageUrls, null);
+    }
 
     @PrePersist
     protected void onCreate() {

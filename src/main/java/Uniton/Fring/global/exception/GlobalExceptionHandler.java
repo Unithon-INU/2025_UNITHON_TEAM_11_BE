@@ -5,6 +5,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.util.List;
 
@@ -29,5 +30,14 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .toList();
         return ErrorResponseEntity.toResponseEntity(errorCode,"요청한 값이 올바르지 않습니다.", errors);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponseEntity> handleMissingPart(MissingServletRequestPartException ex) {
+        ErrorCode errorCode = ErrorCode.MISSING_PART;
+
+        String message = "요청에 필요한 부분이 없습니다: " + ex.getRequestPartName();
+
+        return ErrorResponseEntity.toResponseEntity(errorCode, message, null);
     }
 }

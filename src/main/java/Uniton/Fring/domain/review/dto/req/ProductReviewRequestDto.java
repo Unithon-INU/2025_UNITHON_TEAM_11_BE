@@ -12,6 +12,9 @@ public class ProductReviewRequestDto {
     @Schema(description = "농수산품 아이디", example = "1")
     private Long productId;
 
+    @Schema(description = "농수산품 옵션", example = "단품 계란 30구, 1판")
+    private String option;
+
     @Schema(description = "농수산품 별점", example = "4.0")
     private Double rating;
 

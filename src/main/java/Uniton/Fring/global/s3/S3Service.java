@@ -117,6 +117,8 @@ public class S3Service {
             }
         }
 
+        log.info("총 {}개의 리뷰 이미지 업로드 완료", stepImageUrls.size() + 1);
+
         return Pair.of(mainImageUrl, stepImageUrls);
     }
 }

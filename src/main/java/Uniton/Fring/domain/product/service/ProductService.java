@@ -10,7 +10,6 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
-import Uniton.Fring.domain.purchase.Purchase;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
@@ -33,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -107,19 +105,10 @@ public class ProductService {
 
                     MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer);
 
-                    // 구매 엔티티에서 멤버 + 상품으로 구매 내역 찾기 (최신 1건)
-                    Optional<Purchase> purchaseOpt = purchaseRepository.findTopByMemberIdAndProductIdOrderByPurchaseDateDesc(
-                            review.getMemberId(), review.getProductId());
-
-                    // Optional 내부에 값이 있으면, 그 값을 인자로 받아서 특정 변환
-                    String purchaseOption = purchaseOpt
-                            .map(Purchase::getPurchaseOption)
-                            .orElse("옵션 정보 없음");
-
                     return ReviewResponseDto.builder()
                             .review(review)
                             .memberInfo(reviewerInfoResponseDto)
-                            .purchaseOption(purchaseOption).build();
+                            .purchaseOption(review.getPurchaseOption()).build();
                 })
                 .toList();
         log.info("[리뷰 정보 응답 생성 완료]");
