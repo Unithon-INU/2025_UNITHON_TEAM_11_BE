@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.member.dto.res;
 
 import Uniton.Fring.domain.member.entity.Member;
+import Uniton.Fring.domain.member.enums.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class SimpleMemberResponseDto {
     @Schema(description = "좋아요 여부", example = "true")
     private final Boolean isLikedMember;
 
+    @Schema(description = "판매자 여부", example = "true")
+    private final Boolean isSeller;
+
     @Builder
     private SimpleMemberResponseDto(Member member, Integer likeCount, Boolean isLikedMember) {
         this.memberId = member.getId();
@@ -35,5 +39,6 @@ public class SimpleMemberResponseDto {
         this.introduction = member.getIntroduction();
         this.likeCount = likeCount;
         this.isLikedMember = isLikedMember;
+        this.isSeller = member.getRole() == MemberRole.FARMER;
     }
 }

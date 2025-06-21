@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.member.dto.res;
 
 import Uniton.Fring.domain.member.entity.Member;
+import Uniton.Fring.domain.member.enums.MemberRole;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,11 +41,14 @@ public class MemberInfoResponseDto {
     @Schema(description = "등록한 상품 수", example = "4")
     private final Integer productCount;
 
+    @Schema(description = "판매자 여부", example = "true")
+    private final Boolean isSeller;
+
     @Builder
     private MemberInfoResponseDto(Long memberId, String imageUrl, String nickname, String introduction,
                                  Integer likeCount,
                                   List<SimpleRecipeResponseDto> recipes, Integer recipeCount,
-                                  List<SimpleProductResponseDto> products, Integer productCount) {
+                                  List<SimpleProductResponseDto> products, Integer productCount, Boolean isSeller) {
         this.memberId = memberId;
         this.imageUrl = imageUrl;
         this.nickname = nickname;
@@ -54,6 +58,7 @@ public class MemberInfoResponseDto {
         this.recipeCount = recipeCount;
         this.products = products;
         this.productCount = productCount;
+        this.isSeller = isSeller;
     }
 
     public static MemberInfoResponseDto fromMember(Member member) {
@@ -64,7 +69,10 @@ public class MemberInfoResponseDto {
                 .introduction(member.getIntroduction())
                 .likeCount(member.getLikeCount())
                 .recipes(null)
+                .recipeCount(null)
                 .products(null)
+                .productCount(null)
+                .isSeller(member.getRole() == MemberRole.FARMER)
                 .build();
     }
 
@@ -79,6 +87,7 @@ public class MemberInfoResponseDto {
                 .recipeCount(recipeCount)
                 .products(null)
                 .productCount(null)
+                .isSeller(member.getRole() == MemberRole.FARMER)
                 .build();
     }
 
@@ -95,6 +104,7 @@ public class MemberInfoResponseDto {
                 .recipeCount(recipeCount)
                 .products(products)
                 .productCount(productCount)
+                .isSeller(member.getRole() == MemberRole.FARMER)
                 .build();
     }
 
@@ -106,7 +116,10 @@ public class MemberInfoResponseDto {
                 .introduction(null)
                 .likeCount(null)
                 .recipes(null)
+                .recipeCount(null)
                 .products(null)
+                .productCount(null)
+                .isSeller(member.getRole() == MemberRole.FARMER)
                 .build();
     }
 }
