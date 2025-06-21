@@ -82,7 +82,7 @@ public interface ProductApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "메인 페이지 응답 성공",
+                            description = "농수산품 추가 성공",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductInfoResponseDto.class)
@@ -101,7 +101,7 @@ public interface ProductApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "메인 페이지 응답 성공",
+                            description = "농수산품 수정 성공",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductInfoResponseDto.class)
@@ -123,11 +123,7 @@ public interface ProductApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "메인 페이지 응답 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ProductInfoResponseDto.class)
-                            )
+                            description = "농수산품 삭제 성공"
                     ),
                     @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없습니다."),
                     @ApiResponse(responseCode = "403", description = "상품에 접근할 권한이 없는 회원입니다.")
