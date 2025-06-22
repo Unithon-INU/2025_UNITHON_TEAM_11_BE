@@ -1,8 +1,9 @@
 package Uniton.Fring.domain.main.controller;
 
-import Uniton.Fring.domain.main.dto.MainProductResponseDto;
-import Uniton.Fring.domain.main.dto.MainRecipeResponseDto;
-import Uniton.Fring.domain.main.dto.MainResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainProductResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainRecipeResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainResponseDto;
+import Uniton.Fring.domain.main.dto.res.SearchAllResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Main", description = "메인 페이지 정보 API")
 public interface MainApiSpecification {
@@ -30,6 +32,25 @@ public interface MainApiSpecification {
             }
     )
     ResponseEntity<MainResponseDto> mainInfo(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
+            summary = "메인 페이지 전체 검색",
+            description = "메인 페이지의 검색 기능 <br><br>키워드를 포함한 회원, 농수산품, 레시피 정보들을 반환합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "전체 검색 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SearchAllResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SearchAllResponseDto> searchAll(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "장터 메인 페이지",

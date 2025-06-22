@@ -31,13 +31,13 @@ public class SimpleRecipeResponseDto {
     private final Integer comment;
 
     @Builder
-    private SimpleRecipeResponseDto(Recipe recipe, Boolean isLiked, Integer commentCount) {
+    private SimpleRecipeResponseDto(Recipe recipe, Boolean isLiked, Integer reviewCount) {
         this.id = recipe.getId();
         this.title = recipe.getTitle();
         this.image = recipe.getImageUrl();
         this.time = recipe.getCookingTime();
         this.rating = recipe.getRating();
         this.isLiked = isLiked;
-        this.comment = commentCount;
+        this.comment = reviewCount;
     }
 }

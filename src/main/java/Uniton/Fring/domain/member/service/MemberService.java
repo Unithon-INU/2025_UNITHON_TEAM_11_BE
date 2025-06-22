@@ -15,6 +15,7 @@ import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
+import Uniton.Fring.domain.recipe.service.RecipeService;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -46,6 +48,7 @@ public class MemberService {
     private final MemberLikeRepository memberLikeRepository;
     private final ProductLikeRepository productLikeRepository;
     private final RecipeLikeRepository recipeLikeRepository;
+    private final RecipeService recipeService;
 
     @Transactional(readOnly = true)
     public List<SimpleMemberResponseDto> searchMember(UserDetailsImpl userDetails, String keyword, int page) {
@@ -127,16 +130,19 @@ public class MemberService {
 
         // 레시피 목록, 개수 조회
         Page<Recipe> recipes = recipeRepository.findByMemberId(memberId, pageable);
+
+        Map<Long, Integer> reviewCountMap = recipeService.getReviewCountMapFromRecipes(recipes.getContent());
+
         List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = recipes.stream()
                 .map(recipe -> {
                     Boolean isLikedRecipe = null;
-                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
+                    Integer reviewCount = reviewCountMap.getOrDefault(recipe.getId(), 0);
 
                     if (mineMemberId != null) {
                         isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
                     }
 
-                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).reviewCount(reviewCount).build();
                 }).toList();
         int recipeCount = (int) recipes.getTotalElements();
 

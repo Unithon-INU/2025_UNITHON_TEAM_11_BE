@@ -1,8 +1,9 @@
 package Uniton.Fring.domain.main.controller;
 
-import Uniton.Fring.domain.main.dto.MainProductResponseDto;
-import Uniton.Fring.domain.main.dto.MainRecipeResponseDto;
-import Uniton.Fring.domain.main.dto.MainResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainProductResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainRecipeResponseDto;
+import Uniton.Fring.domain.main.dto.res.MainResponseDto;
+import Uniton.Fring.domain.main.dto.res.SearchAllResponseDto;
 import Uniton.Fring.domain.main.service.MainService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,6 +26,15 @@ public class MainController implements MainApiSpecification{
     @GetMapping
     public ResponseEntity<MainResponseDto> mainInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(mainService.mainInfo(userDetails));
+    }
+
+    // 메인 페이지 전체 검색
+    @GetMapping("/search")
+    public ResponseEntity<SearchAllResponseDto> searchAll(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(mainService.searchAll(userDetails, keyword, page));
     }
 
     // 장터 메인 페이지

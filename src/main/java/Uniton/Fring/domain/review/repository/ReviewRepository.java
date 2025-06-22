@@ -18,10 +18,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     int countByProductId(Long productId);
 
+    List<Review> findTop5ByProductIdOrderByCreatedAtDesc(Long productId);
+
+    // 리뷰 수 조회
+    @Query("SELECT r.recipeId AS recipeId, COUNT(r) AS cnt FROM Review r WHERE r.recipeId IN :recipeIds GROUP BY r.recipeId")
+    List<Object[]> countReviewsByRecipeIds(@Param("recipeIds") List<Long> recipeIds);
+
     @Query("SELECT COUNT(ri) FROM Review r JOIN r.imageUrls ri WHERE r.productId = :productId")
     int countTotalImagesByProductId(@Param("productId") Long productId);
-
-    List<Review> findTop5ByProductIdOrderByCreatedAtDesc(Long productId);
 
     // 작성일 기준 최신 리뷰의 이미지 5장 반환
     @Query("""

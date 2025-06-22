@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.main.dto;
+package Uniton.Fring.domain.main.dto.res;
 
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;

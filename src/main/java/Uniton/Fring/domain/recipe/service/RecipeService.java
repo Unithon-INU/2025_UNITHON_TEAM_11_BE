@@ -186,16 +186,18 @@ public class RecipeService {
 
         List<Recipe> bestRecipes = recipeRepository.findTop10ByOrderByRatingDesc();
 
+        Map<Long, Integer> reviewCountMap = getReviewCountMapFromRecipes(bestRecipes);
+
         List<SimpleRecipeResponseDto> bestRecipeResponseDtos = bestRecipes.stream()
                 .map(recipe -> {
                     Boolean isLikedRecipe = null;
-                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
+                    Integer reviewCount = reviewCountMap.getOrDefault(recipe.getId(), 0);
 
                     if (memberId != null) {
                         isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
                     }
 
-                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).reviewCount(reviewCount).build();
                 }).toList();
 
         log.info("[요즘 핫한 레시피 더보기 성공]");
@@ -218,16 +220,18 @@ public class RecipeService {
         Page<Recipe> recentRecipes = recipeRepository.findAll(pageable);
         log.info("레시피 8개 조회 완료");
 
+        Map<Long, Integer> reviewCountMap = getReviewCountMapFromRecipes(recentRecipes.getContent());
+
         List<SimpleRecipeResponseDto> recentRecipeResponseDtos = recentRecipes.stream()
                 .map(recipe -> {
                     Boolean isLikedRecipe = null;
-                    Integer reviewCount = reviewRepository.countByRecipeId(recipe.getId());
+                    Integer reviewCount = reviewCountMap.getOrDefault(recipe.getId(), 0);
 
                     if (memberId != null) {
                         isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
                     }
 
-                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).commentCount(reviewCount).build();
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).reviewCount(reviewCount).build();
                 }).toList();
 
         log.info("[전체 레시피 목록 조회 성공]");
@@ -374,5 +378,18 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
 
         log.info("[레시피 삭제 성공]");
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Integer> getReviewCountMapFromRecipes(List<Recipe> recipes) {
+        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
+
+        List<Object[]> reviewCounts = reviewRepository.countReviewsByRecipeIds(recipeIds);
+
+        return reviewCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()
+                ));
     }
 }

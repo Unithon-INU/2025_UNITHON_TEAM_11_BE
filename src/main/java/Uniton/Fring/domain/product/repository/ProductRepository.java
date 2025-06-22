@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -31,4 +32,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findTopProductsByReviewCount(Pageable pageable);
 
     List<Product> findTop5ByOrderByLikeCountDesc();
+
+    // 키워드를 기반으로 유사도 정렬 쿼리문
+    @Query(value = """
+        SELECT * FROM product p
+        WHERE p.name LIKE CONCAT('%', :keyword, '%')
+        ORDER BY
+            CASE
+                WHEN p.name = :keyword THEN 0
+                WHEN p.name LIKE CONCAT(:keyword, '%') THEN 1
+                WHEN p.name LIKE CONCAT('%', :keyword) THEN 2
+                WHEN p.name LIKE CONCAT('%', :keyword, '%') THEN 3
+                ELSE 4
+            END
+        """,
+            countQuery = "SELECT COUNT(*) FROM product p WHERE p.name LIKE CONCAT('%', :keyword, '%')",
+            nativeQuery = true)
+    Page<Product> findByNameContaining(@Param("keyword") String name, Pageable pageable);
 }
