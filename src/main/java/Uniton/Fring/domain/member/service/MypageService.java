@@ -134,6 +134,8 @@ public class MypageService {
     @Transactional(readOnly = true)
     public List<SimpleProductResponseDto> getRecentViewedProducts(UserDetailsImpl userDetails, int page) {
 
+        log.info("[마이페이지 최근 본 상품 조회 요청]");
+
         Long memberId = userDetails.getMember().getId();
 
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "viewedAt"));

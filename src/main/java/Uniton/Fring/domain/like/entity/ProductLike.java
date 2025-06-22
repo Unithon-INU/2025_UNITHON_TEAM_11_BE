@@ -19,7 +19,7 @@ public class ProductLike {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "recipe_id", nullable = false)
+    @Column(name = "product_id", nullable = false)
     private Long productId;
 
     @Builder
