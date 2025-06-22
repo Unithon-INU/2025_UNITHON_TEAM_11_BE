@@ -28,7 +28,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,7 +62,7 @@ public class ProductService {
         Long memberId;
         if (userDetails != null) {
             memberId = userDetails.getMember().getId();
-            saveOrUpdate(memberId, productId);
+            mypageService.saveOrUpdate(memberId, productId);
         } else {
             memberId = null;
         }
@@ -336,10 +335,5 @@ public class ProductService {
                 }
             }
         }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdate(Long memberId, Long productId) {
-        recentProductViewRepository.saveOrUpdate(memberId, productId);
     }
 }
