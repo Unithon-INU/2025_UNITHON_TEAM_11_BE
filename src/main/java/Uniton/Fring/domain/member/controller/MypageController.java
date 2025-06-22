@@ -28,7 +28,7 @@ public class MypageController implements MypageApiSpecification {
     // 마이페이지 조회
     @GetMapping
     public ResponseEntity<MypageResponseDto> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mypageService.getMypage(userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getMypage(userDetails));
     }
 
     // 마이페이지 수정
@@ -36,21 +36,21 @@ public class MypageController implements MypageApiSpecification {
     public ResponseEntity<MypageResponseDto> updateMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                           @RequestPart @Valid MypageRequestDto mypageRequestDto,
                                                           @RequestPart(value = "image", required = false) MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mypageService.updateMypage(userDetails, mypageRequestDto, image));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateMypage(userDetails, mypageRequestDto, image));
     }
 
     // 주문 내역
     @GetMapping("/orders")
     public ResponseEntity<List<SimpleOrderResponseDto>> getOrderHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                         @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(mypageService.getOrderHistory(userDetails, page));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getOrderHistory(userDetails, page));
     }
 
     // 최근 본 상품
     @GetMapping("/recent/products")
     public ResponseEntity<List<SimpleProductResponseDto>> getRecentViewedProducts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                                   @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(mypageService.getRecentViewedProducts(userDetails, page));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getRecentViewedProducts(userDetails, page));
     }
 
 //    // 전체 리뷰 내역
