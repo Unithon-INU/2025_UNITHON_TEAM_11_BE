@@ -67,5 +67,4 @@ public class AuthController implements AuthApiSpecification {
         authService.changeToFarmer(userDetails.getMember());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 }

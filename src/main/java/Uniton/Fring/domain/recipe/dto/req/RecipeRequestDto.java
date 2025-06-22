@@ -1,5 +1,7 @@
 package Uniton.Fring.domain.recipe.dto.req;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.util.Map;
 @Schema(description = "레시피 추가 / 수정 요청 DTO")
 public class RecipeRequestDto {
 
-    @Schema(description = "대표 이미지", type = "string", format = "binary")
+    @Parameter(description = "대표 이미지", content = @Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary")))
     private MultipartFile mainImage;
 
     @Schema(description = "레시피 제목", example = "맛있는 된장찌개")

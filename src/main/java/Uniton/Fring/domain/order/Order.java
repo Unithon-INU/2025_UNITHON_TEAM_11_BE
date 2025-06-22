@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -21,6 +21,9 @@ public class Order {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
+
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
@@ -28,9 +31,5 @@ public class Order {
     private Status status = Status.PENDING;
 
     @Column(name = "ordered_at", updatable = false)
-    private LocalDateTime orderedAt;
-
-    public enum Status {
-        PENDING, SHIPPED, DELIVERED, CANCELLED
-    }
+    private LocalDate orderedAt;
 }

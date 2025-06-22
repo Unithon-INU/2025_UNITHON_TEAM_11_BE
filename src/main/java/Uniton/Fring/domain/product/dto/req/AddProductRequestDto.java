@@ -1,5 +1,7 @@
 package Uniton.Fring.domain.product.dto.req;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -14,10 +16,10 @@ import java.util.List;
 @Schema(description = "상품 정보 추가 요청 DTO ")
 public class AddProductRequestDto {
 
-    @Schema(description = "대표 이미지", type = "string", format = "binary")
+    @Parameter(description = "대표 이미지", content = @Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary")))
     private MultipartFile mainImage;
 
-    @Schema(description = "상세 설명 이미지 목록", type = "array", format = "binary")
+    @Parameter(description = "상세 설명 이미지 목록", content = @Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary")))
     private List<MultipartFile> descriptionImages;
 
     @NotBlank
