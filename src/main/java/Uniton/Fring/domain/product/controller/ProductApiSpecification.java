@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -91,7 +92,9 @@ public interface ProductApiSpecification {
             }
     )
     ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                             @RequestPart @Valid AddProductRequestDto addProductRequestDto);
+                                                      @RequestPart @Valid AddProductRequestDto addProductRequestDto,
+                                                      @RequestPart("mainImage") MultipartFile mainImage,
+                                                      @RequestPart("descriptionImages") List<MultipartFile> descriptionImages);
 
     @Operation(
             summary = "농수산품 수정",
@@ -112,7 +115,9 @@ public interface ProductApiSpecification {
             }
     )
     ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId,
-                                                          @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto);
+                                                         @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto,
+                                                         @RequestPart("mainImage") MultipartFile mainImage,
+                                                         @RequestPart("descriptionImages") List<MultipartFile> descriptionImages);
 
     @Operation(
             summary = "농수산품 삭제",

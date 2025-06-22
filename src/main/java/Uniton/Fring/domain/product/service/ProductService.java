@@ -10,6 +10,7 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.domain.product.repository.RecentProductViewRepository;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,7 @@ public class ProductService {
     private final PurchaseRepository purchaseRepository;
     private final S3Service s3Service;
     private final ProductLikeRepository productLikeRepository;
+    private final RecentProductViewRepository recentProductViewRepository;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -55,7 +58,10 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "likeCount"));
 
         Long memberId;
-        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+        if (userDetails != null) {
+            memberId = userDetails.getMember().getId();
+            recentProductViewRepository.saveOrUpdate(memberId, productId);
+        } else {
             memberId = null;
         }
 
@@ -206,20 +212,21 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
+    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto,
+                                             MultipartFile mainImage, List<MultipartFile> descriptionImages) {
 
         log.info("[농수산품 추가 요청]");
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
-                addProductRequestDto.getMainImage(), addProductRequestDto.getDescriptionImages(),
+                mainImage, descriptionImages,
                 "products", "productDescriptions");
 
         String mainImageUrl = imageData.getFirst();
-        List<String> descriptionImages = imageData.getSecond();
+        List<String> productDescriptionImages = imageData.getSecond();
 
-        Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, descriptionImages);
+        Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, productDescriptionImages);
 
         productRepository.save(product);
 
@@ -237,7 +244,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto) {
+    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto,
+                                                MultipartFile mainImage, List<MultipartFile> descriptionImages) {
 
         log.info("[농수산품 수정 요청]");
 
@@ -259,13 +267,13 @@ public class ProductService {
         List<String> oldDescriptionImages = product.getDescriptionImageUrl();
 
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
-                updateProductRequestDto.getMainImage(), updateProductRequestDto.getDescriptionImages(),
+                mainImage, descriptionImages,
                 "products", "productDescriptions");
 
         String mainImageUrl = imageData.getFirst();
-        List<String> descriptionImages = imageData.getSecond();
+        List<String> productDescriptionImages = imageData.getSecond();
 
-        product.updateProduct(updateProductRequestDto , mainImageUrl, descriptionImages);
+        product.updateProduct(updateProductRequestDto , mainImageUrl, productDescriptionImages);
 
         log.info("[농수산품 수정 성공]");
 

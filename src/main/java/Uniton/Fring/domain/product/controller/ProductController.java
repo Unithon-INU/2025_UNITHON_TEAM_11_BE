@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class ProductController implements ProductApiSpecification {
 
     private final ProductService productService;
 
-    // 농수산품상세 정보 조회
+    // 농수산품 상세 정보 조회
     @GetMapping("/{productId}")
     public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @PathVariable Long productId, @RequestParam(defaultValue = "0") int page) {
@@ -45,15 +46,19 @@ public class ProductController implements ProductApiSpecification {
     // 농수산품 추가
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                             @RequestPart @Valid AddProductRequestDto addProductRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto));
+                                                             @RequestPart @Valid AddProductRequestDto addProductRequestDto,
+                                                             @RequestPart("mainImage") MultipartFile mainImage,
+                                                             @RequestPart("descriptionImages") List<MultipartFile> descriptionImages) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto, mainImage, descriptionImages));
     }
 
     // 농수산품 수정
     @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductInfoResponseDto> updateProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId,
-                                                                @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto));
+                                                                @RequestPart @Valid UpdateProductRequestDto updateProductRequestDto,
+                                                                @RequestPart("mainImage") MultipartFile mainImage,
+                                                                @RequestPart("descriptionImages") List<MultipartFile> descriptionImages) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(userDetails, productId, updateProductRequestDto, mainImage, descriptionImages));
     }
 
     // 농수산품 삭제

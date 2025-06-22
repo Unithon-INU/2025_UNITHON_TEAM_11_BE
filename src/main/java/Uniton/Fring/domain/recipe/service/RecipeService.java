@@ -240,23 +240,19 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeInfoResponseDto addRecipe(UserDetailsImpl userDetails, RecipeRequestDto recipeRequestDto) {
+    public RecipeInfoResponseDto addRecipe(UserDetailsImpl userDetails, RecipeRequestDto recipeRequestDto,
+                                           MultipartFile mainImage, List<MultipartFile> descriptionImages) {
 
         log.info("[레시피 등록 요청]");
 
         Member member = userDetails.getMember();
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
 
-        // 레시피 순서 이미지
-        List<MultipartFile> stepImages = recipeRequestDto.getSteps().stream()
-                .map(RecipeStepRequestDto::getStepImage)
-                .toList();
-
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
-                recipeRequestDto.getMainImage(), stepImages, "recipes", "recipeSteps");
+                mainImage, descriptionImages, "recipes", "recipeSteps");
 
         String mainImageUrl = imageData.getFirst();
-        List<String> descriptionImages = imageData.getSecond();
+        List<String> recipeDescriptionImages = imageData.getSecond();
 
         Recipe recipe = Recipe.builder()
                 .memberId(member.getId())
@@ -274,7 +270,7 @@ public class RecipeService {
 
             RecipeStep step = RecipeStep.builder()
                     .recipeId(recipe.getId())
-                    .imageUrl(descriptionImages.get(i))
+                    .imageUrl(recipeDescriptionImages.get(i))
                     .recipeStepRequestDto(stepDto)
                     .build();
 
@@ -300,7 +296,8 @@ public class RecipeService {
 
     @Transactional
     public RecipeInfoResponseDto updateRecipe(UserDetailsImpl userDetails, Long recipeId,
-                                              RecipeRequestDto recipeRequestDto) {
+                                              RecipeRequestDto recipeRequestDto,
+                                              MultipartFile mainImage, List<MultipartFile> descriptionImages) {
 
         log.info("[레시피 수정 요청]");
 
@@ -322,16 +319,11 @@ public class RecipeService {
         String oldMainImage = recipe.getImageUrl();
         List<String> oldStepImageUrls = recipeStepRepository.findImageUrlsByRecipeId(recipeId);
 
-        // 새 이미지 업로드
-        List<MultipartFile> stepImages = recipeRequestDto.getSteps().stream()
-                .map(RecipeStepRequestDto::getStepImage)
-                .toList();
-
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
-                recipeRequestDto.getMainImage(), stepImages, "recipes", "recipeSteps");
+                mainImage, descriptionImages, "recipes", "recipeSteps");
 
         String mainImageUrl = imageData.getFirst();
-        List<String> descriptionImages = imageData.getSecond();
+        List<String> recipeDescriptionImages = imageData.getSecond();
 
         recipe.updateRecipe(recipeRequestDto, mainImageUrl);
         log.info("[레시피 엔티티 업데이트 성공] recipeId={}", recipeId);
@@ -345,7 +337,7 @@ public class RecipeService {
 
             RecipeStep step = RecipeStep.builder()
                     .recipeId(recipe.getId())
-                    .imageUrl(descriptionImages.get(i))
+                    .imageUrl(recipeDescriptionImages.get(i))
                     .recipeStepRequestDto(stepDto)
                     .build();
 

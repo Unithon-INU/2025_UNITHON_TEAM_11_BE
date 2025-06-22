@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,16 +45,20 @@ public class RecipeController implements RecipeApiSpecification{
     // 레시피 추가
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                           @RequestPart @Valid RecipeRequestDto recipeRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(recipeService.addRecipe(userDetails, recipeRequestDto));
+                                                           @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                           @RequestPart("mainImage") MultipartFile mainImage,
+                                                           @RequestPart("descriptionImages") List<MultipartFile> descriptionImages) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(recipeService.addRecipe(userDetails, recipeRequestDto, mainImage, descriptionImages));
     }
 
     // 레시피 수정
     @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @PathVariable Long recipeId,
-                                                              @RequestPart @Valid RecipeRequestDto recipeRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(recipeService.updateRecipe(userDetails, recipeId, recipeRequestDto));
+                                                              @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                              @RequestPart("mainImage") MultipartFile mainImage,
+                                                              @RequestPart("descriptionImages") List<MultipartFile> descriptionImages) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeService.updateRecipe(userDetails, recipeId, recipeRequestDto, mainImage, descriptionImages));
     }
 
     // 레시피 삭제

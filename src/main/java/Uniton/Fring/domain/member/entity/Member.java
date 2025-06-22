@@ -54,9 +54,15 @@ public class Member {
     }
 
     public void updateMember(MypageRequestDto mypageRequestDto, String imageUrl) {
-        this.nickname = mypageRequestDto.getNickname();
-        this.introduction = mypageRequestDto.getIntroduction();
-        this.imageUrl = imageUrl;
+        if (mypageRequestDto.getNickname() != null && !mypageRequestDto.getNickname().isBlank()) {
+            this.nickname = mypageRequestDto.getNickname();
+        }
+        if (mypageRequestDto.getIntroduction() != null && !mypageRequestDto.getIntroduction().isBlank()) {
+            this.introduction = mypageRequestDto.getIntroduction();
+        }
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            this.imageUrl = imageUrl;
+        }
     }
 
     public void changeRoleToFarmer() {

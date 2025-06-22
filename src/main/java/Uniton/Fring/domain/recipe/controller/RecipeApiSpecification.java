@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -89,7 +90,9 @@ public interface RecipeApiSpecification {
             }
     )
     ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @RequestPart @Valid RecipeRequestDto recipeRequestDto);
+                                                    @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                    @RequestPart("mainImage") MultipartFile mainImage,
+                                                    @RequestPart("descriptionImages") List<MultipartFile> descriptionImages);
 
     @Operation(
             summary = "레시피 수정",
@@ -110,7 +113,9 @@ public interface RecipeApiSpecification {
     )
     ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                        @PathVariable Long recipeId,
-                                                       @RequestPart @Valid RecipeRequestDto recipeRequestDto);
+                                                       @RequestPart @Valid RecipeRequestDto recipeRequestDto,
+                                                       @RequestPart("mainImage") MultipartFile mainImage,
+                                                       @RequestPart("descriptionImages") List<MultipartFile> descriptionImages);
 
     @Operation(
             summary = "레시피 삭제",

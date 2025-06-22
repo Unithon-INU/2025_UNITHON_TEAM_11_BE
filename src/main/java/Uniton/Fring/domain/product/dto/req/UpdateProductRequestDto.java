@@ -1,12 +1,9 @@
 package Uniton.Fring.domain.product.dto.req;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,12 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "상품 정보 수정 요청 DTO ")
 public class UpdateProductRequestDto {
-
-    @Parameter(description = "대표 이미지", content = @Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary")))
-    private MultipartFile mainImage;
-
-    @Parameter(description = "상세 설명 이미지 목록", content = @Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary")))
-    private List<MultipartFile> descriptionImages;
 
     @NotBlank
     @Schema(description = "상품 이름", example = "계란 30구, 1판")
