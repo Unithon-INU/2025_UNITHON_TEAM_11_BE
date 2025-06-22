@@ -1,9 +1,12 @@
 package Uniton.Fring.domain.member.entity;
 
+import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.enums.MemberRole;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -48,6 +51,12 @@ public class Member {
         this.introduction = signupRequestDto.getIntroduction();
         this.imageUrl = imageUrl;
         this.role = MemberRole.CONSUMER;
+    }
+
+    public void updateMember(MypageRequestDto mypageRequestDto, String imageUrl) {
+        this.nickname = mypageRequestDto.getNickname();
+        this.introduction = mypageRequestDto.getIntroduction();
+        this.imageUrl = imageUrl;
     }
 
     public void changeRoleToFarmer() {

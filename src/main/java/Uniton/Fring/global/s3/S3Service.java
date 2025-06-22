@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,26 +100,52 @@ public class S3Service {
         return Optional.empty();
     }
 
-    public Pair<String, List<String>> uploadMainAndStepImages(List<MultipartFile> images, String mainDir, String stepDir) {
+    public Pair<String, List<String>> uploadMainAndDescriptionImages(MultipartFile mainImage, List<MultipartFile> descriptionImages,
+                                                                     String mainDir, String descDir) {
         String mainImageUrl = null;
-        List<String> stepImageUrls = new ArrayList<>();
+        List<String> descImageUrls = new ArrayList<>();
 
-        if (images != null && !images.isEmpty()) {
-            try {
-                mainImageUrl = upload(images.get(0), mainDir);
-
-                for (int i = 1; i < images.size(); i++) {
-                    String stepUrl = upload(images.get(i), stepDir);
-                    stepImageUrls.add(stepUrl);
-                }
-
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+        try {
+            // 메인 이미지 업로드
+            if (mainImage != null && !mainImage.isEmpty()) {
+                mainImageUrl = upload(mainImage, mainDir);
             }
+
+            // 설명 이미지들 업로드
+            if (descriptionImages != null && !descriptionImages.isEmpty()) {
+                for (MultipartFile image : descriptionImages) {
+                    if (image != null && !image.isEmpty()) {
+                        descImageUrls.add(upload(image, descDir));
+                    }
+                }
+            }
+
+            log.info("메인 이미지 업로드 여부: {}, 설명 이미지 {}개 업로드 완료", mainImageUrl != null, descImageUrls.size());
+
+            return Pair.of(mainImageUrl, descImageUrls);
+
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
         }
+    }
 
-        log.info("총 {}개의 리뷰 이미지 업로드 완료", stepImageUrls.size() + 1);
+    public void delete(String imageUrl) {
+        try {
+            String key = extractKeyFromUrl(imageUrl); // 버킷 내 객체 키 추출
+            amazonS3Client.deleteObject(bucket, key);
+            log.info("[s3] 이미지 삭제 성공: {} ({})", key, imageUrl);
+        } catch (Exception e) {
+            log.warn("[s3] 이미지 삭제 실패: {}", imageUrl, e);
+        }
+    }
 
-        return Pair.of(mainImageUrl, stepImageUrls);
+    // S3 URL에서 key 추출
+    private String extractKeyFromUrl(String imageUrl) {
+        URI uri = URI.create(imageUrl);
+        // S3 도메인이 아니면 예외 발생
+        if (!uri.getHost().contains("amazonaws.com")) {
+            throw new CustomException(ErrorCode.FILE_DELETE_FAIL);
+        }
+        return uri.getPath().substring(1);
     }
 }

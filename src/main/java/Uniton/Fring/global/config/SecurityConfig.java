@@ -58,11 +58,11 @@ public class SecurityConfig {
                         .requestMatchers(SIGNUP_URIS).permitAll()
                         .requestMatchers(SWAGGER_URIS).permitAll()
                         .requestMatchers(HttpMethod.GET, VIEW_URIS).permitAll()
+                        .requestMatchers(HttpMethod.POST, FARMER_URIS).hasRole("FARMER")
+                        .requestMatchers(HttpMethod.PUT, FARMER_URIS).hasRole("FARMER")
+                        .requestMatchers(HttpMethod.DELETE, FARMER_URIS).hasRole("FARMER")
+                        .requestMatchers(FARMERPAGE_URIS).hasRole("FARMER")
                         .anyRequest().authenticated()
-//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
-//                        .access( new WebExpressionAuthorizationManager(
-//                                "hasIpAddress('219.248.253.212') or hasIpAddress('210.123.73.85')"
-//                        ))
                 )
 
                 // 예외 처리 설정
@@ -111,5 +111,13 @@ public class SecurityConfig {
             "/api/recipes/**",
             "/api/products/**",
             "/api/members/**",
+    };
+
+    private static final String[] FARMER_URIS = {
+            "/api/products/**"
+    };
+
+    private static final String[] FARMERPAGE_URIS = {
+            "/api/farmerpage/**"
     };
 }

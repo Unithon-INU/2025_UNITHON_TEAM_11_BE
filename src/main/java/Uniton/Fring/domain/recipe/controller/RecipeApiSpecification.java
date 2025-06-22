@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -76,7 +75,7 @@ public interface RecipeApiSpecification {
 
     @Operation(
             summary = "레시피 추가",
-            description = "첫 번째 이미지가 대표 이미지,<br>나머지 이미지가 레시피 순서 이미지입니다.<br>레시피 순서 요청값과 첫 번째 이미지를 제외한 이미지 수가 일치해야 합니다.",
+            description = "새로운 레시피를 추가합니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -90,8 +89,7 @@ public interface RecipeApiSpecification {
             }
     )
     ResponseEntity<RecipeInfoResponseDto> addRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @RequestPart @Valid RecipeRequestDto recipeRequestDto,
-                                                    @RequestPart(value = "images", required = true) List<MultipartFile> images);
+                                                    @RequestPart @Valid RecipeRequestDto recipeRequestDto);
 
     @Operation(
             summary = "레시피 수정",
@@ -112,8 +110,7 @@ public interface RecipeApiSpecification {
     )
     ResponseEntity<RecipeInfoResponseDto> updateRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                        @PathVariable Long recipeId,
-                                                       @RequestPart @Valid RecipeRequestDto recipeRequestDto,
-                                                       @RequestPart(value = "images", required = true) List<MultipartFile> images);
+                                                       @RequestPart @Valid RecipeRequestDto recipeRequestDto);
 
     @Operation(
             summary = "레시피 삭제",

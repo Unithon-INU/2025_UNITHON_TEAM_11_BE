@@ -54,7 +54,6 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),
     RECIPE_STEP_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피 순서를 찾을 수 없습니다."),
     RECIPE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "레시피에 접근할 권한이 없는 회원입니다."),
-    STEP_IMAGE_COUNT_MISMATCH(HttpStatus.BAD_REQUEST, 400, "레시피 단계 수와 이미지 수가 일치하지 않습니다."),
 
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "리뷰를 찾을 수 없습니다."),
@@ -65,6 +64,7 @@ public enum ErrorCode {
 
     // S3
     FILE_CONVERT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 500, "파일 변환에 실패했습니다."),
+    FILE_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 500, "파일 삭제에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;

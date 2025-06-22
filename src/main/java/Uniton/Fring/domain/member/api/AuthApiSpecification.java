@@ -26,7 +26,13 @@ public interface AuthApiSpecification {
             summary = "회원가입 [ JWT ❌ ]",
             description = "회원가입을 진행합니다.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "회원가입 성공"),
+                    @ApiResponse(responseCode = "201",
+                            description = "회원가입 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SignupResponseDto.class)
+                            )
+                    ),
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다."),
                     @ApiResponse(responseCode = "500", description = "파일 변환에 실패했습니다.")
             }

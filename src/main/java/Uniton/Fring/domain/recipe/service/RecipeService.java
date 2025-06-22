@@ -240,22 +240,26 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeInfoResponseDto addRecipe(UserDetailsImpl userDetails, RecipeRequestDto recipeRequestDto, List<MultipartFile> images) {
+    public RecipeInfoResponseDto addRecipe(UserDetailsImpl userDetails, RecipeRequestDto recipeRequestDto) {
 
         log.info("[레시피 등록 요청]");
 
-        if (images.size() - 1 != recipeRequestDto.getSteps().size()) {
-            throw new CustomException(ErrorCode.STEP_IMAGE_COUNT_MISMATCH);
-        }
+        Member member = userDetails.getMember();
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        // 레시피 순서 이미지
+        List<MultipartFile> stepImages = recipeRequestDto.getSteps().stream()
+                .map(RecipeStepRequestDto::getStepImage)
+                .toList();
 
-        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "recipes", "recipeSteps");
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
+                recipeRequestDto.getMainImage(), stepImages, "recipes", "recipeSteps");
+
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
         Recipe recipe = Recipe.builder()
-                .memberId(userDetails.getMember().getId())
+                .memberId(member.getId())
                 .recipeRequestDto(recipeRequestDto)
                 .mainImageUrl(mainImageUrl)
                 .build();
@@ -264,7 +268,7 @@ public class RecipeService {
         log.info("[레시피 추가]");
 
         List<RecipeStepResponseDto> recipeStepResponseDtos = new ArrayList<>();
-
+        List<RecipeStep> steps = new ArrayList<>();
         for (int i = 0; i < recipeRequestDto.getSteps().size(); i++) {
             RecipeStepRequestDto stepDto = recipeRequestDto.getSteps().get(i);
 
@@ -274,9 +278,10 @@ public class RecipeService {
                     .recipeStepRequestDto(stepDto)
                     .build();
 
-            recipeStepRepository.save(step);
+            steps.add(step);
             recipeStepResponseDtos.add(RecipeStepResponseDto.builder().recipeStep(step).build());
         }
+        recipeStepRepository.saveAll(steps);
 
         log.info("[레시피 순서 추가]");
 
@@ -294,15 +299,13 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeInfoResponseDto updateRecipe(UserDetailsImpl userDetails, Long recipeId, RecipeRequestDto recipeRequestDto, List<MultipartFile> images) {
+    public RecipeInfoResponseDto updateRecipe(UserDetailsImpl userDetails, Long recipeId,
+                                              RecipeRequestDto recipeRequestDto) {
 
         log.info("[레시피 수정 요청]");
 
-        if (images.size() - 1 != recipeRequestDto.getSteps().size()) {
-            throw new CustomException(ErrorCode.STEP_IMAGE_COUNT_MISMATCH);
-        }
-
         Member member = userDetails.getMember();
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
         Recipe recipe = recipeRepository.findById(recipeId)
                         .orElseThrow(() -> {
@@ -315,9 +318,18 @@ public class RecipeService {
             throw new CustomException(ErrorCode.RECIPE_MEMBER_NOT_MATCH);
         }
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        // 기존 이미지들 백업
+        String oldMainImage = recipe.getImageUrl();
+        List<String> oldStepImageUrls = recipeStepRepository.findImageUrlsByRecipeId(recipeId);
 
-        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "recipes", "recipeSteps");
+        // 새 이미지 업로드
+        List<MultipartFile> stepImages = recipeRequestDto.getSteps().stream()
+                .map(RecipeStepRequestDto::getStepImage)
+                .toList();
+
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
+                recipeRequestDto.getMainImage(), stepImages, "recipes", "recipeSteps");
+
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -327,7 +339,7 @@ public class RecipeService {
         recipeStepRepository.deleteByRecipeId(recipeId);
 
         List<RecipeStepResponseDto> recipeStepResponseDtos = new ArrayList<>();
-
+        List<RecipeStep> steps = new ArrayList<>();
         for (int i = 0; i < recipeRequestDto.getSteps().size(); i++) {
             RecipeStepRequestDto stepDto = recipeRequestDto.getSteps().get(i);
 
@@ -337,13 +349,21 @@ public class RecipeService {
                     .recipeStepRequestDto(stepDto)
                     .build();
 
-            recipeStepRepository.save(step);
+            steps.add(step);
             recipeStepResponseDtos.add(RecipeStepResponseDto.builder().recipeStep(step).build());
         }
-
-        log.info("[레시피 순서 수정]");
+        recipeStepRepository.saveAll(steps);
 
         log.info("[레시피 수정 성공] recipeId={}", recipeId);
+
+        if (oldMainImage != null && !oldMainImage.isBlank()) {
+            s3Service.delete(oldMainImage);
+        }
+        for (String url : oldStepImageUrls) {
+            if (url != null && !url.isBlank()) {
+                s3Service.delete(url);
+            }
+        }
 
         return RecipeInfoResponseDto.builder()
                 .member(memberInfoResponseDto)
@@ -374,10 +394,23 @@ public class RecipeService {
             throw new CustomException(ErrorCode.RECIPE_MEMBER_NOT_MATCH);
         }
 
+        // 기존 이미지 백업
+        String mainImageUrl = recipe.getImageUrl();
+        List<String> stepImageUrls = recipeStepRepository.findImageUrlsByRecipeId(recipeId);
+
         recipeStepRepository.deleteByRecipeId(recipeId);
         recipeRepository.deleteById(recipeId);
 
         log.info("[레시피 삭제 성공]");
+
+        if (mainImageUrl != null && !mainImageUrl.isBlank()) {
+            s3Service.delete(mainImageUrl);
+        }
+        for (String url : stepImageUrls) {
+            if (url != null && !url.isBlank()) {
+                s3Service.delete(url);
+            }
+        }
     }
 
     @Transactional(readOnly = true)

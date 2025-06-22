@@ -27,7 +27,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,15 +206,16 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails,
-                                             AddProductRequestDto addProductRequestDto,
-                                             List<MultipartFile> images) {
+    public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto) {
 
         log.info("[농수산품 추가 요청]");
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
 
-        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "products", "productDescriptions");
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
+                addProductRequestDto.getMainImage(), addProductRequestDto.getDescriptionImages(),
+                "products", "productDescriptions");
+
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
@@ -237,9 +237,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId,
-                                                UpdateProductRequestDto updateProductRequestDto,
-                                                List<MultipartFile> images) {
+    public ProductInfoResponseDto updateProduct(UserDetailsImpl userDetails, Long productId, UpdateProductRequestDto updateProductRequestDto) {
 
         log.info("[농수산품 수정 요청]");
 
@@ -256,13 +254,31 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
         }
 
-        Pair<String, List<String>> imageData = s3Service.uploadMainAndStepImages(images, "products", "productDescriptions");
+        // 기존 이미지 보관
+        String oldMainImage = product.getMainImageUrl();
+        List<String> oldDescriptionImages = product.getDescriptionImageUrl();
+
+        Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
+                updateProductRequestDto.getMainImage(), updateProductRequestDto.getDescriptionImages(),
+                "products", "productDescriptions");
+
         String mainImageUrl = imageData.getFirst();
         List<String> descriptionImages = imageData.getSecond();
 
         product.updateProduct(updateProductRequestDto , mainImageUrl, descriptionImages);
 
         log.info("[농수산품 수정 성공]");
+
+        if (oldMainImage != null && !oldMainImage.isBlank()) {
+            s3Service.delete(oldMainImage);
+        }
+        if (oldDescriptionImages != null && !oldDescriptionImages.isEmpty()) {
+            for (String url : oldDescriptionImages) {
+                if (url != null && !url.isBlank()) {
+                    s3Service.delete(url);
+                }
+            }
+        }
 
         return ProductInfoResponseDto.builder()
                 .product(product)
@@ -292,8 +308,22 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_MEMBER_NOT_MATCH);
         }
 
+        String mainImage = product.getMainImageUrl();
+        List<String> descriptionImages = product.getDescriptionImageUrl();
+
         productRepository.delete(product);
 
         log.info("[농수산품 삭제 성공]");
+
+        if (mainImage != null && !mainImage.isBlank()) {
+            s3Service.delete(mainImage);
+        }
+        if (descriptionImages != null && !descriptionImages.isEmpty()) {
+            for (String url : descriptionImages) {
+                if (url != null && !url.isBlank()) {
+                    s3Service.delete(url);
+                }
+            }
+        }
     }
 }
