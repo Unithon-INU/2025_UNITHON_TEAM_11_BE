@@ -40,7 +40,7 @@ public interface MypageApiSpecification {
 
     @Operation(
             summary = "마이페이지 수정",
-            description = "회원의 마이페이지 정보를 수정합니다.",
+            description = "회원의 마이페이지 정보를 수정합니다. <br><br> 값이 비어있는 필드에 대해선 이전 값이 적용됩니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

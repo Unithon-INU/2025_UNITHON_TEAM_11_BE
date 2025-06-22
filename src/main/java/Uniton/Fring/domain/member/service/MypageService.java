@@ -205,4 +205,9 @@ public class MypageService {
 //
 //
 //    }
+
+    @Transactional
+    public void saveOrUpdate(Long memberId, Long productId) {
+        recentProductViewRepository.saveOrUpdate(memberId, productId);
+    }
 }
