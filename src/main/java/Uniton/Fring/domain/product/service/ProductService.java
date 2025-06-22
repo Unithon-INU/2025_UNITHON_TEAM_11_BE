@@ -11,6 +11,7 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.domain.product.repository.RecentProductViewRepository;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +50,7 @@ public class ProductService {
     private final S3Service s3Service;
     private final ProductLikeRepository productLikeRepository;
     private final MypageService mypageService;
+    private final RecentProductViewRepository recentProductViewRepository;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -60,7 +63,7 @@ public class ProductService {
         Long memberId;
         if (userDetails != null) {
             memberId = userDetails.getMember().getId();
-            mypageService.saveOrUpdate(memberId, productId);
+            saveOrUpdate(memberId, productId);
         } else {
             memberId = null;
         }
@@ -333,5 +336,10 @@ public class ProductService {
                 }
             }
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveOrUpdate(Long memberId, Long productId) {
+        recentProductViewRepository.saveOrUpdate(memberId, productId);
     }
 }
