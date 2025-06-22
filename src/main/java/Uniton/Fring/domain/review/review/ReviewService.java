@@ -41,7 +41,7 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         log.info("[상품 리뷰 등록 성공]");
 
@@ -71,7 +71,7 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         log.info("[레시피 리뷰 등록 성공]");
 
