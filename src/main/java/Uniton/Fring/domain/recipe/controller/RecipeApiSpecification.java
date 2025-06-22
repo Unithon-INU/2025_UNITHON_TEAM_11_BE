@@ -123,11 +123,7 @@ public interface RecipeApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "레시피 삭제 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = RecipeInfoResponseDto.class)
-                            )
+                            description = "레시피 삭제 성공"
                     ),
                     @ApiResponse(responseCode = "404", description = "레시피를 찾을 수 없습니다."),
                     @ApiResponse(responseCode = "403", description = "레시피에 접근할 권한이 없는 멤버입니다.")

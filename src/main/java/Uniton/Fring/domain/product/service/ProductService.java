@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.product.service;
 
+import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
@@ -11,7 +12,6 @@ import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
-import Uniton.Fring.domain.product.repository.RecentProductViewRepository;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
@@ -49,7 +49,7 @@ public class ProductService {
     private final S3Service s3Service;
     private final ProductLikeRepository productLikeRepository;
     private final MypageService mypageService;
-    private final RecentProductViewRepository recentProductViewRepository;
+    private final MemberLikeRepository memberLikeRepository;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -84,8 +84,13 @@ public class ProductService {
             isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
         }
 
+        Boolean isLikedMember = null;
+        if (memberId != null) {
+            isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+        }
+
         // 작성자 정보
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member, isLikedMember);
         log.info("[작성자 정보 응답 생성 완료]");
 
         // 리뷰 페이지 조회
@@ -219,7 +224,7 @@ public class ProductService {
 
         log.info("[농수산품 추가 요청]");
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
                 mainImage, descriptionImages,

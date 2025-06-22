@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.recipe.service;
 
+import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
@@ -45,13 +46,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecipeService {
 
+    private final S3Service s3Service;
     private final RecipeRepository recipeRepository;
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeLikeRepository recipeLikeRepository;
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
-    private final S3Service s3Service;
+    private final MemberLikeRepository memberLikeRepository;
 
     @Transactional(readOnly = true)
     public RecipeInfoResponseDto getRecipe(UserDetailsImpl userDetails, Long recipeId, int page) {
@@ -92,8 +94,13 @@ public class RecipeService {
 
         log.info("[레시피 순서 응답 생성]");
 
+        Boolean isLikedMember = null;
+        if (memberId != null) {
+            isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+        }
+
         // 작성자 정보
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member, isLikedMember);
 
         log.info("[작성 회원 정보 응답 생성]");
 
@@ -246,7 +253,7 @@ public class RecipeService {
         log.info("[레시피 등록 요청]");
 
         Member member = userDetails.getMember();
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member);
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member, null);
 
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
                 mainImage, descriptionImages, "recipes", "recipeSteps");
@@ -302,7 +309,7 @@ public class RecipeService {
         log.info("[레시피 수정 요청]");
 
         Member member = userDetails.getMember();
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember());
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         Recipe recipe = recipeRepository.findById(recipeId)
                         .orElseThrow(() -> {

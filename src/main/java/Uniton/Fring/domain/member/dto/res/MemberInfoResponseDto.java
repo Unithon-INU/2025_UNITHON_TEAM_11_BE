@@ -44,11 +44,14 @@ public class MemberInfoResponseDto {
     @Schema(description = "판매자 여부", example = "true")
     private final Boolean isSeller;
 
+    @Schema(description = "찜 여부", example = "true")
+    private final Boolean isLiked;
+
     @Builder
     private MemberInfoResponseDto(Long memberId, String imageUrl, String nickname, String introduction,
                                  Integer likeCount,
                                   List<SimpleRecipeResponseDto> recipes, Integer recipeCount,
-                                  List<SimpleProductResponseDto> products, Integer productCount, Boolean isSeller) {
+                                  List<SimpleProductResponseDto> products, Integer productCount, Boolean isSeller, Boolean isLiked) {
         this.memberId = memberId;
         this.imageUrl = imageUrl;
         this.nickname = nickname;
@@ -59,9 +62,10 @@ public class MemberInfoResponseDto {
         this.products = products;
         this.productCount = productCount;
         this.isSeller = isSeller;
+        this.isLiked = isLiked;
     }
 
-    public static MemberInfoResponseDto fromMember(Member member) {
+    public static MemberInfoResponseDto fromMember(Member member, Boolean isLiked) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -73,10 +77,11 @@ public class MemberInfoResponseDto {
                 .products(null)
                 .productCount(null)
                 .isSeller(member.getRole() == MemberRole.FARMER)
+                .isLiked(isLiked)
                 .build();
     }
 
-    public static MemberInfoResponseDto fromConsumer(Member member, List<SimpleRecipeResponseDto> recipes, Integer recipeCount) {
+    public static MemberInfoResponseDto fromConsumer(Member member, List<SimpleRecipeResponseDto> recipes, Integer recipeCount, Boolean isLiked) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -88,12 +93,13 @@ public class MemberInfoResponseDto {
                 .products(null)
                 .productCount(null)
                 .isSeller(member.getRole() == MemberRole.FARMER)
+                .isLiked(isLiked)
                 .build();
     }
 
     public static MemberInfoResponseDto fromFarmer(Member member,
                                                    List<SimpleRecipeResponseDto> recipes, Integer recipeCount,
-                                                   List<SimpleProductResponseDto> products, Integer productCount) {
+                                                   List<SimpleProductResponseDto> products, Integer productCount, Boolean isLiked) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -105,6 +111,7 @@ public class MemberInfoResponseDto {
                 .products(products)
                 .productCount(productCount)
                 .isSeller(member.getRole() == MemberRole.FARMER)
+                .isLiked(isLiked)
                 .build();
     }
 

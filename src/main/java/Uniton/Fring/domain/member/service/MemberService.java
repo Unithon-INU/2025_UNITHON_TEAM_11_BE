@@ -125,6 +125,11 @@ public class MemberService {
             mineMemberId = null;
         }
 
+        Boolean isLikedMember = null;
+        if (mineMemberId != null) {
+            isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(mineMemberId, memberId);
+        }
+
         // 평점 기준 정렬
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "rating"));
 
@@ -149,7 +154,7 @@ public class MemberService {
         // 소비자 유저 정보 조회
         if (member.getRole() == MemberRole.CONSUMER) {
             log.info("[소비자 유저 정보 조회 성공]");
-            return MemberInfoResponseDto.fromConsumer(member, simpleRecipeResponseDtos, recipeCount);
+            return MemberInfoResponseDto.fromConsumer(member, simpleRecipeResponseDtos, recipeCount, isLikedMember);
         }
 
         // 농부 유저 정보 조회
@@ -159,7 +164,7 @@ public class MemberService {
                     Boolean isLikedProduct = null;
 
                     if (mineMemberId != null) {
-                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(mineMemberId, product.getId());
                     }
 
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
@@ -167,7 +172,7 @@ public class MemberService {
         int productCount = (int) products.getTotalElements();
 
         log.info("[농부 유저 정보 조회 성공]");
-        return MemberInfoResponseDto.fromFarmer(member, simpleRecipeResponseDtos, recipeCount, simpleProductResponseDtos, productCount);
+        return MemberInfoResponseDto.fromFarmer(member, simpleRecipeResponseDtos, recipeCount, simpleProductResponseDtos, productCount, isLikedMember);
     }
 
     @Transactional
