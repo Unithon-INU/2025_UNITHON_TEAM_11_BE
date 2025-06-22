@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Schema(description = "로그인 요청 DTO")
+@Schema(description = "마이페이지 수정 요청 DTO")
 public class MypageRequestDto {
 
     @Schema(description = "사용자의 닉네임", example = "두옹균")
