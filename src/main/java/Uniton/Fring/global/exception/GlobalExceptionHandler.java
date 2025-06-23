@@ -2,10 +2,12 @@ package Uniton.Fring.global.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 
@@ -38,6 +40,20 @@ public class GlobalExceptionHandler {
 
         String message = "요청에 필요한 부분이 없습니다: " + ex.getRequestPartName();
 
+        return ErrorResponseEntity.toResponseEntity(errorCode, message, null);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponseEntity> handleNoHandlerFound(NoHandlerFoundException ex) {
+        ErrorCode errorCode = ErrorCode.NO_HANDLER_FOUND;
+        String message = "존재하지 않는 API입니다.";
+        return ErrorResponseEntity.toResponseEntity(errorCode, message, null);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseEntity> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+        String message = "지원하지 않는 HTTP 메서드입니다: " + ex.getMethod();
         return ErrorResponseEntity.toResponseEntity(errorCode, message, null);
     }
 }
