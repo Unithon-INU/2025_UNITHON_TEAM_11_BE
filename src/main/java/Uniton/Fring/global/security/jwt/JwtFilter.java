@@ -31,9 +31,15 @@ public class JwtFilter extends OncePerRequestFilter {
         // 요청 URI 정보 저장
         String requestURI = request.getRequestURI();
 
+        // 리프레시 토큰 발급 API는 Access Token 검증 건너뜀
+        if ("/api/auth/refresh".equals(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             // JWT 토큰이 존재하고 유효하면 인증 객체를 SecurityContext에 저장
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt, "access")) {
 
                 // 토큰 기반 인증 정보 생성
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);

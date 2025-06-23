@@ -115,7 +115,7 @@ public class AuthService {
 
         log.info("[JWT 토큰 재발급 요청]");
 
-        if (!jwtTokenProvider.validateToken(jwtTokenRequestDto.getRefreshToken())) {
+        if (!jwtTokenProvider.validateToken(jwtTokenRequestDto.getRefreshToken(), "refresh")) {
             log.warn("[JWT 토큰 유효성 검증 실패] 만료된 Refresh Token");
             throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
