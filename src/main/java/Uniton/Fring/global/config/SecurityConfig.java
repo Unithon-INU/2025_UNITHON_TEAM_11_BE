@@ -56,6 +56,7 @@ public class SecurityConfig {
                 // 요청 권한 설정 ( 해당 엔드포인트에 대해서는 허용 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/auth/refresh").permitAll()
                         .requestMatchers(SIGNUP_URIS).permitAll()
                         .requestMatchers(SWAGGER_URIS).permitAll()
                         .requestMatchers(HttpMethod.GET, VIEW_URIS).permitAll()
