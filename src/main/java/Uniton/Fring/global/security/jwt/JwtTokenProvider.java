@@ -116,7 +116,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     // 토큰 유효성 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, String tokenType) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
@@ -128,7 +128,13 @@ public class JwtTokenProvider implements InitializingBean {
             throw new CustomException(ErrorCode.JWT_MALFORMED);
         } catch (ExpiredJwtException e) {
             // 만료된 토큰
-            throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
+            if ("access".equals(tokenType)) {
+                throw new CustomException(ErrorCode.JWT_ACCESS_TOKEN_EXPIRED);
+            } else if ("refresh".equals(tokenType)) {
+                throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
+            } else {
+                throw new CustomException(ErrorCode.JWT_NOT_VALID);
+            }
         } catch (UnsupportedJwtException e) {
             // 지원하지 않는 형식
             throw new CustomException(ErrorCode.JWT_UNSUPPORTED);
