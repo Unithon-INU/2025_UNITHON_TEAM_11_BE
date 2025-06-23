@@ -34,7 +34,7 @@ public class Review {
     private String content;
 
     @Column(nullable = false)
-    private Double rating;
+    private Integer rating;
 
     @ElementCollection
     @CollectionTable(name = "review_image", joinColumns = @JoinColumn(name = "review_id"))
@@ -54,7 +54,7 @@ public class Review {
     private Integer likeCount = 0;
 
     @Builder
-    private Review(Long memberId, Long productId, Long recipeId, String content, Double rating, List<String> imageUrls, String purchaseOption) {
+    private Review(Long memberId, Long productId, Long recipeId, String content, Integer rating, List<String> imageUrls, String purchaseOption) {
         this.memberId = memberId;
         this.productId = productId;
         this.recipeId = recipeId;

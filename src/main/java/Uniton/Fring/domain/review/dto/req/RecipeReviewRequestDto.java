@@ -13,7 +13,7 @@ public class RecipeReviewRequestDto {
     private Long recipeId;
 
     @Schema(description = "레시피 별점", example = "4.0")
-    private Double rating;
+    private Integer rating;
 
     @Schema(description = "후기", example = "야미~ 맛있었어요 !")
     private String content;

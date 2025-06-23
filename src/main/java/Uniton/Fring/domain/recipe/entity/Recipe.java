@@ -102,4 +102,8 @@ public class Recipe {
     public void decreaseLikeCount() {
         this.likeCount = Math.max(0, this.likeCount - 1);
     }
+
+    public void updateRating(Double newRating) {
+        this.rating = newRating != null ? newRating : 0.0;
+    }
 }

@@ -2,6 +2,7 @@ package Uniton.Fring.domain.product.service;
 
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
+import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -50,6 +51,7 @@ public class ProductService {
     private final ProductLikeRepository productLikeRepository;
     private final MypageService mypageService;
     private final MemberLikeRepository memberLikeRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -117,10 +119,17 @@ public class ProductService {
 
                     MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer);
 
+                    Boolean isLikedReview = null;
+                    if (memberId != null) {
+                        isLikedReview = reviewLikeRepository.existsByMemberIdAndReviewId(memberId, review.getId());
+                    }
+
                     return ReviewResponseDto.builder()
                             .review(review)
                             .memberInfo(reviewerInfoResponseDto)
-                            .purchaseOption(review.getPurchaseOption()).build();
+                            .isLiked(isLikedReview)
+                            .purchaseOption(review.getPurchaseOption())
+                            .build();
                 })
                 .toList();
         log.info("[리뷰 정보 응답 생성 완료]");

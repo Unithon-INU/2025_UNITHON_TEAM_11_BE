@@ -1,11 +1,25 @@
 package Uniton.Fring.domain.cart.service;
 
+import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
+import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
+import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
+import Uniton.Fring.domain.cart.entity.Cart;
 import Uniton.Fring.domain.cart.repository.CartRepository;
-import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.product.entity.Product;
+import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -16,53 +30,90 @@ public class CartService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
 
-//    public AddCartResponseDto getCartItems(UserDetailsImpl userDetails) {
-//        List<Cart> carts = cartRepository.findAllByMemberId(userDetails.getMember().getId());
-//
-//        List;
-//
-//        return CartInfoResponseDto.builder().build();
-//    }
+    @Transactional(readOnly = true)
+    public CartInfoResponseDto getCart(UserDetailsImpl userDetails) {
 
-//    @Transactional
-//    public AddCartResponseDto addCartItems(UserDetailsImpl userDetails, List<CartItemDto> items) {
-//
-//        log.info("[장바구니 추가 요청] memberId={}, product={}", userDetails.getMember().getId(), items);
-//
-//        Member member = memberRepository.findById(userDetails.getMember().getId())
-//                .orElseThrow(() -> {
-//                    log.warn("[장바구니 추가 실패] 사용자 없음: memberId={}", userDetails.getMember().getId());
-//                    return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-//                });
-//
-//        List<Long> productIds = items.stream().map(CartItemDto::getProductId).toList();
-//
-//        List<FarmProduct> farmProducts = farmProductRepository.findAllById(productIds);
-//
-//        Map<Long, FarmProduct> productMap = farmProducts.stream()
-//                .collect(Collectors.toMap(FarmProduct::getId, farmProduct -> farmProduct));
-//
-//        List<Cart> carts = new ArrayList<>();
-//
-//        for (CartItemDto item : items) {
-//            FarmProduct farmProduct = productMap.get(item.getProductId());
-//            if (farmProduct == null) {
-//                log.warn("[장바구니 추가 실패] 존재하지 않는 상품 ID= {}", item.getProductId());
-//                throw new CustomException(ErrorCode.Product_NOT_FOUND);
-//            }
-//
-//            Cart cart = Cart.builder()
-//                    .member(member)
-//                    .product(farmProduct)
-//                    .quantity(item.getQuantity())
-//                    .build();
-//
-//            member.addCart(cart);
-//            carts.add(cart);
-//        }
-//
-//        log.info("[장바구니 추가 완료] memberId={}", member.getId());
-//
-//        return AddCartResponseDto.builder().carts(carts).build();
-//    }
+        log.info("[장바구니 조회 요청]");
+
+        Member member = userDetails.getMember();
+
+        // 해당 사용자의 장바구니 항목 조회
+        List<Cart> carts = cartRepository.findByMemberId(member.getId());
+        if (carts.isEmpty()) {
+            log.info("[장바구니 비어 있음]");
+            return CartInfoResponseDto.builder().items(Collections.emptyList()).build();
+        }
+
+        // 장바구니에 있는 상품 ID만 추출
+        List<Long> productIds = carts.stream()
+                .map(Cart::getProductId)
+                .distinct()
+                .toList();
+
+        // 상품 정보 일괄 조회
+        List<Product> products = productRepository.findAllById(productIds);
+        Map<Long, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        // 상품 판매자 일괄 조회
+        List<Long> memberIds = products.stream()
+                .map(Product::getMemberId)
+                .distinct()
+                .toList();
+        List<Member> sellers = memberRepository.findAllById(memberIds);
+        Map<Long, Member> memberMap = sellers.stream()
+                .collect(Collectors.toMap(Member::getId, Function.identity()));
+
+        // 장바구니 항목 DTO로 변환
+        List<CartItemResponseDto> cartInfoResponseDtos = carts.stream()
+                .map(cartItem -> {
+                    Product product = productMap.get(cartItem.getProductId());
+                    Member seller = memberMap.get(product.getMemberId());
+
+                    return CartItemResponseDto.builder()
+                            .cart(cartItem)
+                            .memberNickname(seller.getNickname())
+                            .product(product)
+                            .build();
+                })
+                .toList();
+
+        log.info("[장바구니 조회 성공]");
+
+        return CartInfoResponseDto.builder().items(cartInfoResponseDtos).build();
+    }
+
+    @Transactional
+    public CartInfoResponseDto addCart(UserDetailsImpl userDetails, Long productId, CartRequestDto cartRequestDto) {
+
+        log.info("[장바구니 추가 요청]");
+
+
+
+        log.info("[장바구니 추가 성공]");
+
+        return CartInfoResponseDto.builder().build();
+    }
+
+    @Transactional
+    public CartInfoResponseDto updateCart(UserDetailsImpl userDetails, CartRequestDto cartRequestDto) {
+
+        log.info("[장바구니 수정 요청]");
+
+
+
+        log.info("[장바구니 수정 성공]");
+
+        return CartInfoResponseDto.builder().build();
+    }
+
+    @Transactional
+    public void deleteCart(UserDetailsImpl userDetails) {
+
+        log.info("[장바구니 삭제 요청]");
+
+
+
+        log.info("[장바구니 삭제 성공]");
+    }
 }

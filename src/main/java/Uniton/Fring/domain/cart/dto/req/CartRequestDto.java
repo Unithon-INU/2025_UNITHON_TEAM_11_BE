@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Schema(description = "장바구니 추가 요청 DTO")
-public class AddCartRequestDto {
+public class CartRequestDto {
 
-    @NotBlank(message = "상품 Id 리스트가 비어있습니다.")
-    @Schema(description = "상품 Id 리스트", example = "[1, 2, 3, 4]")
-    private List<CartItemDto> items;
+    @NotBlank(message = "장바구니 상품 요소가 비어있습니다.")
+    @Schema(description = "장바구니 상품 요소", example = "계란, 토마토")
+    private List<CartItemRequestDto> items;
 }

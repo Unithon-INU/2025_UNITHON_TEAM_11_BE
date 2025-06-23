@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -86,6 +87,9 @@ public class ProductInfoResponseDto {
     @Schema(description = "리뷰에 달린 사진들 (5개)", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
     private List<String> recentImageUrls;
 
+    @Schema(description = "연관 농수산품 목록", example = "(5개) 꿀당근, 꿀멜론, 꿀")
+    private final List<SimpleProductResponseDto> relatedProducts;
+
     @Schema(description = "인기 많은 농수산품 목록", example = "(5개) 꿀당근, 꿀멜론, 꿀")
     private final List<SimpleProductResponseDto> bestProducts;
 
@@ -123,6 +127,7 @@ public class ProductInfoResponseDto {
         this.totalReviewCount = totalReviewCount;
         this.totalImageCount = totalImageCount;
         this.recentImageUrls = recentImageUrls;
+        this.relatedProducts = new ArrayList<>();
         this.bestProducts = bestProducts;
     }
 }

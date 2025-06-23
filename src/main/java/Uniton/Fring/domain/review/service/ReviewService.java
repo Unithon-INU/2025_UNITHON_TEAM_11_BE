@@ -1,6 +1,10 @@
-package Uniton.Fring.domain.review.review;
+package Uniton.Fring.domain.review.service;
 
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
+import Uniton.Fring.domain.product.entity.Product;
+import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.domain.recipe.entity.Recipe;
+import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.dto.req.ProductReviewRequestDto;
 import Uniton.Fring.domain.review.dto.req.RecipeReviewRequestDto;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
@@ -27,6 +31,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final S3Service s3Service;
+    private final ProductRepository productRepository;
+    private final RecipeRepository recipeRepository;
 
     @Transactional
     public ReviewResponseDto addProductReview(UserDetailsImpl userDetails,
@@ -43,11 +49,22 @@ public class ReviewService {
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
+        Product product = productRepository.findById(productReviewRequestDto.getProductId())
+                .orElseThrow(() -> {
+                    log.warn("[농수산품 수정 실패] 상품 없음: productId={}", productReviewRequestDto.getProductId());
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        // 평균 평점 계산
+        Double avgRating = reviewRepository.findAverageRatingByProductId(productReviewRequestDto.getProductId());
+        product.updateRating(avgRating);
+
         log.info("[상품 리뷰 등록 성공]");
 
         return ReviewResponseDto.builder()
                 .memberInfo(memberInfoResponseDto)
                 .review(review)
+                .isLiked(null)
                 .purchaseOption(productReviewRequestDto.getPurchase_option())
                 .build();
     }
@@ -73,11 +90,21 @@ public class ReviewService {
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
+        Recipe recipe = recipeRepository.findById(recipeReviewRequestDto.getRecipeId())
+                .orElseThrow(() -> {
+                    log.warn("[레시피 조회 실패] 레시피 없음: recipeId={}", recipeReviewRequestDto.getRecipeId());
+                    return new CustomException(ErrorCode.RECIPE_NOT_FOUND);
+                });
+
+        Double avgRating = reviewRepository.findAverageRatingByRecipeId(recipeReviewRequestDto.getRecipeId());
+        recipe.updateRating(avgRating);
+
         log.info("[레시피 리뷰 등록 성공]");
 
         return ReviewResponseDto.builder()
                 .memberInfo(memberInfoResponseDto)
                 .review(review)
+                .isLiked(null)
                 .purchaseOption(null)
                 .build();
     }

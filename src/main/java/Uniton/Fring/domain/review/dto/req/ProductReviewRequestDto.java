@@ -16,7 +16,7 @@ public class ProductReviewRequestDto {
     private String purchase_option;
 
     @Schema(description = "농수산품 별점", example = "4.0")
-    private Double rating;
+    private Integer rating;
 
     @Schema(description = "후기", example = "정말 신선해요 !!")
     private String content;

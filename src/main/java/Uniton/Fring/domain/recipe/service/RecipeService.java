@@ -2,6 +2,7 @@ package Uniton.Fring.domain.recipe.service;
 
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
+import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -54,6 +55,7 @@ public class RecipeService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional(readOnly = true)
     public RecipeInfoResponseDto getRecipe(UserDetailsImpl userDetails, Long recipeId, int page) {
@@ -128,9 +130,15 @@ public class RecipeService {
 
                     MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer);
 
+                    Boolean isLikedReview = null;
+                    if (memberId != null) {
+                        isLikedReview = reviewLikeRepository.existsByMemberIdAndReviewId(memberId, review.getId());
+                    }
+
                     return ReviewResponseDto.builder()
                             .review(review)
                             .memberInfo(reviewerInfoResponseDto)
+                            .isLiked(isLikedReview)
                             .build();
                 })
                 .toList();

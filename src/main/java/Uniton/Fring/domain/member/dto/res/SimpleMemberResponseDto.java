@@ -26,7 +26,7 @@ public class SimpleMemberResponseDto {
     private final Integer likeCount;
 
     @Schema(description = "좋아요 여부", example = "true")
-    private final Boolean isLikedMember;
+    private final Boolean isLiked;
 
     @Schema(description = "판매자 여부", example = "true")
     private final Boolean isSeller;
@@ -38,7 +38,7 @@ public class SimpleMemberResponseDto {
         this.imageUrl = member.getImageUrl();
         this.introduction = member.getIntroduction();
         this.likeCount = likeCount;
-        this.isLikedMember = isLikedMember;
+        this.isLiked = isLikedMember;
         this.isSeller = member.getRole() == MemberRole.FARMER;
     }
 }

@@ -46,4 +46,7 @@ public class LikeController implements LikeApiSpecification{
                                                             @PathVariable Long reviewId) {
         return ResponseEntity.status(HttpStatus.OK).body(likeService.likeReview(userDetails, reviewId));
     }
+
+    // 좋아요 목록 불러오기
+
 }

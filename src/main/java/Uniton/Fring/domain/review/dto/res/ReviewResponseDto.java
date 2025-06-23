@@ -16,14 +16,17 @@ public class ReviewResponseDto {
     @Schema(description = "회원", example = "dor****")
     private final MemberInfoResponseDto memberInfo;
 
+    @Schema(description = "리뷰 아이디", example = "1")
+    private final Long reviewId;
+
     @Schema(description = "리뷰 내용", example = "아침마다 계란을 삶아먹는데 여기만한 계란이 없더라구요.^^")
     private final String content;
 
     @Schema(description = "리뷰 이미지 URL 목록", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
     private final List<String> imageUrls;
 
-    @Schema(description = "리뷰 평점", example = "4.5")
-    private final Double rating;
+    @Schema(description = "리뷰 평점", example = "4")
+    private final Integer rating;
 
     @Schema(description = "리뷰 작성 일자", example = "2025-01-23")
     private final LocalDate createdAt;
@@ -31,17 +34,22 @@ public class ReviewResponseDto {
     @Schema(description = "리뷰 좋아요 수", example = "2")
     private final Integer likeCount;
 
+    @Schema(description = "찜 여부", example = "true")
+    private final Boolean isLiked;
+
     @Schema(description = "구매 상품 옵션", example = "단품 계란 30구, 1판")
     private final String purchaseOption;
 
     @Builder
-    private ReviewResponseDto(MemberInfoResponseDto memberInfo, Review review, String purchaseOption) {
+    private ReviewResponseDto(MemberInfoResponseDto memberInfo, Review review, Boolean isLiked, String purchaseOption) {
         this.memberInfo = memberInfo;
+        this.reviewId = review.getId();
         this.content = review.getContent();
         this.imageUrls = review.getImageUrls();
         this.rating = review.getRating();
         this.createdAt = review.getCreatedAt();
         this.likeCount = review.getLikeCount();
+        this.isLiked = isLiked;
         this.purchaseOption = purchaseOption;
     }
 }

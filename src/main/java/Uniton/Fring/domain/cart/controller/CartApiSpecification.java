@@ -1,8 +1,8 @@
 package Uniton.Fring.domain.cart.controller;
 
 
-import Uniton.Fring.domain.cart.dto.res.AddCartResponseDto;
-import Uniton.Fring.domain.cart.dto.req.AddCartRequestDto;
+import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
+import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,27 +11,72 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Cart", description = "장바구니 관련 API")
 public interface CartApiSpecification {
 
     @Operation(
-            summary = "장바구니 추가",
-            description = "상품 ID를 받아 해당 게임을 현재 로그인한 사용자의 장바구니에 추가합니다.",
+            summary = "장바구니 조회",
+            description = "회원의 장바구니 목록을 조회합니다.",
             responses = {
-                    // 201 Created 응답일 때
                     @ApiResponse(
-                            responseCode = "201",
-                            description = "장바구니에 성공적으로 추가됨",
-                            // 응답 본문은 JSON 형식이고, 구조는 CartResponse DTO를 따름
+                            responseCode = "200",
+                            description = "장바구니 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = AddCartResponseDto.class)
+                                    schema = @Schema(implementation = CartInfoResponseDto.class)
                             )
-                    ),
-                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+                    )
             }
     )
-    public ResponseEntity<AddCartResponseDto> addCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody AddCartRequestDto addCartRequestDto);
+    ResponseEntity<CartInfoResponseDto> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
+            summary = "장바구니 추가",
+            description = "상품 아이디를 통해 회원의 장바구니에 추가합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "장바구니 추가 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CartInfoResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<CartInfoResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @PathVariable Long productId,
+                                                @RequestBody CartRequestDto cartRequestDto);
+
+    @Operation(
+            summary = "장바구니 수정",
+            description = "회원의 장바구니 목록을 수정합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "장바구니 수정 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CartInfoResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<CartInfoResponseDto> updateCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @RequestBody CartRequestDto cartRequestDto);
+
+    @Operation(
+            summary = "장바구니 전체 삭제",
+            description = "회원의 장바구니 목록 전체를 삭제합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "장바구니 삭제 성공"
+                    )
+            }
+    )
+    ResponseEntity<CartInfoResponseDto> deleteCart(@AuthenticationPrincipal UserDetailsImpl userDetails);
 }

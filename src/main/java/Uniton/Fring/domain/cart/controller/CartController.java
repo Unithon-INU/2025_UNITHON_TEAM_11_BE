@@ -1,38 +1,47 @@
 package Uniton.Fring.domain.cart.controller;
 
+import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
+import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
 import Uniton.Fring.domain.cart.service.CartService;
+import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/carts")
-public class CartController {
+public class CartController implements CartApiSpecification {
 
     private final CartService cartService;
 
-//    // 장바구니 조회
-//    @GetMapping
-//    public ResponseEntity<AddCartResponseDto> getCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return ResponseEntity.status(HttpStatus.OK).body(cartService.getCartItems(userDetails));
-//    }
+    // 장바구니 조회
+    @GetMapping
+    public ResponseEntity<CartInfoResponseDto> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(cartService.getCart(userDetails));
+    }
 
-//    // 장바구니 추가
-//    @PostMapping
-//    public ResponseEntity<AddCartResponseDto> addCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody AddCartRequestDto addCartRequestDto) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCartItems(userDetails, addCartRequestDto.getItems()));
-//    }
+    // 장바구니 추가
+    @PostMapping("/{productId}")
+    public ResponseEntity<CartInfoResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                           @PathVariable Long productId,
+                                                           @RequestBody CartRequestDto cartRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCart(userDetails,productId, cartRequestDto));
+    }
 
-//    // 장바구니 수정
-//    @PutMapping
-//    public ResponseEntity<AddCartResponseDto> updateCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return ResponseEntity.status(HttpStatus.OK).body(cartService.updateCartItems(userDetails));
-//    }
-//
-//    // 장바구니 삭제
-//    @DeleteMapping
-//    public ResponseEntity<AddCartResponseDto> deleteCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return ResponseEntity.status(HttpStatus.OK).body(cartService.deleteCartItems(userDetails));
-//    }
+    // 장바구니 수정
+    @PutMapping
+    public ResponseEntity<CartInfoResponseDto> updateCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                               @RequestBody CartRequestDto cartRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(cartService.updateCart(userDetails, cartRequestDto));
+    }
+
+    // 장바구니 삭제
+    @DeleteMapping
+    public ResponseEntity<CartInfoResponseDto> deleteCart(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cartService.deleteCart(userDetails);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

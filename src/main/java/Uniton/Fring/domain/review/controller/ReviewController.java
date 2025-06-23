@@ -3,7 +3,7 @@ package Uniton.Fring.domain.review.controller;
 import Uniton.Fring.domain.review.dto.req.ProductReviewRequestDto;
 import Uniton.Fring.domain.review.dto.req.RecipeReviewRequestDto;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
-import Uniton.Fring.domain.review.review.ReviewService;
+import Uniton.Fring.domain.review.service.ReviewService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
