@@ -45,7 +45,7 @@ public class Cart {
     private LocalDateTime createdAt;
 
     @Builder
-    private Cart(Long memberId, Long productId,String productOption, int quantity, BigDecimal productPrice,
+    private Cart(Long memberId, Long productId, String productOption, int quantity, BigDecimal productPrice,
                  BigDecimal optionPrice, BigDecimal deliveryFee, BigDecimal totalPrice) {
         this.memberId = memberId;
         this.productId = productId;

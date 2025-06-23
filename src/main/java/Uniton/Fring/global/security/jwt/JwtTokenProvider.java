@@ -43,7 +43,7 @@ public class JwtTokenProvider implements InitializingBean {
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secret, UserDetailsServiceImpl userDetailsService) {
         this.secret = secret;
 
-        this.accessTokenValidityInSeconds = 2 * 60 * 60 * 1000L;
+        this.accessTokenValidityInSeconds = 60 * 1000L;
 
         this.refreshTokenValidityInSeconds = 3 * 24 * 60 * 60 * 1000L;
 

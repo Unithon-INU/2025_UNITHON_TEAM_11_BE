@@ -7,6 +7,8 @@ import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.global.exception.CustomException;
+import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +88,22 @@ public class CartService {
 
         log.info("[장바구니 추가 요청]");
 
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("[농수산 조회 실패] 농수산 없음: productId={}", productId);
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
 
+        Member member = userDetails.getMember();
+
+        Boolean isAlreadyCart = cartRepository.existsCartByMemberIdAndProductId(member.getId(), productId);
+
+        if (isAlreadyCart) {
+
+        }
+        else {
+
+        }
 
         log.info("[장바구니 추가 성공]");
 
