@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.like.service;
 
 import Uniton.Fring.domain.like.dto.res.LikeStatusResponseDto;
+import Uniton.Fring.domain.like.dto.res.LikedItemsResponseDto;
 import Uniton.Fring.domain.like.entity.MemberLike;
 import Uniton.Fring.domain.like.entity.ProductLike;
 import Uniton.Fring.domain.like.entity.RecipeLike;
@@ -9,10 +10,13 @@ import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
+import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.repository.ProductRepository;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.entity.Review;
@@ -22,8 +26,16 @@ import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -178,6 +190,111 @@ public class LikeService {
                 .name(review.getContent())
                 .isLiked(!isLiked)
                 .likeCount(likeCount)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LikedItemsResponseDto<SimpleRecipeResponseDto> getLikedRecipe(UserDetailsImpl userDetails, int page) {
+        log.info("[찜한 레시피 목록 조회 요청]");
+
+        Long memberId = userDetails.getMember().getId();
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+        Page<RecipeLike> likes = recipeLikeRepository.findByMemberId(memberId, pageable);
+
+        List<Long> recipeIds = likes.stream().map(RecipeLike::getRecipeId).toList();
+        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+
+        // 리뷰 수 조회: List<Object[]> → Map<Long, Integer>
+        List<Object[]> rawReviewCounts = reviewRepository.countByRecipeIds(recipeIds);
+        Map<Long, Integer> reviewCountMap = rawReviewCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()
+                ));
+
+        List<SimpleRecipeResponseDto> result = recipes.stream()
+                .map(recipe -> SimpleRecipeResponseDto.builder()
+                        .recipe(recipe)
+                        .isLiked(true)
+                        .reviewCount(reviewCountMap.getOrDefault(recipe.getId(), 0))
+                        .build())
+                .toList();
+
+        log.info("[찜한 레시피 목록 조회 성공]");
+        return LikedItemsResponseDto.<SimpleRecipeResponseDto>builder()
+                .totalCount((int) recipeLikeRepository.countByMemberId(memberId))
+                .items(result)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LikedItemsResponseDto<SimpleMemberResponseDto> getLikedMember(UserDetailsImpl userDetails, int page) {
+        log.info("[찜한 유저 목록 조회 요청]");
+
+        Long memberId = userDetails.getMember().getId();
+        Pageable pageable = PageRequest.of(page, 8);
+
+        Page<Member> members = memberLikeRepository.findLikedConsumers(memberId, pageable);
+
+        List<SimpleMemberResponseDto> result = members.stream()
+                .map(member -> SimpleMemberResponseDto.builder()
+                        .member(member)
+                        .likeCount(null)
+                        .isLikedMember(true)
+                        .build())
+                .toList();
+
+        log.info("[찜한 유저 목록 조회 성공]");
+        return LikedItemsResponseDto.<SimpleMemberResponseDto>builder()
+                .totalCount(memberLikeRepository.countLikedConsumers(memberId))
+                .items(result)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LikedItemsResponseDto<SimpleProductResponseDto> getLikedProduct(UserDetailsImpl userDetails, int page) {
+        log.info("[찜한 농수산품 목록 조회 요청]");
+
+        Long memberId = userDetails.getMember().getId();
+        Pageable pageable = PageRequest.of(page, 6);
+        Page<ProductLike> likes = productLikeRepository.findByMemberId(memberId, pageable);
+        List<Long> productIds = likes.stream().map(ProductLike::getProductId).toList();
+        List<Product> products = productRepository.findAllById(productIds);
+
+        List<SimpleProductResponseDto> result = products.stream()
+                .map(product -> SimpleProductResponseDto.builder()
+                        .product(product)
+                        .isLiked(true)
+                        .build())
+                .toList();
+
+        log.info("[찜한 농수산품 목록 조회 성공]");
+        return LikedItemsResponseDto.<SimpleProductResponseDto>builder()
+                .totalCount((int) productLikeRepository.countByMemberId(memberId))
+                .items(result)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LikedItemsResponseDto<SimpleMemberResponseDto> getLikedFarmer(UserDetailsImpl userDetails, int page) {
+        log.info("[찜한 판매자 유저 목록 조회 요청]");
+
+        Long memberId = userDetails.getMember().getId();
+        Pageable pageable = PageRequest.of(page, 8);
+        Page<Member> farmers = memberLikeRepository.findLikedFarmers(memberId, pageable);
+
+        List<SimpleMemberResponseDto> result = farmers.stream()
+                .map(member -> SimpleMemberResponseDto.builder()
+                        .member(member)
+                        .likeCount(member.getLikeCount())
+                        .isLikedMember(true)
+                        .build())
+                .toList();
+
+        log.info("[찜한 판매자 유저 목록 조회 성공]");
+        return LikedItemsResponseDto.<SimpleMemberResponseDto>builder()
+                .totalCount(memberLikeRepository.countLikedFarmers(memberId))
+                .items(result)
                 .build();
     }
 }

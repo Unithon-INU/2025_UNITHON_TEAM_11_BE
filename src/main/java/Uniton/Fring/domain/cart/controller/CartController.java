@@ -2,7 +2,7 @@ package Uniton.Fring.domain.cart.controller;
 
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
-import Uniton.Fring.domain.cart.service.CartService;
+import Uniton.Fring.domain.cart.CartService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -85,4 +85,6 @@ public interface LikeApiSpecification {
     )
     ResponseEntity<LikeStatusResponseDto> likeReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                      @PathVariable Long reviewId);
+
+
 }

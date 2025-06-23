@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.cart.entity;
+package Uniton.Fring.domain.cart;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

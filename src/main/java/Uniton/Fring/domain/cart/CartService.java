@@ -1,10 +1,8 @@
-package Uniton.Fring.domain.cart.service;
+package Uniton.Fring.domain.cart;
 
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
-import Uniton.Fring.domain.cart.entity.Cart;
-import Uniton.Fring.domain.cart.repository.CartRepository;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.domain.product.entity.Product;

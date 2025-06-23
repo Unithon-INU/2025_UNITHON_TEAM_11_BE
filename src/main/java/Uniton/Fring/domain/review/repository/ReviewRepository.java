@@ -44,4 +44,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<String> findTopImageUrlsByReviewIds(@Param("reviewIds") List<Long> reviewIds, Pageable pageable);
 
     boolean existsByMemberIdAndRecipeId(Long memberId, Long recipeId);
+
+    @Query("SELECT r.recipeId, COUNT(r) FROM Review r WHERE r.recipeId IN :recipeIds GROUP BY r.recipeId")
+    List<Object[]> countByRecipeIds(@Param("recipeIds") List<Long> recipeIds);
 }

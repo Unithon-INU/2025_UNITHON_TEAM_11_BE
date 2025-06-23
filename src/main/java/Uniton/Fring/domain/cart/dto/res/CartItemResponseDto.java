@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.cart.dto.res;
 
-import Uniton.Fring.domain.cart.entity.Cart;
+import Uniton.Fring.domain.cart.Cart;
 import Uniton.Fring.domain.product.entity.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

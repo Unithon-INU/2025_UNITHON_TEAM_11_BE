@@ -1,6 +1,5 @@
-package Uniton.Fring.domain.cart.repository;
+package Uniton.Fring.domain.cart;
 
-import Uniton.Fring.domain.cart.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
