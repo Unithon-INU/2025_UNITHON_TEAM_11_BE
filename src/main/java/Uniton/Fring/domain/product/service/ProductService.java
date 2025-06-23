@@ -117,7 +117,12 @@ public class ProductService {
                         throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                     }
 
-                    MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer);
+                    Boolean isLikedReviewer = null;
+                    if (memberId != null) {
+                        isLikedReviewer = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, reviewer.getId());
+                    }
+
+                    MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer, isLikedReviewer);
 
                     Boolean isLikedReview = null;
                     if (memberId != null) {

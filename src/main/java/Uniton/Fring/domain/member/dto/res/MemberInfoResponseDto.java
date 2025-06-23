@@ -115,7 +115,7 @@ public class MemberInfoResponseDto {
                 .build();
     }
 
-    public static MemberInfoResponseDto fromReviewer(Member member) {
+    public static MemberInfoResponseDto fromReviewer(Member member, Boolean isLiked) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .imageUrl(member.getImageUrl())
@@ -127,6 +127,7 @@ public class MemberInfoResponseDto {
                 .products(null)
                 .productCount(null)
                 .isSeller(member.getRole() == MemberRole.FARMER)
+                .isLiked(isLiked)
                 .build();
     }
 }

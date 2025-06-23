@@ -128,7 +128,12 @@ public class RecipeService {
                         throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                     }
 
-                    MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer);
+                    Boolean isLikedReviewer = null;
+                    if (memberId != null) {
+                        isLikedReviewer = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, reviewer.getId());
+                    }
+
+                    MemberInfoResponseDto reviewerInfoResponseDto = MemberInfoResponseDto.fromReviewer(reviewer, isLikedReviewer);
 
                     Boolean isLikedReview = null;
                     if (memberId != null) {
@@ -167,7 +172,12 @@ public class RecipeService {
                         throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                     }
 
-                    MemberInfoResponseDto commenterInfoResponseDto = MemberInfoResponseDto.fromReviewer(commenter);
+                    Boolean isLikedCommenter = null;
+                    if (memberId != null) {
+                        isLikedCommenter = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, commenter.getId());
+                    }
+
+                    MemberInfoResponseDto commenterInfoResponseDto = MemberInfoResponseDto.fromReviewer(commenter, isLikedCommenter);
 
                     return CommentResponseDto.builder()
                             .comment(comment)
