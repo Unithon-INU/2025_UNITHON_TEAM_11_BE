@@ -16,6 +16,7 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - S3_ACCESSKEY=${S3_ACCESSKEY}
       - S3_SECRETKEY=${S3_SECRETKEY}
+      - S3_BUCKET=${S3_BUCKET}
     restart: always
     pull_policy: always
 
