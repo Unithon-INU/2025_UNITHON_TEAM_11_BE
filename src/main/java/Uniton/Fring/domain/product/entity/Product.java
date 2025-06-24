@@ -55,7 +55,7 @@ public class Product {
     private String deliveryCompany;
 
     @Column(nullable = false)
-    private Long deliveryFee;
+    private BigDecimal deliveryFee;
 
     @Column(nullable = false)
     private Integer deliverySchedule;

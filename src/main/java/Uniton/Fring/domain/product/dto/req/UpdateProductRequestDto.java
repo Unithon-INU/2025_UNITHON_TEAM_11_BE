@@ -49,7 +49,7 @@ public class UpdateProductRequestDto {
     @NotNull
     @Min(0)
     @Schema(description = "배송비", example = "2500")
-    private Long deliveryFee;
+    private BigDecimal deliveryFee;
 
     @NotBlank
     @Schema(description = "배송 일정", example = "3 -> 주문일 기준 3일내 발송을 의미")

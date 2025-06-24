@@ -48,8 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 System.out.println("Security Context : " + authentication.getName() + "\nURI : " + requestURI);
-            } else {
-                System.out.println("Invalid or Empty JWT, URI : " + requestURI);
             }
 
             // 다음 필터로 요청 / 응답 객체 전달

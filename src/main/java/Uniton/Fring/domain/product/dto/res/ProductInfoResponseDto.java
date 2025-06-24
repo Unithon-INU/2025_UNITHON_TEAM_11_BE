@@ -52,7 +52,7 @@ public class ProductInfoResponseDto {
     private final String deliveryCompany;
 
     @Schema(description = "배송비", example = "2000원")
-    private final Long deliveryFee;
+    private final BigDecimal deliveryFee;
 
     @Schema(description = "배송일정", example = "3 -> 주문일 기준 3일내 발송을 의미")
     private final Integer deliverySchedule;

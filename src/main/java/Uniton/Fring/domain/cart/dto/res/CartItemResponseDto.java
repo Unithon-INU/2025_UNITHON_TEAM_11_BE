@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.cart.dto.res;
 
 import Uniton.Fring.domain.cart.Cart;
+import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.product.entity.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -20,8 +21,8 @@ public class CartItemResponseDto {
     @Schema(description = "상품 Id", example = "1")
     private Long productId;
 
-    @Schema(description = "판매자 닉네임", example = "병아리 농장")
-    private String memberNickname;
+    @Schema(description = "판매자 Id", example = "1")
+    private Long sellerId;
 
     @Schema(description = "상품 이름", example = "토마토")
     private String productName;
@@ -35,22 +36,18 @@ public class CartItemResponseDto {
     @Schema(description = "상품 옵션", example = "단품 계란 15구, 1판")
     private String productOption;
 
-    @Schema(description = "상품 단가 (상품 가격 + 옵션 가격)", example = "6000")
-    private BigDecimal unitPrice;
-
-    @Schema(description = "배송비", example = "3000")
-    private BigDecimal deliveryFee;
+    @Schema(description = "상품 가격", example = "6090")
+    private BigDecimal productPrice;
 
     @Builder
-    private CartItemResponseDto(Cart cart, String memberNickname, Product product) {
+    private CartItemResponseDto(Cart cart, Member seller, Product product) {
         this.cartId = cart.getId();
         this.productId = product.getId();
-        this.memberNickname = memberNickname;
+        this.sellerId = seller.getId();
         this.productName = product.getName();
         this.imageUrl = product.getMainImageUrl();
         this.quantity = cart.getQuantity();
         this.productOption = cart.getProductOption();
-        this.unitPrice = cart.getProductPrice().add(cart.getOptionPrice()).multiply(BigDecimal.valueOf(cart.getQuantity()));
-        this.deliveryFee = cart.getDeliveryFee();
+        this.productPrice = cart.getProductPrice();
     }
 }

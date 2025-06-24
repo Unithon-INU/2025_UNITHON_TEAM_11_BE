@@ -1,8 +1,11 @@
 package Uniton.Fring.domain.cart.controller;
 
+import Uniton.Fring.domain.cart.CartService;
+import Uniton.Fring.domain.cart.dto.req.CartItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
-import Uniton.Fring.domain.cart.CartService;
+import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
+import Uniton.Fring.domain.cart.dto.res.CartUpdateResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,17 +27,16 @@ public class CartController implements CartApiSpecification {
     }
 
     // 장바구니 추가
-    @PostMapping("/{productId}")
-    public ResponseEntity<CartInfoResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                           @PathVariable Long productId,
-                                                           @RequestBody CartRequestDto cartRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCart(userDetails,productId, cartRequestDto));
+    @PostMapping
+    public ResponseEntity<CartItemResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                       @RequestBody CartItemRequestDto cartItemRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCart(userDetails, cartItemRequestDto));
     }
 
     // 장바구니 수정
     @PutMapping
-    public ResponseEntity<CartInfoResponseDto> updateCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                               @RequestBody CartRequestDto cartRequestDto) {
+    public ResponseEntity<CartUpdateResponseDto> updateCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestBody CartRequestDto cartRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(cartService.updateCart(userDetails, cartRequestDto));
     }
 
