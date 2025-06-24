@@ -69,6 +69,10 @@ public class Member {
         this.role = MemberRole.FARMER;
     }
 
+    public void updatePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+    }
+
     public void increaseLikeCount() {
         likeCount++;
     }

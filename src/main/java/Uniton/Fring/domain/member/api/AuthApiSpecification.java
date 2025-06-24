@@ -2,6 +2,7 @@ package Uniton.Fring.domain.member.api;
 
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
+import Uniton.Fring.domain.member.dto.req.UpdatePasswordRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
@@ -24,7 +25,7 @@ public interface AuthApiSpecification {
 
     @Operation(
             summary = "회원가입 [ JWT ❌ ]",
-            description = "회원가입을 진행합니다.",
+            description = "회원가입을 진행합니다. (비밀번호는 최소 8자 이상이어야 합니다.)",
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "회원가입 성공",
@@ -127,14 +128,27 @@ public interface AuthApiSpecification {
             summary = "멤버 ROLE을 농부로 변경",
             description = "회원의 ROLE을 농부로 변경합니다.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "농부 변경 성공",
-                            content = @Content(
-                                    mediaType = "application/json"
-                            )
-                    ),
+                    @ApiResponse(responseCode = "204", description = "농부 변경 성공"),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.")
             }
     )
     ResponseEntity<Void> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
+
+    @Operation(
+            summary = "회원 비밀번호 변경",
+            description = "회원의 비밀번호를 변경합니다. (비밀번호는 최소 8자 이상이어야 합니다.)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SignupResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
+            }
+    )
+    ResponseEntity<SignupResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                     @Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto);
 }

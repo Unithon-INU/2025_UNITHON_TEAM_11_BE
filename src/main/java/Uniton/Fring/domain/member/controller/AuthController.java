@@ -3,6 +3,7 @@ package Uniton.Fring.domain.member.controller;
 import Uniton.Fring.domain.member.api.AuthApiSpecification;
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
+import Uniton.Fring.domain.member.dto.req.UpdatePasswordRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.service.AuthService;
@@ -66,5 +67,12 @@ public class AuthController implements AuthApiSpecification {
     public ResponseEntity<Void> changeToFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         authService.changeToFarmer(userDetails.getMember());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 비밀번호 변경
+    @PutMapping("/password")
+    public ResponseEntity<SignupResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.updatePassword(userDetails, updatePasswordRequestDto));
     }
 }

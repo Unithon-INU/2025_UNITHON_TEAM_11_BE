@@ -2,6 +2,7 @@ package Uniton.Fring.domain.member.service;
 
 import Uniton.Fring.domain.member.dto.req.LoginRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
+import Uniton.Fring.domain.member.dto.req.UpdatePasswordRequestDto;
 import Uniton.Fring.domain.member.dto.res.LoginResponseDto;
 import Uniton.Fring.domain.member.dto.res.SignupResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
@@ -9,10 +10,8 @@ import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
-import Uniton.Fring.global.security.jwt.JwtTokenProvider;
-import Uniton.Fring.global.security.jwt.JwtTokenRequestDto;
-import Uniton.Fring.global.security.jwt.RefreshToken;
-import Uniton.Fring.global.security.jwt.RefreshTokenRepository;
+import Uniton.Fring.global.security.jwt.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,10 +58,7 @@ public class AuthService {
 
         log.info("[회원가입 완료] memberId={}, username={}, email={}", member.getId(),member.getUsername(), member.getEmail());
 
-        return SignupResponseDto.builder()
-                .username(member.getUsername())
-                .nickname(member.getNickname())
-                .build();
+        return SignupResponseDto.builder().member(member).build();
     }
 
     @Transactional
@@ -200,5 +196,33 @@ public class AuthService {
         newMember.changeRoleToFarmer();
 
         log.info("[회원 ROLE 농부로 변경 완료] email={}", member.getEmail());
+    }
+
+    @Transactional
+    public SignupResponseDto updatePassword(UserDetailsImpl userDetails, @Valid UpdatePasswordRequestDto updatePasswordRequestDto) {
+
+        log.info("[비밀번호 변경 요청] nickname={}", userDetails.getUsername());
+
+        Member member = memberRepository.findById(userDetails.getMember().getId())
+                .orElseThrow(() -> {
+                    log.warn("[비밀번호 변경 실패] 사용자 없음: username={}", userDetails.getUsername());
+                    return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+                });
+
+        if (!passwordEncoder.matches(updatePasswordRequestDto.getPassword(), member.getPassword())) {
+            log.warn("[비밀번호 변경 실패] 비밀번호 불일치: username={}", member.getUsername());
+            throw new CustomException(ErrorCode.PASSWORD_NOT_CORRECT);
+        }
+
+        if (passwordEncoder.matches(updatePasswordRequestDto.getNewPassword(), member.getPassword())) {
+            log.warn("[비밀번호 변경 실패] 동일한 비밀번호로 변경 시도: username={}", member.getUsername());
+            throw new CustomException(ErrorCode.PASSWORD_SAME_AS_BEFORE);
+        }
+
+        member.updatePassword(passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
+
+        log.info("[비밀번호 변경 성공] nickname={}", member.getUsername());
+
+        return SignupResponseDto.builder().member(member).build();
     }
 }

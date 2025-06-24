@@ -37,7 +37,7 @@ public interface CartApiSpecification {
 
     @Operation(
             summary = "장바구니 추가",
-            description = "상품 아이디를 통해 회원의 장바구니에 추가합니다.",
+            description = "상품 아이디를 통해 회원의 장바구니에 추가합니다. <br><br>이미 있는 항목을 추가할 경우 해당 항목의 개수가 증가합니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -54,7 +54,7 @@ public interface CartApiSpecification {
 
     @Operation(
             summary = "장바구니 수정",
-            description = "회원의 장바구니 목록을 수정합니다.",
+            description = "회원의 장바구니 목록을 수정합니다. (장바구니에서 나갈 때의 api입니다.) <br><br>회원의 장바구니 목록을 전부 삭제하고 새로운 값으로 채웁니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
