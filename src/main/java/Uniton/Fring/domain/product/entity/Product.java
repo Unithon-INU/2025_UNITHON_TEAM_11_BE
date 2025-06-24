@@ -30,7 +30,7 @@ public class Product {
     @Column(name = "main_image_url")
     private String mainImageUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @ElementCollection

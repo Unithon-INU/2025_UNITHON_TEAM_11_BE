@@ -36,8 +36,13 @@ public class SimpleRecipeResponseDto {
         this.title = recipe.getTitle();
         this.image = recipe.getImageUrl();
         this.time = recipe.getCookingTime();
-        this.rating = recipe.getRating();
+        this.rating = formatRating(recipe.getRating());
         this.isLiked = isLiked;
         this.comment = reviewCount;
+    }
+
+    private Double formatRating(Double rating) {
+        if (rating == null) return 0.0;
+        return Math.floor(rating * 10) / 10.0;
     }
 }

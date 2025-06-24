@@ -89,7 +89,7 @@ public class RecipeInfoResponseDto {
         this.title = recipe.getTitle();
         this.content = recipe.getContent();
         this.imageUrl = recipe.getImageUrl();
-        this.rating = recipe.getRating();
+        this.rating = formatRating(recipe.getRating());
         this.headCount = recipe.getHeadCount();
         this.cookingTime = recipe.getCookingTime();
         this.difficulty = recipe.getDifficulty();
@@ -101,5 +101,10 @@ public class RecipeInfoResponseDto {
         this.totalReviewCount = totalReviewCount;
         this.recentImageUrls = recentImageUrls;
         this.comments = comments;
+    }
+
+    private Double formatRating(Double rating) {
+        if (rating == null) return 0.0;
+        return Math.floor(rating * 10) / 10.0;
     }
 }
