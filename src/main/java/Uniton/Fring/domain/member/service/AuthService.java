@@ -42,13 +42,15 @@ public class AuthService {
 
         log.info("[회원가입 요청] email={}, username={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getUsername(), signupRequestDto.getNickname());
 
-        String imageUrl = null;
+        String imageUrl;
         if (image != null && !image.isEmpty()) {
             try {
                 imageUrl = s3Service.upload(image, "profileImages");
             } catch (IOException e) {
                 throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
             }
+        } else {
+            imageUrl = s3Service.getDefaultProfileImageUrl();
         }
 
         Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()), imageUrl);

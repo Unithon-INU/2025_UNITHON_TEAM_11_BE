@@ -33,6 +33,7 @@ jobs:
           spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
           cloud.aws.s3.credentials.accessKey: ${{ secrets.S3_ACCESSKEY }}
           cloud.aws.s3.credentials.secretKey: ${{ secrets.S3_SECRETKEY }}
+          cloud.aws.s3.bucket: ${{ secrets.S3_BUCKET }}
 
       - name: Build with Gradle
         run: |
@@ -86,6 +87,7 @@ jobs:
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
             echo "S3_ACCESSKEY=${{ secrets.S3_ACCESSKEY }}" >> .env
             echo "S3_SECRETKEY=${{ secrets.S3_SECRETKEY }}" >> .env
+            echo "S3_BUCKET=${{ secrets.S3_BUCKET }}" >> .env
 
             if [ "$(docker ps -aq -f name=Fring-server)" ]; then
               docker stop Fring-server

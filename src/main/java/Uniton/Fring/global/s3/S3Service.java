@@ -148,4 +148,8 @@ public class S3Service {
         }
         return uri.getPath().substring(1);
     }
+
+    public String getDefaultProfileImageUrl() {
+        return amazonS3Client.getUrl(bucket, "profileImages/default.png").toString();
+    }
 }

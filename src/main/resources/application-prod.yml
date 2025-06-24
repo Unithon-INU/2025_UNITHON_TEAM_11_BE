@@ -63,7 +63,7 @@ spring:
 cloud:
   aws:
     s3:
-      bucket: fring-s3
+      bucket: ${S3_BUCKET}
       stack.auto: false
       region.static: ap-northeast-2
       credentials:
