@@ -91,7 +91,7 @@ public class MemberService {
             memberId = null;
         }
 
-        List<Member> members =  memberRepository.findTop5ByOrderByLikeCountDesc();
+        List<Member> members =  memberRepository.findTop8ByOrderByLikeCountDesc();
 
         List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
                 .map(member -> {
