@@ -219,7 +219,7 @@ public class MainService {
         }
 
         List<Recipe> bestRecipes = recipeRepository.findTop5ByOrderByRatingDesc();
-        List<Member> members = memberRepository.findTop5ByOrderByLikeCountDesc();
+        List<Member> members = memberRepository.findTop8ByOrderByLikeCountDesc();
         List<Recipe> newRecipes = recipeRepository.findTop5ByOrderByCreatedAtDesc();
         Recipe specialRecipe = recipeRepository.findTop1ByTitleContainingOrderByCreatedAtDesc("특별")
                 .orElse(null);
