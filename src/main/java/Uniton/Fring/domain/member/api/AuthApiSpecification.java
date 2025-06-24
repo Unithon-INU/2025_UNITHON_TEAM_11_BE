@@ -127,10 +127,9 @@ public interface AuthApiSpecification {
             summary = "멤버 ROLE을 농부로 변경",
             description = "회원의 ROLE을 농부로 변경합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공 여부 반환",
+                    @ApiResponse(responseCode = "204", description = "농부 변경 성공",
                             content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = Boolean.class)
+                                    mediaType = "application/json"
                             )
                     ),
                     @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없습니다.")
