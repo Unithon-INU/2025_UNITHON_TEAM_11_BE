@@ -150,6 +150,6 @@ public class S3Service {
     }
 
     public String getDefaultProfileImageUrl() {
-        return amazonS3Client.getUrl(bucket, "profileImages/default.png").toString();
+        return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/profileImages/default.png";
     }
 }
