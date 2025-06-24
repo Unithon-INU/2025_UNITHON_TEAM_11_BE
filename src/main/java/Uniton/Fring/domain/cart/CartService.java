@@ -9,6 +9,8 @@ import Uniton.Fring.domain.cart.dto.res.CartUpdateResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.domain.product.entity.Product;
+import Uniton.Fring.domain.product.entity.ProductOption;
+import Uniton.Fring.domain.product.repository.ProductOptionRepository;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
@@ -19,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,7 @@ import java.util.stream.Collectors;
 public class CartService {
 
     private final ProductRepository productRepository;
+    private final ProductOptionRepository productOptionRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
 
@@ -132,8 +138,15 @@ public class CartService {
             log.info("[장바구니 수량 추가] memberNickname={}, productName={}, newQuantity={}", member.getNickname(), product.getName(), cart.getQuantity());
         }
         else {
+
+            ProductOption option = productOptionRepository
+                    .findByProductIdAndOptionName(product.getId(), cartItemRequestDto.getProductOption())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+
+            BigDecimal optionPrice = BigDecimal.valueOf(option.getAdditionalPrice());
+
             cart = Cart.builder().memberId(member.getId()).product(product)
-                    .productOption(cartItemRequestDto.getProductOption()).quantity(cartItemRequestDto.getQuantity()).build();
+                    .productOption(cartItemRequestDto.getProductOption()).quantity(cartItemRequestDto.getQuantity()).optionPrice(optionPrice).build();
             cartRepository.save(cart);
             log.info("[장바구니 항목 추가] memberNickname={}, productName={}", member.getNickname(), product.getName());
         }
@@ -171,12 +184,20 @@ public class CartService {
                         return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                     });
 
+            // 옵션 조회
+            ProductOption option = productOptionRepository
+                    .findByProductIdAndOptionName(product.getId(), cartItem.getProductOption())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+
+            BigDecimal optionPrice = BigDecimal.valueOf(option.getAdditionalPrice());
+
             // 장바구니 객체 생성 및 저장
             Cart cart = Cart.builder()
                     .memberId(member.getId())
                     .product(product)
                     .productOption(cartItem.getProductOption())
                     .quantity(cartItem.getQuantity())
+                    .optionPrice(optionPrice)
                     .build();
 
             cartRepository.save(cart);

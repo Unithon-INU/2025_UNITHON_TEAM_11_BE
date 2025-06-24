@@ -42,6 +42,9 @@ public class ProductInfoResponseDto {
     @Schema(description = "상품 평점", example = "4.7")
     private final Double rating;
 
+    @Schema(description = "상품 옵션")
+    private final List<ProductOptionResponseDto> productOptions;
+
     @Schema(description = "상품 가격", example = "8700")
     private final BigDecimal price;
 
@@ -99,7 +102,7 @@ public class ProductInfoResponseDto {
     private ProductInfoResponseDto(Product product,
                                    MemberInfoResponseDto memberInfoResponseDto,
                                    Boolean isLiked,
-                                   List<ReviewResponseDto> reviews,
+                                   List<ReviewResponseDto> reviews, List<ProductOptionResponseDto> productOptions,
                                    Integer totalReviewCount, Integer totalImageCount,
                                    List<String> recentImageUrls,
                                    List<SimpleProductResponseDto> bestProducts) {
@@ -109,6 +112,7 @@ public class ProductInfoResponseDto {
         this.name = product.getName();
         this.description = product.getDescription();
         this.reviews = reviews;
+        this.productOptions = productOptions;
         this.mainImageUrl = product.getMainImageUrl();
         this.descriptionImageUrls = product.getDescriptionImageUrl();
         this.rating = product.getRating();

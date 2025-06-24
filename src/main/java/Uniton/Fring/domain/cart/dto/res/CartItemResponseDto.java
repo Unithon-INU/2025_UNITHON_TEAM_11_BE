@@ -39,6 +39,9 @@ public class CartItemResponseDto {
     @Schema(description = "상품 가격", example = "6090")
     private BigDecimal productPrice;
 
+    @Schema(description = "상품 옵션 가격", example = "3045")
+    private BigDecimal optionPrice;
+
     @Builder
     private CartItemResponseDto(Cart cart, Member seller, Product product) {
         this.cartId = cart.getId();
@@ -49,5 +52,6 @@ public class CartItemResponseDto {
         this.quantity = cart.getQuantity();
         this.productOption = cart.getProductOption();
         this.productPrice = cart.getProductPrice();
+        this.optionPrice = cart.getOptionPrice();
     }
 }

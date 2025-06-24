@@ -49,6 +49,7 @@ public enum ErrorCode {
     // Product
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품을 찾을 수 없습니다."),
     PRODUCT_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "상품에 접근할 권한이 없는 회원입니다."),
+    PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "상품 옵션을 찾을 수 없습니다."),
 
     // Recipe
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "레시피를 찾을 수 없습니다."),

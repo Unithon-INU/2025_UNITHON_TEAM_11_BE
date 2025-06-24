@@ -38,11 +38,17 @@ public class Cart {
     @Column(name = "delivery_fee", nullable = false)
     private BigDecimal deliveryFee;
 
+    @Column(name = "option_price", nullable = false)
+    private BigDecimal optionPrice = BigDecimal.ZERO;
+
+    @Column(name = "total_price", nullable = false)
+    private BigDecimal totalPrice;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    private Cart(Long memberId, Product product, String productOption, int quantity) {
+    private Cart(Long memberId, Product product, String productOption, int quantity, BigDecimal optionPrice) {
         this.memberId = memberId;
         this.productId = product.getId();
         this.productName = product.getName();
@@ -50,6 +56,8 @@ public class Cart {
         this.quantity = quantity;
         this.productPrice = product.getPrice().multiply(BigDecimal.valueOf(1 - product.getDiscountRate()));
         this.deliveryFee = product.getDeliveryFee();
+        this.optionPrice = optionPrice;
+        this.totalPrice = this.productPrice.add(optionPrice != null ? optionPrice : BigDecimal.ZERO);
         this.createdAt = LocalDateTime.now();
     }
 

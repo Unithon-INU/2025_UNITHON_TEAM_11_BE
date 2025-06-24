@@ -10,8 +10,11 @@ import Uniton.Fring.domain.member.service.MypageService;
 import Uniton.Fring.domain.product.dto.req.AddProductRequestDto;
 import Uniton.Fring.domain.product.dto.req.UpdateProductRequestDto;
 import Uniton.Fring.domain.product.dto.res.ProductInfoResponseDto;
+import Uniton.Fring.domain.product.dto.res.ProductOptionResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
+import Uniton.Fring.domain.product.entity.ProductOption;
+import Uniton.Fring.domain.product.repository.ProductOptionRepository;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
@@ -44,11 +47,12 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductLikeRepository productLikeRepository;
+    private final ProductOptionRepository productOptionRepository;
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final PurchaseRepository purchaseRepository;
     private final S3Service s3Service;
-    private final ProductLikeRepository productLikeRepository;
     private final MypageService mypageService;
     private final MemberLikeRepository memberLikeRepository;
     private final ReviewLikeRepository reviewLikeRepository;
@@ -74,6 +78,12 @@ public class ProductService {
                     log.warn("[농수산 조회 실패] 농수산 없음: productId={}", productId);
                     return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
                 });
+
+        // 옵션 리스트 조회
+        List<ProductOption> productOptions = productOptionRepository.findByProductId(productId);
+        List<ProductOptionResponseDto> productOptionResponseDtos = productOptions.stream()
+                .map(productOption ->  ProductOptionResponseDto.builder().productOption(productOption).build())
+                .toList();
 
         Member member = memberRepository.findById(product.getMemberId())
                 .orElseThrow(() -> {
@@ -173,6 +183,7 @@ public class ProductService {
                 .totalImageCount(totalImageCount)
                 .recentImageUrls(recentImages)
                 .bestProducts(bestProductResponseDtos)
+                .productOptions(productOptionResponseDtos)
                 .build();
     }
 
@@ -238,8 +249,6 @@ public class ProductService {
 
         log.info("[농수산품 추가 요청]");
 
-        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
-
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
                 mainImage, descriptionImages,
                 "products", "productDescriptions");
@@ -248,8 +257,23 @@ public class ProductService {
         List<String> productDescriptionImages = imageData.getSecond();
 
         Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, productDescriptionImages);
-
         productRepository.save(product);
+
+        List<ProductOptionResponseDto> productOptionResponseDtos = new ArrayList<>();
+        // 옵션 저장
+        if (addProductRequestDto.getProductOptions() != null && !addProductRequestDto.getProductOptions().isEmpty()) {
+            List<ProductOption> productOptions = addProductRequestDto.getProductOptions().stream()
+                    .map(optionDto -> new ProductOption(product.getId(), optionDto.getOptionName(), optionDto.getAdditionalPrice()))
+                    .toList();
+            productOptionRepository.saveAll(productOptions);
+            log.info("[옵션 {}개 추가 완료]", productOptions.size());
+
+            productOptionResponseDtos = productOptions.stream()
+                    .map(productOption ->  ProductOptionResponseDto.builder().productOption(productOption).build())
+                    .toList();
+        }
+
+        MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         log.info("[농수산품 추가 성공]");
 
@@ -261,6 +285,8 @@ public class ProductService {
                 .totalReviewCount(0)
                 .totalImageCount(0)
                 .recentImageUrls(new ArrayList<>())
+                .productOptions(productOptionResponseDtos)
+                .bestProducts(new ArrayList<>())
                 .build();
     }
 
@@ -294,9 +320,26 @@ public class ProductService {
         String mainImageUrl = imageData.getFirst();
         List<String> productDescriptionImages = imageData.getSecond();
 
+        // 상품 정보 수정
         product.updateProduct(updateProductRequestDto , mainImageUrl, productDescriptionImages);
 
-        log.info("[농수산품 수정 성공]");
+        // 기존 옵션 제거
+        productOptionRepository.deleteByProductId(productId);
+        log.info("[상품 옵션 삭제 완료] productId={}", productId);
+
+        // 새 옵션 추가
+        List<ProductOptionResponseDto> productOptionResponseDtos = new ArrayList<>();
+        if (updateProductRequestDto.getOptions() != null && !updateProductRequestDto.getOptions().isEmpty()) {
+            List<ProductOption> productOptions = updateProductRequestDto.getOptions().stream()
+                    .map(optionDto -> new ProductOption(productId, optionDto.getOptionName(), optionDto.getAdditionalPrice()))
+                    .toList();
+            productOptionRepository.saveAll(productOptions);
+            log.info("[상품 옵션 새로 저장 완료] count={}", productOptions.size());
+
+            productOptionResponseDtos = productOptions.stream()
+                    .map(option -> ProductOptionResponseDto.builder().productOption(option).build())
+                    .toList();
+        }
 
         if (oldMainImage != null && !oldMainImage.isBlank()) {
             s3Service.delete(oldMainImage);
@@ -309,13 +352,18 @@ public class ProductService {
             }
         }
 
+        log.info("[농수산품 수정 성공]");
+
         return ProductInfoResponseDto.builder()
                 .product(product)
+                .memberInfoResponseDto(MemberInfoResponseDto.fromMember(member, null))
                 .isLiked(null)
-                .reviews(null)
-                .totalReviewCount(null)
-                .totalImageCount(null)
-                .recentImageUrls(null)
+                .reviews(new ArrayList<>())
+                .totalReviewCount(0)
+                .totalImageCount(0)
+                .recentImageUrls(new ArrayList<>())
+                .productOptions(productOptionResponseDtos)
+                .bestProducts(new ArrayList<>())
                 .build();
     }
 

@@ -40,7 +40,7 @@ public class AddProductRequestDto {
     private Integer discountRatePercent;
 
     @Schema(description = "상품 옵션")
-    private List<ProductOptionRequestDto> options;
+    private List<ProductOptionRequestDto> productOptions;
 
     @NotBlank
     @Schema(description = "택배사", example = "프링택배")
