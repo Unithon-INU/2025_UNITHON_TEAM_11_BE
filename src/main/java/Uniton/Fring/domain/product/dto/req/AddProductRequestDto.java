@@ -51,7 +51,7 @@ public class AddProductRequestDto {
     @Schema(description = "배송비", example = "2500")
     private BigDecimal deliveryFee;
 
-    @NotBlank
+    @NotNull
     @Schema(description = "배송 일정", example = "3 -> 주문일 기준 3일내 발송을 의미")
     private Integer deliverySchedule;
 

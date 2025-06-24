@@ -27,7 +27,7 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "image_url")
+    @Column(name = "main_image_url")
     private String mainImageUrl;
 
     @Column(nullable = false)
