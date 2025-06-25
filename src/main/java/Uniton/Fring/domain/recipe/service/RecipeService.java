@@ -272,7 +272,7 @@ public class RecipeService {
 
         Member member = memberRepository.findById(userDetails.getMember().getId())
                 .orElseThrow(() -> {
-                    log.warn("[회원 정보 조회 실패] 회원 없음: memberId={}", userDetails.getMember().getId()gi);
+                    log.warn("[회원 정보 조회 실패] 회원 없음: memberId={}", userDetails.getMember().getId());
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member, null);
