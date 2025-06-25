@@ -30,7 +30,7 @@ public class Review {
     @Column(name = "recipe_id", nullable = true)
     private Long recipeId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)

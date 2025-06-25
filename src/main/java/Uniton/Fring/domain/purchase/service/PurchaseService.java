@@ -126,17 +126,19 @@ public class PurchaseService {
 
     @Transactional
     public int nextSeqToday() {
-        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE); // 20250626
+        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 
-        jdbc.update("""
-            INSERT INTO purchase_seq (seq_date, seq_no)
-            VALUES (?, 1)
-            ON DUPLICATE KEY UPDATE
-              seq_no = LAST_INSERT_ID(seq_no + 1)
-        """, today);
+        Integer seq = jdbc.queryForObject(
+                "SELECT seq_no FROM purchase_seq WHERE seq_date = ? FOR UPDATE",
+                Integer.class, today);
 
-        // 증가된 seq_no 를 바로 돌려받음
-        return jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        if (seq == null) {
+            jdbc.update("INSERT INTO purchase_seq (seq_date, seq_no) VALUES (?, 1)", today);
+            return 1;
+        } else {
+            jdbc.update("UPDATE purchase_seq SET seq_no = seq_no + 1 WHERE seq_date = ?", today);
+            return jdbc.queryForObject("SELECT seq_no FROM purchase_seq WHERE seq_date = ?", Integer.class, today);
+        }
     }
 
 //    @Transactional
