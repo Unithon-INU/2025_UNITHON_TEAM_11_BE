@@ -1,7 +1,7 @@
 package Uniton.Fring.domain.cart.controller;
 
 import Uniton.Fring.domain.cart.CartService;
-import Uniton.Fring.domain.cart.dto.req.CartItemRequestDto;
+import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
@@ -29,8 +29,8 @@ public class CartController implements CartApiSpecification {
     // 장바구니 추가
     @PostMapping
     public ResponseEntity<CartItemResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                       @RequestBody CartItemRequestDto cartItemRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCart(userDetails, cartItemRequestDto));
+                                                       @RequestBody ProductItemRequestDto productItemRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addCart(userDetails, productItemRequestDto));
     }
 
     // 장바구니 수정

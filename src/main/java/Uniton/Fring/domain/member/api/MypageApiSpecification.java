@@ -2,8 +2,8 @@ package Uniton.Fring.domain.member.api;
 
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
-import Uniton.Fring.domain.order.SimpleOrderResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
+import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,13 +66,13 @@ public interface MypageApiSpecification {
                             description = "주문 내역 반환 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SimpleOrderResponseDto.class, type = "array")
+                                    schema = @Schema(implementation = SimplePurchaseResponseDto.class, type = "array")
                             )
                     )
             }
     )
-    ResponseEntity<List<SimpleOrderResponseDto>> getOrderHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                 @RequestParam(defaultValue = "0") int page);
+    ResponseEntity<List<SimplePurchaseResponseDto>> getPurchaseHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                    @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "최근 본 상품",

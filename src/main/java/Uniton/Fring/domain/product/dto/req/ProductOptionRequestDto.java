@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @NoArgsConstructor
 @Schema(description = "상품 옵션 요청 DTO")
@@ -13,5 +15,5 @@ public class ProductOptionRequestDto {
     private String optionName;
 
     @Schema(description = "추가 금액", example = "2000")
-    private Integer additionalPrice;
+    private BigDecimal additionalPrice;
 }

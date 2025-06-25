@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.cart;
 
-import Uniton.Fring.domain.cart.dto.req.CartItemRequestDto;
+import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartGroupResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
@@ -113,13 +113,13 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemResponseDto addCart(UserDetailsImpl userDetails, CartItemRequestDto cartItemRequestDto) {
+    public CartItemResponseDto addCart(UserDetailsImpl userDetails, ProductItemRequestDto productItemRequestDto) {
 
         log.info("[장바구니 추가 요청] 회원: {}", userDetails.getUsername());
 
-        Product product = productRepository.findById(cartItemRequestDto.getProductId())
+        Product product = productRepository.findById(productItemRequestDto.getProductId())
                 .orElseThrow(() -> {
-                    log.warn("[농수산 조회 실패] 농수산 없음: productId={}", cartItemRequestDto.getProductId());
+                    log.warn("[농수산 조회 실패] 농수산 없음: productId={}", productItemRequestDto.getProductId());
                     return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
                 });
 
@@ -131,22 +131,22 @@ public class CartService {
 
         Member member = userDetails.getMember();
 
-        Cart cart = cartRepository.findByMemberIdAndProductId(member.getId(), cartItemRequestDto.getProductId()).orElse(null);
+        Cart cart = cartRepository.findByMemberIdAndProductId(member.getId(), productItemRequestDto.getProductId()).orElse(null);
 
         if (cart != null) {
-            cart.addQuantity(cartItemRequestDto.getQuantity());
+            cart.addQuantity(productItemRequestDto.getQuantity());
             log.info("[장바구니 수량 추가] memberNickname={}, productName={}, newQuantity={}", member.getNickname(), product.getName(), cart.getQuantity());
         }
         else {
 
             ProductOption option = productOptionRepository
-                    .findByProductIdAndOptionName(product.getId(), cartItemRequestDto.getProductOption())
+                    .findByProductIdAndOptionName(product.getId(), productItemRequestDto.getProductOption())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
-            BigDecimal optionPrice = BigDecimal.valueOf(option.getAdditionalPrice());
+            BigDecimal optionPrice = option.getAdditionalPrice();
 
             cart = Cart.builder().memberId(member.getId()).product(product)
-                    .productOption(cartItemRequestDto.getProductOption()).quantity(cartItemRequestDto.getQuantity()).optionPrice(optionPrice).build();
+                    .productOption(productItemRequestDto.getProductOption()).quantity(productItemRequestDto.getQuantity()).optionPrice(optionPrice).build();
             cartRepository.save(cart);
             log.info("[장바구니 항목 추가] memberNickname={}, productName={}", member.getNickname(), product.getName());
         }
@@ -168,7 +168,7 @@ public class CartService {
 
         List<CartItemResponseDto> savedItems = new ArrayList<>();
 
-        for (CartItemRequestDto cartItem : cartRequestDto.getItems()) {
+        for (ProductItemRequestDto cartItem : cartRequestDto.getItems()) {
 
             // 상품 조회
             Product product = productRepository.findById(cartItem.getProductId())
@@ -189,7 +189,7 @@ public class CartService {
                     .findByProductIdAndOptionName(product.getId(), cartItem.getProductOption())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
-            BigDecimal optionPrice = BigDecimal.valueOf(option.getAdditionalPrice());
+            BigDecimal optionPrice = option.getAdditionalPrice();
 
             // 장바구니 객체 생성 및 저장
             Cart cart = Cart.builder()

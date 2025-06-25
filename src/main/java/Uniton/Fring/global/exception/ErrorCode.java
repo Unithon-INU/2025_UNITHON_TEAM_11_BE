@@ -63,6 +63,7 @@ public enum ErrorCode {
 
     // Purchase
     PURCHASE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "구매 정보를 찾을 수 없습니다."),
+    PURCHASE_MEMBER_NOT_MATCH(HttpStatus.FORBIDDEN, 403, "주문에 접근할 권한이 없는 회원입니다."),
 
     // S3
     FILE_CONVERT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 500, "파일 변환에 실패했습니다."),

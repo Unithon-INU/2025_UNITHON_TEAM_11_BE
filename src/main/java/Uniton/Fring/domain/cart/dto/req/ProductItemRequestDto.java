@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Schema(description = "장바구니 추가 / 수정 상품 요소 요청 DTO")
-public class CartItemRequestDto {
+@Schema(description = "구매 / 장바구니 상품 요소 요청 DTO")
+public class ProductItemRequestDto {
 
     @NotNull(message = "상품 Id가 비어있습니다.")
     @Schema(description = "상품 Id", example = "1")

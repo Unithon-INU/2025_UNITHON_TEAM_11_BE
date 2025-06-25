@@ -1,7 +1,7 @@
 package Uniton.Fring.domain.cart.controller;
 
 
-import Uniton.Fring.domain.cart.dto.req.CartItemRequestDto;
+import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
@@ -50,7 +50,7 @@ public interface CartApiSpecification {
             }
     )
     ResponseEntity<CartItemResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                @RequestBody CartItemRequestDto cartItemRequestDto);
+                                                @RequestBody ProductItemRequestDto productItemRequestDto);
 
     @Operation(
             summary = "장바구니 수정",

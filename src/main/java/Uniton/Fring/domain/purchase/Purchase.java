@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -25,18 +25,45 @@ public class Purchase {
     private Long productId;
 
     @Column(nullable = false)
+    private String purchaseNumber;
+
+    @Column(nullable = false)
     private Integer quantity;
 
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
+    @Column(nullable = false)
     private String purchaseOption;
 
+    @Column(nullable = false)
+    private String payMethod;
+
+    @Column(nullable = false)
+    private String memberNickname;
+
+    @Column(nullable = false)
+    private String memberAddress;
+
+    @Column(nullable = false)
+    private  String memberPhoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
+
     @Column(name = "purchase_date", nullable = false, updatable = false)
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
+
+    private String returnReason;
+
+    private String returnDetailReason;
+
+    private String returnImageUrls;
+
+    private String returnFee;
 
     @PrePersist
     protected void onCreate() {
-        this.purchaseDate = LocalDateTime.now();
+        this.purchaseDate = LocalDate.now();
     }
 }

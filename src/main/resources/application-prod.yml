@@ -70,6 +70,9 @@ cloud:
         accessKey: ${S3_ACCESSKEY}
         secretKey: ${S3_SECRETKEY}
 
+ai:
+  base-url: ${AI_BASEURL}
+
 server:
   port: 8080
 

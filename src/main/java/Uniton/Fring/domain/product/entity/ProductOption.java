@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,11 +24,15 @@ public class ProductOption {
     private String optionName;
 
     @Column(name = "additional_price", nullable = false)
-    private Integer additionalPrice;
+    private BigDecimal additionalPrice;
 
-    public ProductOption(Long productId, String optionName, Integer additionalPrice) {
+    @Column(nullable = false)
+    private Boolean available;
+
+    public ProductOption(Long productId, String optionName, BigDecimal additionalPrice) {
         this.productId = productId;
         this.optionName = optionName;
         this.additionalPrice = additionalPrice;
+        this.available = true;
     }
 }

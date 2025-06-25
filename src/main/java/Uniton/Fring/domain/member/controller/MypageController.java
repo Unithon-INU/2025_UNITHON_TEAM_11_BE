@@ -4,8 +4,8 @@ import Uniton.Fring.domain.member.api.MypageApiSpecification;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.service.MypageService;
-import Uniton.Fring.domain.order.SimpleOrderResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
+import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +41,9 @@ public class MypageController implements MypageApiSpecification {
 
     // 주문 내역
     @GetMapping("/orders")
-    public ResponseEntity<List<SimpleOrderResponseDto>> getOrderHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                        @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getOrderHistory(userDetails, page));
+    public ResponseEntity<List<SimplePurchaseResponseDto>> getPurchaseHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                           @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getPurchaseHistory(userDetails, page));
     }
 
     // 최근 본 상품

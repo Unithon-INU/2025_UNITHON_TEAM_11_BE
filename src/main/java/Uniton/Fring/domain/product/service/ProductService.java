@@ -82,7 +82,7 @@ public class ProductService {
         // 옵션 리스트 조회
         List<ProductOption> productOptions = productOptionRepository.findByProductId(productId);
         List<ProductOptionResponseDto> productOptionResponseDtos = productOptions.stream()
-                .map(productOption ->  ProductOptionResponseDto.builder().productOption(productOption).build())
+                .map(productOption ->  ProductOptionResponseDto.builder().product(product).productOption(productOption).build())
                 .toList();
 
         Member member = memberRepository.findById(product.getMemberId())
@@ -269,7 +269,7 @@ public class ProductService {
             log.info("[옵션 {}개 추가 완료]", productOptions.size());
 
             productOptionResponseDtos = productOptions.stream()
-                    .map(productOption ->  ProductOptionResponseDto.builder().productOption(productOption).build())
+                    .map(productOption ->  ProductOptionResponseDto.builder().product(product).productOption(productOption).build())
                     .toList();
         }
 
@@ -337,7 +337,7 @@ public class ProductService {
             log.info("[상품 옵션 새로 저장 완료] count={}", productOptions.size());
 
             productOptionResponseDtos = productOptions.stream()
-                    .map(option -> ProductOptionResponseDto.builder().productOption(option).build())
+                    .map(option -> ProductOptionResponseDto.builder().product(product).productOption(option).build())
                     .toList();
         }
 

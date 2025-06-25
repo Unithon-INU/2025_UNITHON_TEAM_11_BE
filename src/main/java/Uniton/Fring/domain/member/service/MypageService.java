@@ -5,14 +5,14 @@ import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
-import Uniton.Fring.domain.order.Order;
-import Uniton.Fring.domain.order.OrderRepository;
-import Uniton.Fring.domain.order.SimpleOrderResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.entity.RecentProductView;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.product.repository.RecentProductViewRepository;
+import Uniton.Fring.domain.purchase.Purchase;
+import Uniton.Fring.domain.purchase.PurchaseRepository;
+import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
@@ -43,12 +43,12 @@ public class MypageService {
 
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
-    private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final RecipeRepository recipeRepository;
     private final ReviewRepository reviewRepository;
     private final RecentProductViewRepository recentProductViewRepository;
     private final ProductLikeRepository productLikeRepository;
+    private final PurchaseRepository purchaseRepository;
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMypage(UserDetailsImpl userDetails) {
@@ -95,18 +95,18 @@ public class MypageService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleOrderResponseDto> getOrderHistory(UserDetailsImpl userDetails, int page) {
+    public List<SimplePurchaseResponseDto> getPurchaseHistory(UserDetailsImpl userDetails, int page) {
 
         log.info("[마이페이지 주문 내역 조회 요청]");
 
         Long memberId = userDetails.getMember().getId();
 
-        Pageable pageable = PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "orderedAt"));
-        Page<Order> orders = orderRepository.findByMemberId(memberId, pageable);
+        Pageable pageable = PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "purchaseDate"));
+        Page<Purchase> purchases = purchaseRepository.findByMemberId(memberId, pageable);
 
         // 주문에서 productId 리스트 추출
-        List<Long> productIds = orders.stream()
-                .map(Order::getProductId)
+        List<Long> productIds = purchases.stream()
+                .map(Purchase::getProductId)
                 .distinct()
                 .toList();
 
@@ -117,18 +117,18 @@ public class MypageService {
         Map<Long, Product> productMap = products.stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
 
-        List<SimpleOrderResponseDto> simpleOrderResponseDtos = orders.stream()
-                        .map(order -> {
-                            Product product = productMap.get(order.getProductId());
+        List<SimplePurchaseResponseDto> simplePurchaseResponseDtos = purchases.stream()
+                        .map(purchase -> {
+                            Product product = productMap.get(purchase.getProductId());
 
-                            return SimpleOrderResponseDto.builder()
-                                    .order(order).status(order.getStatus().getDescription()).product(product).build();
+                            return SimplePurchaseResponseDto.builder()
+                                    .purchase(purchase).status(purchase.getStatus().getDescription()).product(product).build();
                         })
                         .toList();
 
         log.info("[마이페이지 주문 내역 조회 성공]");
 
-        return simpleOrderResponseDtos;
+        return simplePurchaseResponseDtos;
     }
 
     @Transactional(readOnly = true)

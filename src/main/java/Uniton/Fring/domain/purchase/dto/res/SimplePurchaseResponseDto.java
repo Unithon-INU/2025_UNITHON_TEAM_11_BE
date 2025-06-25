@@ -1,6 +1,7 @@
-package Uniton.Fring.domain.order;
+package Uniton.Fring.domain.purchase.dto.res;
 
 import Uniton.Fring.domain.product.entity.Product;
+import Uniton.Fring.domain.purchase.Purchase;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,8 +10,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
-@Schema(description = "주문 미리보기 정보 응답 DTO")
-public class SimpleOrderResponseDto {
+@Schema(description = "구매 미리보기 정보 응답 DTO")
+public class SimplePurchaseResponseDto {
 
     @Schema(description = "주문 ID", example = "1")
     private final Long id;
@@ -28,15 +29,15 @@ public class SimpleOrderResponseDto {
     private final String imageUrl;
 
     @Schema(description = "주문 일자", example = "2025-01-01")
-    private final LocalDate orderDate;
+    private final LocalDate purchaseDate;
 
     @Builder
-    private SimpleOrderResponseDto(Order order, String status, Product product) {
-        this.id = order.getId();
+    private SimplePurchaseResponseDto(Purchase purchase, String status, Product product) {
+        this.id = purchase.getId();
         this.status = status;
         this.name = product.getName();
-        this.price = order.getTotalPrice();
+        this.price = purchase.getTotalPrice();
         this.imageUrl = product.getMainImageUrl();
-        this.orderDate = order.getOrderedAt();
+        this.purchaseDate = purchase.getPurchaseDate();
     }
 }

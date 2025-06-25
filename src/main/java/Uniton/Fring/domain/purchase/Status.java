@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.order;
+package Uniton.Fring.domain.purchase;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

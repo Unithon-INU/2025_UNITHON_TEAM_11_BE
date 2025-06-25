@@ -14,5 +14,5 @@ public class CartRequestDto {
 
     @NotNull(message = "장바구니 상품 요소가 비어있습니다.")
     @Schema(description = "장바구니 상품 요소")
-    private List<CartItemRequestDto> items;
+    private List<ProductItemRequestDto> items;
 }
