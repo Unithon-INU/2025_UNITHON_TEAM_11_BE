@@ -17,6 +17,13 @@ services:
       - S3_ACCESSKEY=${S3_ACCESSKEY}
       - S3_SECRETKEY=${S3_SECRETKEY}
       - S3_BUCKET=${S3_BUCKET}
+      - S3_ACCESSKEY=${S3_ACCESSKEY}
+      - S3_SECRETKEY=${S3_SECRETKEY}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     restart: always
     pull_policy: always
 

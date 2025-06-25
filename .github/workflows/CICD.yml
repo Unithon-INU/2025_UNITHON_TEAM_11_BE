@@ -25,15 +25,9 @@ jobs:
           files: ./src/main/resources/application-prod.yml
         env:
           spring.datasource.url: ${{ secrets.MYSQL_URL }}
-          spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
-          spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
-          spring.jwt.secret: ${{ secrets.JWT_SECRET }}
-          spring.mail.username: ${{ secrets.MAIL_USERNAME }}
-          spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
-          cloud.aws.s3.credentials.accessKey: ${{ secrets.S3_ACCESSKEY }}
-          cloud.aws.s3.credentials.secretKey: ${{ secrets.S3_SECRETKEY }}
           cloud.aws.s3.bucket: ${{ secrets.S3_BUCKET }}
+          ai.base-url: ${{ secrets.AI_BASEURL }}
 
       - name: Build with Gradle
         run: |
@@ -88,6 +82,11 @@ jobs:
             echo "S3_ACCESSKEY=${{ secrets.S3_ACCESSKEY }}" >> .env
             echo "S3_SECRETKEY=${{ secrets.S3_SECRETKEY }}" >> .env
             echo "S3_BUCKET=${{ secrets.S3_BUCKET }}" >> .env
+            echo "MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}" >> .env
+            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
             if [ "$(docker ps -aq -f name=Fring-server)" ]; then
               docker stop Fring-server
