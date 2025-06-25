@@ -279,6 +279,8 @@ public class RecipeService {
         String mainImageUrl = imageData.getFirst();
         List<String> recipeDescriptionImages = imageData.getSecond();
 
+        log.info("[레시피 추가]");
+
         Recipe recipe = Recipe.builder()
                 .memberId(member.getId())
                 .recipeRequestDto(recipeRequestDto)
@@ -286,7 +288,7 @@ public class RecipeService {
                 .build();
         recipeRepository.save(recipe);
 
-        log.info("[레시피 추가]");
+        log.info("[레시피 순서 추가]");
 
         List<RecipeStepResponseDto> recipeStepResponseDtos = new ArrayList<>();
         List<RecipeStep> steps = new ArrayList<>();
@@ -304,9 +306,9 @@ public class RecipeService {
         }
         recipeStepRepository.saveAll(steps);
 
-        log.info("[레시피 순서 추가]");
-
         log.info("[레시피 등록 성공]");
+
+        member.updateRecipeMember();
 
         return RecipeInfoResponseDto.builder()
                 .member(memberInfoResponseDto)

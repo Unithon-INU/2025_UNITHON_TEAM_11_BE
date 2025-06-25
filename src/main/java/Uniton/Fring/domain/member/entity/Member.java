@@ -43,6 +43,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Column(nullable = false)
+    private Boolean isRecipeMember = false;
+
     public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
         this.username = signupRequestDto.getUsername();
@@ -79,5 +82,9 @@ public class Member {
 
     public void decreaseLikeCount() {
         this.likeCount = Math.max(0, this.likeCount - 1);
+    }
+
+    public void updateRecipeMember() {
+        this.isRecipeMember = true;
     }
 }

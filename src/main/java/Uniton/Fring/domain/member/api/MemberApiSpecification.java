@@ -47,7 +47,7 @@ public interface MemberApiSpecification {
 
     @Operation(
             summary = "유저 랭킹 조회",
-            description = "유저를 좋아요 수 기준으로 상위 5위까지 조회합니다.",
+            description = "유저를 좋아요 수 기준으로 상위 8위까지 조회합니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
