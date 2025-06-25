@@ -18,9 +18,6 @@ public class RecipeRequestDto {
     @Schema(description = "레시피 내용", example = "재료 손질부터 끓이기까지 상세 과정")
     private String content;
 
-    @Schema(description = "레시피 평점", example = "4.5")
-    private Double rating;
-
     @Schema(description = "몇 명이 먹을 수 있는지", example = "4")
     private int headCount;
 

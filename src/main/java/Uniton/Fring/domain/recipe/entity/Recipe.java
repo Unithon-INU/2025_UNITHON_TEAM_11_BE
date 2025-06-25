@@ -35,7 +35,7 @@ public class Recipe {
 
     private Integer likeCount = 0;
 
-    private Double rating;
+    private Double rating = 0.0;
 
     @Column(name = "head_count", nullable = false)
     private int headCount;
@@ -68,7 +68,6 @@ public class Recipe {
         this.content = recipeRequestDto.getContent();
         this.imageUrl = mainImageUrl;
         this.likeCount = 0;
-        this.rating = recipeRequestDto.getRating();
         this.headCount = recipeRequestDto.getHeadCount();
         this.cookingTime = recipeRequestDto.getCookingTime();
         this.difficulty = recipeRequestDto.getDifficulty();
@@ -81,7 +80,6 @@ public class Recipe {
         this.title = recipeRequestDto.getTitle();
         this.content = recipeRequestDto.getContent();
         this.imageUrl = mainImageUrl;
-        this.rating = recipeRequestDto.getRating();
         this.headCount = recipeRequestDto.getHeadCount();
         this.cookingTime = recipeRequestDto.getCookingTime();
         this.difficulty = recipeRequestDto.getDifficulty();

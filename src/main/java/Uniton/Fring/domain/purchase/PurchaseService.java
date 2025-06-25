@@ -18,7 +18,7 @@ public class PurchaseService {
     @Transactional
     public PurchaseResponseDto purchase(UserDetailsImpl userDetails, PurchaseRequestDto purchaseRequestDto) {
 
-        log.info("[상품 주문 요청]");
+        log.info("[상품 주문 요청] 회원: {}", userDetails.getUsername());
 
         PurchaseResponseDto purchaseResponseDto = PurchaseResponseDto.builder().build();
 
