@@ -16,8 +16,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/inquires")
-public class InquiryController implements InqurityApiSpecification{
+@RequestMapping("/api/inquiries")
+public class InquiryController implements InquiryApiSpecification {
 
     private final InquiryService inquiryService;
 
@@ -27,6 +27,6 @@ public class InquiryController implements InqurityApiSpecification{
                                                          @PathVariable Long productId,
                                                          @RequestPart @Valid InquiryRequestDto inquiryRequestDto,
                                                          @RequestPart("images") List<MultipartFile> images) {
-        return ResponseEntity.status(HttpStatus.OK).body(inquiryService.inquire(userDetails, productId, inquiryRequestDto, images));
+        return ResponseEntity.status(HttpStatus.CREATED).body(inquiryService.inquire(userDetails, productId, inquiryRequestDto, images));
     }
 }

@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +39,7 @@ public class ReviewService {
 
         log.info("[상품 리뷰 등록 요청]");
 
-        List<String> imageUrls = uploadReviewImages(images);
+        List<String> imageUrls =s3Service.uploadImages(images, "reviews");
 
         Review review = Review.fromProductReview(userDetails.getMember().getId(), productReviewRequestDto, imageUrls, productReviewRequestDto.getPurchase_option());
 
@@ -82,7 +80,7 @@ public class ReviewService {
             throw new CustomException(ErrorCode.ALREADY_REVIEWED);
         }
 
-        List<String> imageUrls = uploadReviewImages(images);
+        List<String> imageUrls = s3Service.uploadImages(images, "reviews");
 
         Review review = Review.fromRecipeReview(userDetails.getMember().getId(), recipeReviewRequestDto, imageUrls);
 
@@ -107,24 +105,5 @@ public class ReviewService {
                 .isLiked(null)
                 .purchaseOption(null)
                 .build();
-    }
-
-    private List<String> uploadReviewImages(List<MultipartFile> images) {
-        List<String> imageUrls = new ArrayList<>();
-
-        if (images != null && !images.isEmpty()) {
-            try {
-                for (int i = 0; i < images.size(); i++) {
-                    String url = s3Service.upload(images.get(i), "reviews");
-                    imageUrls.add(url);
-                }
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-            }
-        }
-
-        log.info("총 {}개의 리뷰 이미지 업로드 완료", imageUrls.size());
-
-        return imageUrls;
     }
 }

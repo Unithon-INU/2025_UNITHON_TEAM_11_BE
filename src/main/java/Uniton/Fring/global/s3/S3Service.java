@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -107,19 +108,18 @@ public class S3Service {
 
         try {
             // 메인 이미지 업로드
-            if (mainImage != null && !mainImage.isEmpty()) {
+            if (StringUtils.hasText(mainImage.getOriginalFilename())) {
                 mainImageUrl = upload(mainImage, mainDir);
             }
-
             // 설명 이미지들 업로드
             if (descriptionImages != null && !descriptionImages.isEmpty()) {
                 for (MultipartFile image : descriptionImages) {
-                    if (image != null && !image.isEmpty()) {
-                        descImageUrls.add(upload(image, descDir));
+                    if (!StringUtils.hasText(image.getOriginalFilename())) {
+                        continue;
                     }
+                    descImageUrls.add(upload(image, descDir));
                 }
             }
-
             log.info("메인 이미지 업로드 여부: {}, 설명 이미지 {}개 업로드 완료", mainImageUrl != null, descImageUrls.size());
 
             return Pair.of(mainImageUrl, descImageUrls);
@@ -127,6 +127,28 @@ public class S3Service {
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
         }
+    }
+
+    public List<String> uploadImages(List<MultipartFile> images, String dirName) {
+        List<String> imageUrls = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile file : images) {
+                if (!StringUtils.hasText(file.getOriginalFilename())) {
+                    continue;
+                }
+                try {
+                    String url = upload(file, dirName);
+                    imageUrls.add(url);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+                }
+            }
+        }
+
+        log.info("총 {}개의 리뷰 이미지 업로드 완료", imageUrls.size());
+
+        return imageUrls;
     }
 
     public void delete(String imageUrl) {
