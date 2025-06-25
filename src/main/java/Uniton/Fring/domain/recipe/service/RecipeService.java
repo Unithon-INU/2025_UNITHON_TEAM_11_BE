@@ -270,7 +270,11 @@ public class RecipeService {
 
         log.info("[레시피 등록 요청]");
 
-        Member member = userDetails.getMember();
+        Member member = memberRepository.findById(userDetails.getMember().getId())
+                .orElseThrow(() -> {
+                    log.warn("[회원 정보 조회 실패] 회원 없음: memberId={}", userDetails.getMember().getId()gi);
+                    return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+                });
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(member, null);
 
         Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
