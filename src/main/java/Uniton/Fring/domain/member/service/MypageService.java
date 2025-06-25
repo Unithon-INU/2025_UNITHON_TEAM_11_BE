@@ -10,9 +10,11 @@ import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.entity.RecentProductView;
 import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.product.repository.RecentProductViewRepository;
-import Uniton.Fring.domain.purchase.Purchase;
-import Uniton.Fring.domain.purchase.PurchaseRepository;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
+import Uniton.Fring.domain.purchase.entity.Purchase;
+import Uniton.Fring.domain.purchase.entity.PurchaseItem;
+import Uniton.Fring.domain.purchase.repository.PurchaseItemRepository;
+import Uniton.Fring.domain.purchase.repository.PurchaseRepository;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
@@ -49,6 +51,7 @@ public class MypageService {
     private final RecentProductViewRepository recentProductViewRepository;
     private final ProductLikeRepository productLikeRepository;
     private final PurchaseRepository purchaseRepository;
+    private final PurchaseItemRepository purchaseItemRepository;
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMypage(UserDetailsImpl userDetails) {
@@ -102,29 +105,54 @@ public class MypageService {
         Long memberId = userDetails.getMember().getId();
 
         Pageable pageable = PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "purchaseDate"));
-        Page<Purchase> purchases = purchaseRepository.findByMemberId(memberId, pageable);
+        Page<Purchase> purchasePage = purchaseRepository.findByMemberId(memberId, pageable);
+        List<Purchase> purchases = purchasePage.getContent();
 
-        // 주문에서 productId 리스트 추출
-        List<Long> productIds = purchases.stream()
-                .map(Purchase::getProductId)
-                .distinct()
+        if (purchases.isEmpty()) return List.of();
+
+        Map<Long, Purchase> purchaseMap = purchases.stream()
+                .collect(Collectors.toMap(Purchase::getId, Function.identity()));
+
+        // 주문 id 리스트
+        List<Long> purchaseIds = purchases.stream()
+                .map(Purchase::getId).toList();
+
+        // 주문-아이템 일괄 조회
+        List<PurchaseItem> items = purchaseItemRepository.findByPurchaseIdIn(purchaseIds);
+
+        // 상품 id 모으기
+        List<Long> productIds = items.stream()
+                .map(PurchaseItem::getProductId).distinct().toList();
+
+        // 상품 - 한 번에 조회 → map
+        Map<Long, Product> productMap = productRepository.findAllById(productIds)
+                .stream().collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        // 판매자 id 모으기
+        List<Long> sellerIds = productMap.values()
+                .stream().map(Product::getMemberId).distinct().toList();
+
+        // 판매자 - 한 번에 조회 → map(id → nickname)
+        Map<Long, String> sellerNameMap = memberRepository.findAllById(sellerIds)
+                .stream()
+                .collect(Collectors.toMap(Member::getId, Member::getNickname));
+
+        // DTO 변환
+        List<SimplePurchaseResponseDto> simplePurchaseResponseDtos = items.stream()
+                .map(item -> {
+                    Purchase purchase = purchaseMap.get(item.getPurchaseId());
+                    Product product = productMap.get(item.getProductId());
+                    String sellerNickame = sellerNameMap.get(product.getMemberId());
+
+                    return SimplePurchaseResponseDto.builder()
+                            .purchaseItem(item)
+                            .purchase(purchase)
+                            .sellerNickname(sellerNickame)
+                            .status(purchase.getStatus().getDescription())
+                            .product(product)
+                            .build();
+                })
                 .toList();
-
-        // 한 번에 상품 조회
-        List<Product> products = productRepository.findAllById(productIds);
-
-        // productId -> Product 매핑
-        Map<Long, Product> productMap = products.stream()
-                .collect(Collectors.toMap(Product::getId, Function.identity()));
-
-        List<SimplePurchaseResponseDto> simplePurchaseResponseDtos = purchases.stream()
-                        .map(purchase -> {
-                            Product product = productMap.get(purchase.getProductId());
-
-                            return SimplePurchaseResponseDto.builder()
-                                    .purchase(purchase).status(purchase.getStatus().getDescription()).product(product).build();
-                        })
-                        .toList();
 
         log.info("[마이페이지 주문 내역 조회 성공]");
 

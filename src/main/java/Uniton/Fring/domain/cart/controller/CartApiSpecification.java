@@ -4,7 +4,7 @@ package Uniton.Fring.domain.cart.controller;
 import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
-import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
+import Uniton.Fring.domain.cart.dto.res.ItemResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartUpdateResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,13 +44,13 @@ public interface CartApiSpecification {
                             description = "장바구니 추가 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CartItemResponseDto.class)
+                                    schema = @Schema(implementation = ItemResponseDto.class)
                             )
                     )
             }
     )
-    ResponseEntity<CartItemResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                @RequestBody ProductItemRequestDto productItemRequestDto);
+    ResponseEntity<ItemResponseDto> addCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @RequestBody ProductItemRequestDto productItemRequestDto);
 
     @Operation(
             summary = "장바구니 수정",

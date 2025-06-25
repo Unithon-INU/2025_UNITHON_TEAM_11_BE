@@ -4,7 +4,7 @@ import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.cart.dto.req.CartRequestDto;
 import Uniton.Fring.domain.cart.dto.res.CartGroupResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartInfoResponseDto;
-import Uniton.Fring.domain.cart.dto.res.CartItemResponseDto;
+import Uniton.Fring.domain.cart.dto.res.ItemResponseDto;
 import Uniton.Fring.domain.cart.dto.res.CartUpdateResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -79,7 +79,7 @@ public class CartService {
             List<Cart> sellerCarts = entry.getValue();
             Member seller = sellerMap.get(sellerId);
 
-            List<CartItemResponseDto> cartItemResponseDtos = new ArrayList<>();
+            List<ItemResponseDto> itemResponseDtos = new ArrayList<>();
             BigDecimal totalProductPrice = BigDecimal.ZERO;
             BigDecimal deliveryFee = BigDecimal.ZERO;
 
@@ -91,7 +91,7 @@ public class CartService {
                     deliveryFee = product.getDeliveryFee();
                 }
 
-                cartItemResponseDtos.add(CartItemResponseDto.builder()
+                itemResponseDtos.add(ItemResponseDto.builder()
                         .cart(cartItem)
                         .seller(seller)
                         .product(product)
@@ -100,7 +100,7 @@ public class CartService {
 
             groups.add(CartGroupResponseDto.builder()
                     .seller(seller)
-                    .items(cartItemResponseDtos )
+                    .items(itemResponseDtos)
                     .totalProductPrice(totalProductPrice)
                     .deliveryFee(deliveryFee)
                     .totalPrice(totalProductPrice.add(deliveryFee))
@@ -113,7 +113,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemResponseDto addCart(UserDetailsImpl userDetails, ProductItemRequestDto productItemRequestDto) {
+    public ItemResponseDto addCart(UserDetailsImpl userDetails, ProductItemRequestDto productItemRequestDto) {
 
         log.info("[장바구니 추가 요청] 회원: {}", userDetails.getUsername());
 
@@ -153,7 +153,7 @@ public class CartService {
 
         log.info("[장바구니 추가 성공] 회원: {}", userDetails.getUsername());
 
-        return CartItemResponseDto.builder().cart(cart).seller(seller).product(product).build();
+        return ItemResponseDto.builder().cart(cart).seller(seller).product(product).build();
     }
 
     @Transactional
@@ -166,7 +166,7 @@ public class CartService {
         cartRepository.deleteByMemberId(member.getId());
         log.info("[기존 장바구니 항목 삭제 완료] memberNickname={}", member.getNickname());
 
-        List<CartItemResponseDto> savedItems = new ArrayList<>();
+        List<ItemResponseDto> savedItems = new ArrayList<>();
 
         for (ProductItemRequestDto cartItem : cartRequestDto.getItems()) {
 
@@ -185,9 +185,11 @@ public class CartService {
                     });
 
             // 옵션 조회
-            ProductOption option = productOptionRepository
-                    .findByProductIdAndOptionName(product.getId(), cartItem.getProductOption())
-                    .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+            ProductOption option = productOptionRepository.findByProductIdAndOptionName(product.getId(), cartItem.getProductOption())
+                    .orElseThrow(() -> {
+                        log.warn("[상품 옵션 조회 실패] productId={}", product.getId());
+                        return new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND);
+                    });
 
             BigDecimal optionPrice = option.getAdditionalPrice();
 
@@ -202,7 +204,7 @@ public class CartService {
 
             cartRepository.save(cart);
 
-            savedItems.add(CartItemResponseDto.builder().cart(cart).seller(seller).product(product).build());
+            savedItems.add(ItemResponseDto.builder().cart(cart).seller(seller).product(product).build());
         }
 
         log.info("[장바구니 수정 성공] 회원: {}", userDetails.getUsername());

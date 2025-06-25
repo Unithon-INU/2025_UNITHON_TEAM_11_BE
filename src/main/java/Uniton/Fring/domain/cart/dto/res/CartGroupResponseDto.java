@@ -19,7 +19,7 @@ public class CartGroupResponseDto {
     private final String sellerNickname;
 
     @Schema(description = "판매자별 장바구니 상품 목록")
-    private final List<CartItemResponseDto> items;
+    private final List<ItemResponseDto> items;
 
     @Schema(description = "판매자별 상품 총합", example = "6000")
     private final BigDecimal totalProductPrice;
@@ -31,7 +31,7 @@ public class CartGroupResponseDto {
     private final BigDecimal totalPrice;
 
     @Builder
-    public CartGroupResponseDto(Member seller, List<CartItemResponseDto> items,
+    public CartGroupResponseDto(Member seller, List<ItemResponseDto> items,
                                 BigDecimal totalProductPrice, BigDecimal deliveryFee, BigDecimal totalPrice) {
         this.sellerId = seller.getId();
         this.sellerNickname = seller.getNickname();

@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 
 @Getter
 @NoArgsConstructor
-@Schema(description = "장바구니 상품 요소 응답 DTO")
-public class CartItemResponseDto {
+@Schema(description = "구매 / 장바구니 상품 요소 응답 DTO")
+public class ItemResponseDto {
 
     @Schema(description = "장바구니 Id", example = "1")
     private Long cartId;
@@ -43,7 +43,7 @@ public class CartItemResponseDto {
     private BigDecimal optionPrice;
 
     @Builder
-    private CartItemResponseDto(Cart cart, Member seller, Product product) {
+    private ItemResponseDto(Cart cart, Member seller, Product product) {
         this.cartId = cart.getId();
         this.productId = product.getId();
         this.sellerId = seller.getId();

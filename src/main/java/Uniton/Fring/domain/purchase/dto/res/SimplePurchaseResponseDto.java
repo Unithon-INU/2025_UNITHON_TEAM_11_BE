@@ -1,7 +1,8 @@
 package Uniton.Fring.domain.purchase.dto.res;
 
 import Uniton.Fring.domain.product.entity.Product;
-import Uniton.Fring.domain.purchase.Purchase;
+import Uniton.Fring.domain.purchase.entity.Purchase;
+import Uniton.Fring.domain.purchase.entity.PurchaseItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +20,17 @@ public class SimplePurchaseResponseDto {
     @Schema(description = "상품 준비 상태", example = "상품 준비 중")
     private final String status;
 
-    @Schema(description = "상품명", example = "신선한 사과")
-    private final String name;
+    @Schema(description = "판매자 닉네임", example = "병아리 농장")
+    private final String sellerNickname;
+
+    @Schema(description = "상품명", example = "토마토 행사")
+    private final String productName;
+
+    @Schema(description = "상품 옵션", example = "방울토마토")
+    private final String productOption;
+
+    @Schema(description = "수량", example = "1")
+    private final Integer quantity;
 
     @Schema(description = "구매 가격", example = "9000")
     private final BigDecimal price;
@@ -32,11 +42,14 @@ public class SimplePurchaseResponseDto {
     private final LocalDate purchaseDate;
 
     @Builder
-    private SimplePurchaseResponseDto(Purchase purchase, String status, Product product) {
-        this.id = purchase.getId();
+    private SimplePurchaseResponseDto(PurchaseItem purchaseItem, Purchase purchase, String sellerNickname, String status, Product product) {
+        this.id = purchaseItem.getId();
         this.status = status;
-        this.name = product.getName();
-        this.price = purchase.getTotalPrice();
+        this.sellerNickname = sellerNickname;
+        this.productName = product.getName();
+        this.productOption = purchaseItem.getProductOption();
+        this.quantity = purchaseItem.getQuantity();
+        this.price = purchaseItem.getProductPrice();
         this.imageUrl = product.getMainImageUrl();
         this.purchaseDate = purchase.getPurchaseDate();
     }

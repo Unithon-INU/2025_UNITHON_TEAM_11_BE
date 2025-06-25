@@ -1,6 +1,6 @@
 package Uniton.Fring.domain.purchase.controller;
 
-import Uniton.Fring.domain.purchase.PurchaseService;
+import Uniton.Fring.domain.purchase.service.PurchaseService;
 import Uniton.Fring.domain.purchase.dto.req.PurchaseRequestDto;
 import Uniton.Fring.domain.purchase.dto.res.PurchaseResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;

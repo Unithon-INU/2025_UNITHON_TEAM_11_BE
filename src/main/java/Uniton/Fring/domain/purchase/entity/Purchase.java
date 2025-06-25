@@ -1,7 +1,8 @@
-package Uniton.Fring.domain.purchase;
+package Uniton.Fring.domain.purchase.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,32 +22,23 @@ public class Purchase {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @Column(name = "delivery_id", nullable = false)
+    private Long deliveryId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 16)
     private String purchaseNumber;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private BigDecimal productPrice;
+
+    @Column(nullable = false)
+    private BigDecimal deliveryFee;
 
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
     @Column(nullable = false)
-    private String purchaseOption;
-
-    @Column(nullable = false)
     private String payMethod;
-
-    @Column(nullable = false)
-    private String memberNickname;
-
-    @Column(nullable = false)
-    private String memberAddress;
-
-    @Column(nullable = false)
-    private  String memberPhoneNumber;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
@@ -61,6 +53,18 @@ public class Purchase {
     private String returnImageUrls;
 
     private String returnFee;
+
+    @Builder
+    private Purchase(Long memberId, Long deliveryId, String purchaseNumber, BigDecimal productPrice,
+                     BigDecimal deliveryFee, BigDecimal totalPrice, String payMethod) {
+        this.memberId = memberId;
+        this.deliveryId = deliveryId;
+        this.purchaseNumber = purchaseNumber;
+        this.productPrice = productPrice;
+        this.deliveryFee = deliveryFee;
+        this.totalPrice = totalPrice;
+        this.payMethod = payMethod;
+    }
 
     @PrePersist
     protected void onCreate() {

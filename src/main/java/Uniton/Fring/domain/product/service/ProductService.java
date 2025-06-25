@@ -16,7 +16,7 @@ import Uniton.Fring.domain.product.entity.Product;
 import Uniton.Fring.domain.product.entity.ProductOption;
 import Uniton.Fring.domain.product.repository.ProductOptionRepository;
 import Uniton.Fring.domain.product.repository.ProductRepository;
-import Uniton.Fring.domain.purchase.PurchaseRepository;
+import Uniton.Fring.domain.purchase.repository.PurchaseRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
 import Uniton.Fring.domain.review.repository.ReviewRepository;

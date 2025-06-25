@@ -11,10 +11,10 @@ import java.util.List;
 public class CartUpdateResponseDto {
 
     @Schema(description = "판매자 단위 장바구니 그룹 목록", example = "병아리 농장, 고릴라 농장")
-    private final List<CartItemResponseDto> items;
+    private final List<ItemResponseDto> items;
 
     @Builder
-    private CartUpdateResponseDto(List<CartItemResponseDto> items) {
+    private CartUpdateResponseDto(List<ItemResponseDto> items) {
         this.items = items;
     }
 }
