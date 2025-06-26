@@ -305,10 +305,10 @@ public class MypageService {
 
         Farmer farmer = farmerRepository.findByMemberId(member.getId())
                 .orElseGet(() -> Farmer.builder().memberId(member.getId()).build());
-        farmerRepository.save(farmer);
 
         member.updateMember(applyFarmerRequestDto.getMarketName(), applyFarmerRequestDto.getIntro(), profileImageUrl);
         farmer.applyFarmer(applyFarmerRequestDto, registFileUrl, passbookUrl, certifidocUrl);
+        farmerRepository.save(farmer);
 
         log.info("[입점 신청 성공]");
 

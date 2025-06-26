@@ -30,19 +30,34 @@ public class StoreResponseDto {
     private final String representativeName;
 
     @Schema(description = "연락처", example = "010-1234-5678")
-    private final String phoneNumber;
+    private final String phone;
 
-    @Schema(description = "사업자 등록번호 혹은 농가확인번호", example = "12345678910")
-    private final String registrationNumber;
+    @Schema(description = "사업자 등록번호 / 농가확인번호", example = "12345678910")
+    private final String registNum;
+
+    @Schema(description = "사업자 등록번호 / 농가확인번호 등록 파일")
+    private String regisFile;
+
+    @Schema(description = "통장 사본")
+    private String passbook;
+
+    @Schema(description = "농산물 인증 서류")
+    private String certifidoc;
 
     @Schema(description = "우편번호", example = "12345")
-    private final String zipcode;
+    private final String postalAddress;
 
     @Schema(description = "기본 주소지", example = "경기도 프링시 프링구 프링동")
-    private final String address;
+    private final String defaultAddress;
 
     @Schema(description = "상세 주소지", example = "101동 123호")
-    private final String addressDetail;
+    private final String restAddress;
+
+    @Schema(description = "계좌번호", example = "234-234234-234234")
+    private String bankNum;
+
+    @Schema(description = "은행명", example = "농협은행")
+    private String bank;
 
     @Builder
     private StoreResponseDto(Member member, Farmer farmer) {
@@ -52,10 +67,15 @@ public class StoreResponseDto {
         this.introduction = member.getIntroduction();
         this.isSeller = member.getRole() == MemberRole.FARMER;
         this.representativeName = farmer.getRepresentativeName();
-        this.phoneNumber = farmer.getPhoneNumber();
-        this.registrationNumber = farmer.getRegisNum();
-        this.zipcode = farmer.getPostalAddress();
-        this.address = farmer.getDefaultAddress();
-        this.addressDetail = farmer.getRestAddress();
+        this.phone = farmer.getPhoneNumber();
+        this.registNum = farmer.getRegisNum();
+        this.regisFile = farmer.getRegisFile();
+        this.passbook = farmer.getPassbook();
+        this.certifidoc = farmer.getCertifidoc();
+        this.postalAddress = farmer.getPostalAddress();
+        this.defaultAddress = farmer.getDefaultAddress();
+        this.restAddress = farmer.getRestAddress();
+        this.bankNum = farmer.getBankNum();
+        this.bank = farmer.getBank();
     }
 }
