@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.member.api;
 
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
+import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
@@ -37,6 +38,23 @@ public interface MypageApiSpecification {
             }
     )
     ResponseEntity<MypageResponseDto> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
+            summary = "마이페이지 상세 조회",
+            description = "회원의 마이페이지 상세 정보를 조회합니다. <br><br>레시피는 최신순 정렬 기본 페이지 6개",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "마이페이지 상세 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MypageDetailResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<MypageDetailResponseDto> getDetailMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "마이페이지 수정",
