@@ -45,15 +45,31 @@ public interface ProductApiSpecification {
     ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long productId, @RequestParam(defaultValue = "0") int page);
 
     @Operation(
+            summary = "특가 농수산 더보기 조회",
+            description = "농수산 상품을 할인율을 기준으로 정렬해 반환합니다. (10개)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "특가 농수산 더보기 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleProductResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleProductResponseDto>> getSaleProductList(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
             summary = "추천 농수산 더보기 조회",
             description = "농수산 상품을 평점을 기준으로 정렬해 반환합니다. (10개)",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "메인 페이지 응답 성공",
+                            description = "추천 농수산 더보기 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SimpleProductResponseDto.class)
+                                    schema = @Schema(implementation = SimpleProductResponseDto.class, type = "array")
                             )
                     )
             }
@@ -66,10 +82,10 @@ public interface ProductApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "메인 페이지 응답 성공",
+                            description = "자주 구매한 농수산 더보기 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SimpleProductResponseDto.class)
+                                    schema = @Schema(implementation = SimpleProductResponseDto.class, type = "array")
                             )
                     )
             }

@@ -31,6 +31,12 @@ public class ProductController implements ProductApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(userDetails, productId, page));
     }
 
+    // 특가 농수산 더보기 조회
+    @GetMapping("/sale")
+    public ResponseEntity<List<SimpleProductResponseDto>> getSaleProductList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getSaleProductList(userDetails));
+    }
+
     // 추천 농수산 더보기 조회
     @GetMapping("/best")
     public ResponseEntity<List<SimpleProductResponseDto>> getBestProductList(@AuthenticationPrincipal UserDetailsImpl userDetails) {

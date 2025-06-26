@@ -193,6 +193,34 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public List<SimpleProductResponseDto> getSaleProductList(UserDetailsImpl userDetails) {
+
+        log.info("[특가 농수산 더보기 조회 요청]");
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
+        List<Product> saleProducts = productRepository.findTop10ByOrderByDiscountRateDesc();
+
+        List<SimpleProductResponseDto> saleProductResponseDtos = saleProducts.stream()
+                .map(product -> {
+                    Boolean isLikedProduct = null;
+
+                    if (memberId != null) {
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
+                    }
+
+                    return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
+                }).toList();
+
+        log.info("[특가 농수산 더보기 조회 성공]");
+
+        return saleProductResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
     public List<SimpleProductResponseDto> getBestProductList(UserDetailsImpl userDetails) {
 
         log.info("[추천 농수산 더보기 조회 요청]");

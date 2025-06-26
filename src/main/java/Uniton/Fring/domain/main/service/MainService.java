@@ -73,7 +73,6 @@ public class MainService {
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
                 }).toList();
 
-
         Map<Long, Integer> reviewCountMap = recipeService.getReviewCountMapFromRecipes(bestRecipes);
 
         log.info("[메인] 평점 높은 레시피 목록 응답 생성");
