@@ -37,6 +37,7 @@ public class FarmerService {
     private final ProductRepository productRepository;
     private final ProductLikeRepository productLikeRepository;
     private final S3Service s3Service;
+    private final FarmerRepository farmerRepository;
 
     @Transactional(readOnly = true)
     public StoreItemsResponseDto<SimpleProductResponseDto> getStore(UserDetailsImpl userDetails, int page) {
@@ -95,7 +96,13 @@ public class FarmerService {
             }
         }
 
-        member.updateStore(updateStoreRequestDto, newImageUrl);
+        Farmer farmer = farmerRepository.findByMemberId(member.getId())
+                .orElseGet(() -> Farmer.builder().memberId(member.getId()).build());
+
+        farmer.updateStore(updateStoreRequestDto);
+        farmerRepository.save(farmer);
+
+        member.updateMember(updateStoreRequestDto.getNickname(), updateStoreRequestDto.getIntroduction(), newImageUrl);
 
         log.info("[스토어 정보 수정 성공]");
 

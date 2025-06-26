@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,16 +39,7 @@ public class AuthService {
 
         log.info("[회원가입 요청] email={}, username={}, nickname={}", signupRequestDto.getEmail(), signupRequestDto.getUsername(), signupRequestDto.getNickname());
 
-        String imageUrl;
-        if (image != null && !image.isEmpty()) {
-            try {
-                imageUrl = s3Service.upload(image, "profileImages");
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-            }
-        } else {
-            imageUrl = s3Service.getDefaultProfileImageUrl();
-        }
+        String imageUrl = s3Service.uploadProfileImage(image, "profileImages");
 
         Member member = new Member(signupRequestDto, passwordEncoder.encode(signupRequestDto.getPassword()), imageUrl);
 

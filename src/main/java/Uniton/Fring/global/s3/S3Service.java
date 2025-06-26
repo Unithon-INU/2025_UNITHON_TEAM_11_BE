@@ -101,6 +101,40 @@ public class S3Service {
         return Optional.empty();
     }
 
+    public String uploadProfileImage(MultipartFile image, String dirName) {
+
+        String imageUrl;
+        if (image != null && !image.isEmpty()) {
+            try {
+                imageUrl = upload(image, dirName);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+            }
+        } else {
+            imageUrl = getDefaultProfileImageUrl();
+        }
+
+        log.info("총 1개의 이미지 업로드 완료");
+
+        return imageUrl;
+    }
+
+    public String uploadFile(MultipartFile file, String dirName) {
+
+        String fileUrl = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                fileUrl = upload(file, dirName);
+                log.info("총 1개의 파일 업로드 완료");
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
+            }
+        }
+
+
+        return fileUrl;
+    }
+
     public Pair<String, List<String>> uploadMainAndDescriptionImages(MultipartFile mainImage, List<MultipartFile> descriptionImages,
                                                                      String mainDir, String descDir) {
         String mainImageUrl = null;

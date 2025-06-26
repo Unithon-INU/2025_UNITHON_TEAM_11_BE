@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.farmer.dto.res;
 
+import Uniton.Fring.domain.farmer.Farmer;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.enums.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,17 +45,17 @@ public class StoreResponseDto {
     private final String addressDetail;
 
     @Builder
-    private StoreResponseDto(Member member) {
+    private StoreResponseDto(Member member, Farmer farmer) {
         this.memberId = member.getId();
         this.imageUrl = member.getImageUrl();
         this.nickname = member.getNickname();
         this.introduction = member.getIntroduction();
         this.isSeller = member.getRole() == MemberRole.FARMER;
-        this.representativeName = member.getRepresentativeName();
-        this.phoneNumber = member.getPhoneNumber();
-        this.registrationNumber = member.getRegisNum();
-        this.zipcode = member.getZipcode();
-        this.address = member.getAddress();
-        this.addressDetail = member.getAddressDetail();
+        this.representativeName = farmer.getRepresentativeName();
+        this.phoneNumber = farmer.getPhoneNumber();
+        this.registrationNumber = farmer.getRegisNum();
+        this.zipcode = farmer.getPostalAddress();
+        this.address = farmer.getDefaultAddress();
+        this.addressDetail = farmer.getRestAddress();
     }
 }

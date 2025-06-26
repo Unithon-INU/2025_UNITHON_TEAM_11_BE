@@ -1,6 +1,8 @@
 package Uniton.Fring.domain.member.controller;
 
+import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
 import Uniton.Fring.domain.member.api.MypageApiSpecification;
+import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
@@ -90,19 +92,19 @@ public class MypageController implements MypageApiSpecification {
 //    }
 //
     // 입점 신청
-//    @PostMapping(value = "/apply-farmer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<Void> applyFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                            @RequestPart @Valid ApplyFarmerRequestDto applyFarmerRequestDto,
-//                                            @RequestPart(value = "registFile", required = false) MultipartFile registFile,
-//                                            @RequestPart(value = "passbook", required = false) MultipartFile passbook,
-//                                            @RequestPart(value = "certifidoc", required = false) MultipartFile certifidoc,
-//                                            @RequestPart(value = "profile", required = false) MultipartFile profile) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(mypageService.applyFarmer(userDetails, applyFarmerRequestDto, registFile, passbook, certifidoc, profile));
-//    }
+    @PostMapping(value = "/applyFarmer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<StoreResponseDto> applyFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestPart @Valid ApplyFarmerRequestDto applyFarmerRequestDto,
+                                                        @RequestPart(value = "RegistFile", required = false) MultipartFile registFile,
+                                                        @RequestPart(value = "Passbook", required = false) MultipartFile passbook,
+                                                        @RequestPart(value = "certifidoc", required = false) MultipartFile certifidoc,
+                                                        @RequestPart(value = "profile", required = false) MultipartFile profile) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(mypageService.applyFarmer(userDetails, applyFarmerRequestDto, registFile, passbook, certifidoc, profile));
+    }
 
-    // 사업자 등록번호 or 농가확인번호 중복 화인
-    @GetMapping("/regisNum/{regisNum}")
-    public ResponseEntity<Boolean> checkRegistNumDuplicated(@PathVariable String regisNum) {
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.checkRegisNumDuplicated(regisNum));
+    // 사업자 등록번호 or 농가확인번호 중복 확인
+    @GetMapping("/registNum/{registNum}")
+    public ResponseEntity<Boolean> checkRegistNumDuplicated(@PathVariable String registNum) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.checkRegisNumDuplicated(registNum));
     }
 }

@@ -1,5 +1,7 @@
 package Uniton.Fring.domain.member.api;
 
+import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
+import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,4 +111,41 @@ public interface MypageApiSpecification {
     )
     ResponseEntity<List<SimpleProductResponseDto>> getRecentViewedProducts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
+            summary = "입점 신청",
+            description = "소비자 회원에 대한 입점 신청입니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "입점 신청 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = StoreResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<StoreResponseDto> applyFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                 @RequestPart @Valid ApplyFarmerRequestDto applyFarmerRequestDto,
+                                                 @RequestPart(value = "RegistFile", required = false) MultipartFile registFile,
+                                                 @RequestPart(value = "Passbook", required = false) MultipartFile passbook,
+                                                 @RequestPart(value = "certifidoc", required = false) MultipartFile certifidoc,
+                                                 @RequestPart(value = "profile", required = false) MultipartFile profile);
+
+    @Operation(
+            summary = "회원 등록 번호 중복 확인",
+            description = "사업자 등록번호 or 농가확인번호 중복 확인 (true = 중복 X, 즉 사용 가능하다)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "회원 등록 번호 중복 확인 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<Boolean> checkRegistNumDuplicated(@PathVariable String registNum);
 }

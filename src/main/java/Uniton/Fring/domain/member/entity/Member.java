@@ -1,7 +1,5 @@
 package Uniton.Fring.domain.member.entity;
 
-import Uniton.Fring.domain.farmer.dto.req.UpdateStoreRequestDto;
-import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.enums.MemberRole;
 import jakarta.persistence.*;
@@ -47,24 +45,6 @@ public class Member {
     @Column(nullable = false)
     private Boolean isRecipeMember = false;
 
-    @Column(nullable = true)
-    private String representativeName;
-
-    @Column(nullable = true)
-    private String phoneNumber;
-
-    @Column(nullable = true)
-    private String regisNum;
-
-    @Column(nullable = true)
-    private String zipcode;
-
-    @Column(nullable = true)
-    private String address;
-
-    @Column(nullable = true)
-    private String addressDetail;
-
     public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
         this.username = signupRequestDto.getUsername();
@@ -75,28 +55,16 @@ public class Member {
         this.role = MemberRole.CONSUMER;
     }
 
-    public void updateMember(MypageRequestDto mypageRequestDto, String imageUrl) {
-        if (mypageRequestDto.getNickname() != null && !mypageRequestDto.getNickname().isBlank()) {
-            this.nickname = mypageRequestDto.getNickname();
+    public void updateMember(String nickname, String introduction, String imageUrl) {
+        if (nickname != null) {
+            this.nickname = nickname;
         }
-        if (mypageRequestDto.getIntroduction() != null && !mypageRequestDto.getIntroduction().isBlank()) {
-            this.introduction = mypageRequestDto.getIntroduction();
+        if (introduction != null) {
+            this.introduction = introduction;
         }
         if (imageUrl != null && !imageUrl.isBlank()) {
             this.imageUrl = imageUrl;
         }
-    }
-
-    public void updateStore(UpdateStoreRequestDto updateStoreRequestDto, String imageUrl) {
-        this.nickname = updateStoreRequestDto.getNickname();
-        this.introduction = updateStoreRequestDto.getIntroduction();
-        this.representativeName = updateStoreRequestDto.getRepresentativeName();
-        this.phoneNumber = updateStoreRequestDto.getPhoneNumber();
-        this.regisNum = updateStoreRequestDto.getRegisNum();
-        this.zipcode = updateStoreRequestDto.getZipcode();
-        this.address = updateStoreRequestDto.getAddress();
-        this.addressDetail = updateStoreRequestDto.getAddressDetail();
-        this.imageUrl = imageUrl;
     }
 
     public void changeRoleToFarmer() {

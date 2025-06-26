@@ -36,7 +36,7 @@ public class ApplyFarmerRequestDto {
 
     @NotBlank
     @Schema(description = "사업자 등록번호 or 농가 확인 번호", example = "123-45-67890")
-    private String registNum;
+    private String RegistNum;
 
     @NotBlank
     @Schema(description = "계좌번호", example = "234-234234-234234")

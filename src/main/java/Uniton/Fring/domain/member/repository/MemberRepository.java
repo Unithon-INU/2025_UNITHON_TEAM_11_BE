@@ -18,7 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     boolean existsByNickname(String nickname);
-    boolean existsByRegisNum(String regisNum);
 
     // 키워드를 기반으로 유사도 정렬 쿼리문
     @Query(value = """

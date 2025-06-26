@@ -1,13 +1,18 @@
 package Uniton.Fring.domain.member.service;
 
+import Uniton.Fring.domain.farmer.Farmer;
+import Uniton.Fring.domain.farmer.FarmerRepository;
+import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
 import Uniton.Fring.domain.like.entity.RecipeLike;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
+import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
+import Uniton.Fring.domain.member.enums.MemberRole;
 import Uniton.Fring.domain.member.repository.MemberRepository;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
@@ -61,6 +66,7 @@ public class MypageService {
     private final PurchaseRepository purchaseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final FarmerRepository farmerRepository;
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMypage(UserDetailsImpl userDetails) {
@@ -140,7 +146,7 @@ public class MypageService {
             }
         }
 
-        member.updateMember(mypageRequestDto, newImageUrl);
+        member.updateMember(mypageRequestDto.getNickname(), mypageRequestDto.getIntroduction(), newImageUrl);
 
         log.info("[마이페이지 수정 성공]");
 
@@ -275,23 +281,46 @@ public class MypageService {
 //
 //    }
 
-//    @Transactional
-//    public Void applyFarmer(UserDetailsImpl userDetails, ApplyFarmerRequestDto applyFarmerRequestDto,
-//                            MultipartFile registFile, MultipartFile passbook, MultipartFile certifidoc, MultipartFile profile) {
-//
-//        log.info("[입점 신청 요청]");
-//
-//
-//
-//        log.info("[입점 신청 성공]");
-//    }
+    @Transactional
+    public StoreResponseDto applyFarmer(UserDetailsImpl userDetails, ApplyFarmerRequestDto applyFarmerRequestDto,
+                                        MultipartFile registFile, MultipartFile passbook, MultipartFile certifidoc, MultipartFile profile) {
+
+        log.info("[입점 신청 요청]");
+
+        if (userDetails.getMember().getRole() == MemberRole.FARMER) {
+            log.warn("이미 농부인 회원입니다. 회원: {}", userDetails.getMember().getUsername());
+            throw new CustomException(ErrorCode.ALREADY_FARMER);
+        }
+
+        String profileImageUrl = s3Service.uploadProfileImage(profile, "profileImages");
+        String registFileUrl = s3Service.uploadFile(registFile, "registFiles");
+        String passbookUrl = s3Service.uploadFile(passbook, "passbookImages");
+        String certifidocUrl = s3Service.uploadFile(certifidoc, "certifidocs");
+
+        Member member = memberRepository.findById(userDetails.getMember().getId())
+                .orElseThrow(() -> {
+                    log.warn("[로그인 실패] 사용자 없음: username={}", userDetails.getMember().getUsername());
+                    return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+                });
+
+        Farmer farmer = farmerRepository.findByMemberId(member.getId())
+                .orElseGet(() -> Farmer.builder().memberId(member.getId()).build());
+        farmerRepository.save(farmer);
+
+        member.updateMember(applyFarmerRequestDto.getMarketName(), applyFarmerRequestDto.getIntro(), profileImageUrl);
+        farmer.applyFarmer(applyFarmerRequestDto, registFileUrl, passbookUrl, certifidocUrl);
+
+        log.info("[입점 신청 성공]");
+
+        return StoreResponseDto.builder().member(member).farmer(farmer).build();
+    }
 
     @Transactional(readOnly = true)
     public Boolean checkRegisNumDuplicated(String regisNum) {
 
         log.info("[사업자 등록번호 / 농가확인번호 중복 확인] regisNum={}", regisNum);
 
-        if (memberRepository.existsByRegisNum(regisNum)) {
+        if (farmerRepository.existsByRegisNum(regisNum)) {
             log.warn("[중복 등록 번호] regisNum={}", regisNum);
             throw new CustomException(ErrorCode.REGIS_NUM_DUPLICATED);
         }

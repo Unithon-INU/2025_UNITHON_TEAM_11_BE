@@ -19,17 +19,17 @@ public class UpdateStoreRequestDto {
     private String representativeName;
 
     @Schema(description = "연락처", example = "010-1234-5678")
-    private String phoneNumber;
+    private String phone;
 
     @Schema(description = "사업자 등록번호 혹은 농가확인번호", example = "12345678910")
-    private String regisNum;
+    private String registNum;
 
     @Schema(description = "우편번호", example = "12345")
-    private String zipcode;
+    private String postalAddress;
 
     @Schema(description = "기본 주소지", example = "경기도 프링시 프링구 프링동")
-    private String address;
+    private String defaultAddress;
 
     @Schema(description = "상세 주소지", example = "101동 123호")
-    private String addressDetail;
+    private String restAddress;
 }
