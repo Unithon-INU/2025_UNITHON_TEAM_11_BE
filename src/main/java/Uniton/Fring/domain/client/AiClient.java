@@ -3,6 +3,7 @@ package Uniton.Fring.domain.client;
 import Uniton.Fring.domain.client.dto.req.RelatedProductsRequestDto;
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
 import Uniton.Fring.domain.client.dto.res.RecommendedProductsResponseDto;
+import Uniton.Fring.domain.client.dto.res.TitleSuggestionResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,8 @@ public class AiClient {
                             uri("/index_product_data"),
                             HttpMethod.POST,
                             new HttpEntity<>(relatedProductsRequestDto),
-                            new ParameterizedTypeReference<RecommendedProductsResponseDto>() {});
+                            new ParameterizedTypeReference<>() {
+                            });
 
             return res.getBody() == null
                     ? List.of()
@@ -55,7 +57,15 @@ public class AiClient {
     public String suggestTitle(TitleSuggestionRequestDto titleSuggestionRequestDto) {
 
         try {
-            return restTemplate.postForObject(uri("/title-suggest"), titleSuggestionRequestDto, String.class);
+            TitleSuggestionResponseDto res = restTemplate.postForObject(
+                    uri("/title-suggest"),
+                    titleSuggestionRequestDto,
+                    TitleSuggestionResponseDto.class);
+
+            return (res == null || res.getGenerated_title() == null || res.getGenerated_title().isBlank())
+                    ? null
+                    : res.getGenerated_title();
+
         } catch (RestClientException e) {
             log.warn("AI title-suggest 실패", e);
             return null;

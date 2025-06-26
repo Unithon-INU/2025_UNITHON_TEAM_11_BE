@@ -19,14 +19,10 @@ public class TitleSuggestionRequestDto {
     @Schema(description = "수확시기", example = "2025-01-15")
     private String harvestPeriod;
 
-    @Schema(description = "스프링 서버 주소")
-    private String backendUrl;
-
     @Builder
-    private TitleSuggestionRequestDto(String description, String origin, String harvestPeriod, String backendUrl) {
+    private TitleSuggestionRequestDto(String description, String origin, String harvestPeriod) {
         this.description = description;
         this.origin = origin;
         this.harvestPeriod = harvestPeriod;
-        this.backendUrl = backendUrl;
     }
 }

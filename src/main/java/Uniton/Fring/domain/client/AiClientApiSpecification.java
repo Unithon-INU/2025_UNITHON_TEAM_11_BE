@@ -21,7 +21,7 @@ public interface AiClientApiSpecification {
 
     @Operation(
             summary = "연관 농수산품 목록 조회",
-            description = "AI 서버에 연관된 농수산품들을 조회를 요청합니다.",
+            description = "AI 서버에 연관된 농수산품들을 조회를 요청합니다. (실패 시 빈 문자열 반환)",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -40,7 +40,7 @@ public interface AiClientApiSpecification {
 
     @Operation(
             summary = "농수산품 제목 추천",
-            description = "AI 서버에 농수산품에 대한 제목 추천을 요청합니다.",
+            description = "AI 서버에 농수산품에 대한 제목 추천을 요청합니다. (실패 시 null 반환)",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
