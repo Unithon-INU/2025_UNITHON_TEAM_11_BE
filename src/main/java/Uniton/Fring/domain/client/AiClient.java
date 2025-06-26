@@ -26,7 +26,7 @@ public class AiClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${ai.url.related-producturl}")
+    @Value("${ai.url.related-product}")
     private String relatedAiUrl;
 
     @Value("${ai.url.suggested-title}")
