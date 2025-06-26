@@ -306,7 +306,7 @@ public class ProductService {
                     .toList();
         }
 
-        aiClientService.relatedProducts(userDetails, product.getId());
+        List<SimpleProductResponseDto> relatedProducts = aiClientService.relatedProducts(userDetails, product.getId());
 
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
@@ -322,6 +322,7 @@ public class ProductService {
                 .recentImageUrls(new ArrayList<>())
                 .productOptions(productOptionResponseDtos)
                 .bestProducts(new ArrayList<>())
+                .relatedProducts(relatedProducts)
                 .build();
     }
 
