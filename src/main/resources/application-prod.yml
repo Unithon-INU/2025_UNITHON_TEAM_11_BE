@@ -71,7 +71,9 @@ cloud:
         secretKey: ${S3_SECRETKEY}
 
 ai:
-  base-url: ${AI_BASEURL}
+  url:
+    related-product: ${AI_RELATED_PRODUCT_URL}
+    suggested-title: ${AI_SUGGESTED_TITLE}
 
 server:
   port: 8080

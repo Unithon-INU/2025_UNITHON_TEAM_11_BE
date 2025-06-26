@@ -27,7 +27,8 @@ jobs:
           spring.datasource.url: ${{ secrets.MYSQL_URL }}
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
           cloud.aws.s3.bucket: ${{ secrets.S3_BUCKET }}
-          ai.base-url: ${{ secrets.AI_BASEURL }}
+          ai.url.related-product: ${{ secrets.AI_RELATED_PRODUCT_URL }}
+          ai.url.suggested-title : ${{ secrets.AI_SUGGESTED_TITLE }}
 
       - name: Build with Gradle
         run: |

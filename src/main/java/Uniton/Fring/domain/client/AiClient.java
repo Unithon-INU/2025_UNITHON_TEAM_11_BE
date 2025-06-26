@@ -26,11 +26,14 @@ public class AiClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${ai.base-url}")
-    private String baseUrl;
+    @Value("${ai.url.related-producturl}")
+    private String relatedAiUrl;
 
-    private URI uri(String path) {
-        return UriComponentsBuilder.fromUriString(baseUrl).path(path).build().toUri();
+    @Value("${ai.url.suggested-title}")
+    private String suggestedTitleAiUrl;
+
+    private URI uri(String aiUrl, String path) {
+        return UriComponentsBuilder.fromUriString(aiUrl).path(path).build().toUri();
     }
 
     public List<Long> relatedProducts(RelatedProductsRequestDto relatedProductsRequestDto) {
@@ -38,7 +41,7 @@ public class AiClient {
         try {
             ResponseEntity<RecommendedProductsResponseDto> res =
                     restTemplate.exchange(
-                            uri("/index_product_data"),
+                            uri(relatedAiUrl, "/index_product_data"),
                             HttpMethod.POST,
                             new HttpEntity<>(relatedProductsRequestDto),
                             new ParameterizedTypeReference<>() {
@@ -58,7 +61,7 @@ public class AiClient {
 
         try {
             TitleSuggestionResponseDto res = restTemplate.postForObject(
-                    uri("/title-suggest"),
+                    uri(suggestedTitleAiUrl, "/generate-product-title"),
                     titleSuggestionRequestDto,
                     TitleSuggestionResponseDto.class);
 
