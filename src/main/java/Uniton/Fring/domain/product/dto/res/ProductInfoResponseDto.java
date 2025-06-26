@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -105,7 +104,7 @@ public class ProductInfoResponseDto {
                                    List<ReviewResponseDto> reviews, List<ProductOptionResponseDto> productOptions,
                                    Integer totalReviewCount, Integer totalImageCount,
                                    List<String> recentImageUrls,
-                                   List<SimpleProductResponseDto> bestProducts) {
+                                   List<SimpleProductResponseDto> relatedProducts, List<SimpleProductResponseDto> bestProducts) {
         this.member = memberInfoResponseDto;
         this.isLiked = isLiked;
         this.id = product.getId();
@@ -131,7 +130,7 @@ public class ProductInfoResponseDto {
         this.totalReviewCount = totalReviewCount;
         this.totalImageCount = totalImageCount;
         this.recentImageUrls = recentImageUrls;
-        this.relatedProducts = new ArrayList<>();
+        this.relatedProducts = relatedProducts;
         this.bestProducts = bestProducts;
     }
 }

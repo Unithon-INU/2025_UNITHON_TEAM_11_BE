@@ -1,8 +1,7 @@
-package Uniton.Fring.domain.member.controller;
+package Uniton.Fring.domain.farmer.controller;
 
-import Uniton.Fring.domain.member.api.FarmerPageApiSpecification;
-import Uniton.Fring.domain.member.dto.res.StoreItemsResponseDto;
-import Uniton.Fring.domain.member.service.FarmerPageService;
+import Uniton.Fring.domain.farmer.FarmerService;
+import Uniton.Fring.domain.farmer.dto.res.StoreItemsResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
-public class FarmerPageController implements FarmerPageApiSpecification {
+public class FarmerController implements FarmerApiSpecification {
 
-    private final FarmerPageService farmerPageService;
+    private final FarmerService farmerService;
 
     // 스토어 관리
     @GetMapping
     public ResponseEntity<StoreItemsResponseDto<SimpleProductResponseDto>> getStore(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                                     @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(farmerPageService.getStore(userDetails, page));
+        return ResponseEntity.status(HttpStatus.OK).body(farmerService.getStore(userDetails, page));
     }
+
+//    // 프로필 수정
+//    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<StoreResponseDto> updateStore(@AuthenticationPrincipal UserDetailsImpl userDetails,
+//                                                        @RequestPart @Valid MypageRequestDto mypageRequestDto,
+//                                                        @RequestPart(value = "image", required = false) MultipartFile image) {
+//        return ResponseEntity.status(HttpStatus.OK).body(farmerService.updateStore(userDetails, mypageRequestDto, image));
+//    }
 
     // 주문 / 배송 관리
 

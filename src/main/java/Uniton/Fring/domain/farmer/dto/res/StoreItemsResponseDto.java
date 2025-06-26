@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.member.dto.res;
+package Uniton.Fring.domain.farmer.dto.res;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

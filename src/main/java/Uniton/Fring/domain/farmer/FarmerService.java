@@ -1,8 +1,8 @@
-package Uniton.Fring.domain.member.service;
+package Uniton.Fring.domain.farmer;
 
 import Uniton.Fring.domain.like.entity.ProductLike;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
-import Uniton.Fring.domain.member.dto.res.StoreItemsResponseDto;
+import Uniton.Fring.domain.farmer.dto.res.StoreItemsResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.product.entity.Product;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FarmerPageService {
+public class FarmerService {
 
     private final ProductRepository productRepository;
     private final ProductLikeRepository productLikeRepository;

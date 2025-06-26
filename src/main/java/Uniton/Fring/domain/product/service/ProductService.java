@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.product.service;
 
+import Uniton.Fring.domain.client.AiClientService;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
@@ -50,12 +51,13 @@ public class ProductService {
     private final ProductLikeRepository productLikeRepository;
     private final ProductOptionRepository productOptionRepository;
     private final MemberRepository memberRepository;
+    private final MemberLikeRepository memberLikeRepository;
     private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
     private final PurchaseRepository purchaseRepository;
     private final S3Service s3Service;
     private final MypageService mypageService;
-    private final MemberLikeRepository memberLikeRepository;
-    private final ReviewLikeRepository reviewLikeRepository;
+    private final AiClientService aiClientService;
 
     @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
@@ -172,6 +174,8 @@ public class ProductService {
                     return SimpleProductResponseDto.builder().product(bestProduct).isLiked(isLikedBestProduct).build();
                 }).toList();
 
+        List<SimpleProductResponseDto> relatedProducts = aiClientService.relatedProducts(userDetails, productId);
+
         log.info("[농수산 상세 조회 성공]");
 
         return ProductInfoResponseDto.builder()
@@ -183,6 +187,7 @@ public class ProductService {
                 .totalImageCount(totalImageCount)
                 .recentImageUrls(recentImages)
                 .bestProducts(bestProductResponseDtos)
+                .relatedProducts(relatedProducts)
                 .productOptions(productOptionResponseDtos)
                 .build();
     }

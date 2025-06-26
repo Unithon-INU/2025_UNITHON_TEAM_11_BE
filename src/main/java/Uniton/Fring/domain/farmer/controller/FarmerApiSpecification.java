@@ -1,6 +1,6 @@
-package Uniton.Fring.domain.member.api;
+package Uniton.Fring.domain.farmer.controller;
 
-import Uniton.Fring.domain.member.dto.res.StoreItemsResponseDto;
+import Uniton.Fring.domain.farmer.dto.res.StoreItemsResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Farmer", description = "농부 전용 페이지 API")
-public interface FarmerPageApiSpecification {
+public interface FarmerApiSpecification {
 
     @Operation(
             summary = "스토어 관리 상품 목록 조회",
