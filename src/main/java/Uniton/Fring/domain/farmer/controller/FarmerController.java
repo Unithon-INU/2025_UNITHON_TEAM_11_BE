@@ -42,5 +42,4 @@ public class FarmerController implements FarmerApiSpecification {
     // 취소 / 반품 관리
 
     // 받은 문의내역
-
 }

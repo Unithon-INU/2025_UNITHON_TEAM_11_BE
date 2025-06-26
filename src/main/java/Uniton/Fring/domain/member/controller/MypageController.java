@@ -2,6 +2,7 @@ package Uniton.Fring.domain.member.controller;
 
 import Uniton.Fring.domain.member.api.MypageApiSpecification;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
+import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.service.MypageService;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
@@ -29,6 +30,13 @@ public class MypageController implements MypageApiSpecification {
     @GetMapping
     public ResponseEntity<MypageResponseDto> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.getMypage(userDetails));
+    }
+
+    // 마이페이지 상세 조회
+    @GetMapping("/detail")
+    public ResponseEntity<MypageDetailResponseDto> getDetailMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                   @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getDetailMypage(userDetails, page));
     }
 
     // 마이페이지 수정

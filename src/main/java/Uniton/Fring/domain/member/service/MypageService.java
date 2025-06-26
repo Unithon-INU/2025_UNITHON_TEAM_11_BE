@@ -1,7 +1,11 @@
 package Uniton.Fring.domain.member.service;
 
+import Uniton.Fring.domain.like.entity.RecipeLike;
+import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
+import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
+import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -15,6 +19,8 @@ import Uniton.Fring.domain.purchase.entity.Purchase;
 import Uniton.Fring.domain.purchase.entity.PurchaseItem;
 import Uniton.Fring.domain.purchase.repository.PurchaseItemRepository;
 import Uniton.Fring.domain.purchase.repository.PurchaseRepository;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
+import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
@@ -46,12 +52,14 @@ public class MypageService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final ProductLikeRepository productLikeRepository;
     private final RecipeRepository recipeRepository;
+    private final RecipeLikeRepository recipeLikeRepository;
     private final ReviewRepository reviewRepository;
     private final RecentProductViewRepository recentProductViewRepository;
-    private final ProductLikeRepository productLikeRepository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
+    private final MemberLikeRepository memberLikeRepository;
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMypage(UserDetailsImpl userDetails) {
@@ -63,6 +71,44 @@ public class MypageService {
         log.info("[마이페이지 조회 성공]");
 
         return mypageResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public MypageDetailResponseDto getDetailMypage(UserDetailsImpl userDetails, int page) {
+
+        log.info("[마이페이지 상세 조회 요청]");
+
+        Long memberId = userDetails.getMember().getId();
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+        Page<RecipeLike> likes = recipeLikeRepository.findByMemberId(memberId, pageable);
+
+        List<Long> recipeIds = likes.stream().map(RecipeLike::getRecipeId).toList();
+        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+
+        // 리뷰 수 조회
+        List<Object[]> rawReviewCounts = reviewRepository.countByRecipeIds(recipeIds);
+        Map<Long, Integer> reviewCountMap = rawReviewCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()
+                ));
+
+        List<SimpleRecipeResponseDto> result = recipes.stream()
+                .map(recipe -> SimpleRecipeResponseDto.builder()
+                        .recipe(recipe)
+                        .isLiked(true)
+                        .reviewCount(reviewCountMap.getOrDefault(recipe.getId(), 0))
+                        .build())
+                .toList();
+
+        Boolean isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, memberId);
+
+        MypageDetailResponseDto mypageDetailResponseDto = MypageDetailResponseDto.builder()
+                .member(userDetails.getMember()).isLiked(isLikedMember).simpleRecipeList(result).build();
+
+        log.info("[마이페이지 상세 조회 성공]");
+
+        return mypageDetailResponseDto;
     }
 
     @Transactional

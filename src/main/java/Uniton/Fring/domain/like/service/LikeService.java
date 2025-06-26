@@ -204,7 +204,7 @@ public class LikeService {
         List<Long> recipeIds = likes.stream().map(RecipeLike::getRecipeId).toList();
         List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
 
-        // 리뷰 수 조회: List<Object[]> → Map<Long, Integer>
+        // 리뷰 수 조회
         List<Object[]> rawReviewCounts = reviewRepository.countByRecipeIds(recipeIds);
         Map<Long, Integer> reviewCountMap = rawReviewCounts.stream()
                 .collect(Collectors.toMap(
