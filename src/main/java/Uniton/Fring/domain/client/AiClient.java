@@ -4,6 +4,8 @@ import Uniton.Fring.domain.client.dto.req.RelatedProductsRequestDto;
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
 import Uniton.Fring.domain.client.dto.res.RecommendedProductsResponseDto;
 import Uniton.Fring.domain.client.dto.res.TitleSuggestionResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,7 @@ import java.util.List;
 public class AiClient {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${ai.url.related-product}")
     private String relatedAiUrl;
@@ -60,14 +63,34 @@ public class AiClient {
     public String suggestTitle(TitleSuggestionRequestDto titleSuggestionRequestDto) {
 
         try {
-            TitleSuggestionResponseDto res = restTemplate.postForObject(
+            ResponseEntity<String> response = restTemplate.exchange(
                     uri(suggestedTitleAiUrl, "/generate-product-title"),
-                    titleSuggestionRequestDto,
-                    TitleSuggestionResponseDto.class);
+                    HttpMethod.POST,
+                    new HttpEntity<>(titleSuggestionRequestDto),
+                    String.class
+            );
 
-            return (res == null || res.getGenerated_title() == null || res.getGenerated_title().isBlank())
-                    ? null
-                    : res.getGenerated_title();
+            String body = response.getBody();
+            String contentType = response.getHeaders().getContentType() != null
+                    ? response.getHeaders().getContentType().toString()
+                    : "";
+
+            if (body == null || body.isBlank()) return null;
+
+            // JSON 응답인 경우
+            if (contentType.contains("application/json")) {
+                try {
+                    TitleSuggestionResponseDto dto = objectMapper.readValue(
+                            body, TitleSuggestionResponseDto.class);
+                    return dto.getGenerated_title();
+                } catch (JsonProcessingException e) {
+                    log.warn("AI title-suggest JSON 파싱 실패 → 원문 반환", e);
+                    return body;
+                }
+            }
+
+            // plain text인 경우
+            return body;
 
         } catch (RestClientException e) {
             log.warn("AI title-suggest 실패", e);
