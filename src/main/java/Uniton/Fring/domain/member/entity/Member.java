@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.member.entity;
 
+import Uniton.Fring.domain.farmer.dto.req.UpdateStoreRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.req.SignupRequestDto;
 import Uniton.Fring.domain.member.enums.MemberRole;
@@ -46,6 +47,24 @@ public class Member {
     @Column(nullable = false)
     private Boolean isRecipeMember = false;
 
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
+    @Column(nullable = true)
+    private String imageUrl;
+
     public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
         this.username = signupRequestDto.getUsername();
@@ -66,6 +85,10 @@ public class Member {
         if (imageUrl != null && !imageUrl.isBlank()) {
             this.imageUrl = imageUrl;
         }
+    }
+
+    public void updateStore(UpdateStoreRequestDto updateStoreRequestDto, String imageUrl) {
+
     }
 
     public void changeRoleToFarmer() {

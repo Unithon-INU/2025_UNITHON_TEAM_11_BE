@@ -174,7 +174,7 @@ public class ProductService {
                     return SimpleProductResponseDto.builder().product(bestProduct).isLiked(isLikedBestProduct).build();
                 }).toList();
 
-        List<SimpleProductResponseDto> relatedProducts = aiClientService.relatedProducts(userDetails, productId);
+        List<SimpleProductResponseDto> relatedProducts = aiClientService.findCachedRelatedProducts(userDetails, productId);
 
         log.info("[농수산 상세 조회 성공]");
 

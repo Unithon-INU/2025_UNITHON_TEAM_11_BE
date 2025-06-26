@@ -13,6 +13,7 @@ import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -137,6 +138,33 @@ public class AiClientService {
         return ids.stream()
                 .map(productMap::get)
                 .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleProductResponseDto> findCachedRelatedProducts(UserDetailsImpl userDetails, Long productId) {
+        List<Long> ids = recommendationRepository
+                .findByProductIdOrderByRankOrderAsc(productId)
+                .stream().map(Recommendation::getRelatedId).toList();
+
+        if (ids.isEmpty()) return List.of();
+
+        Map<Long, Product> map = productRepository.findAllById(ids).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        Long memberId = userDetails == null ? null : userDetails.getMember().getId();
+        Set<Long> liked = memberId == null ? Set.of()
+                : productLikeRepository.findByMemberIdAndProductIdIn(memberId, ids).stream()
+                .map(ProductLike::getProductId)
+                .collect(Collectors.toSet());
+
+        return ids.stream()
+                .map(map::get)
+                .filter(Objects::nonNull)
+                .map(p -> SimpleProductResponseDto.builder()
+                        .product(p)
+                        .isLiked(liked.contains(p.getId()))
+                        .build())
                 .toList();
     }
 }
