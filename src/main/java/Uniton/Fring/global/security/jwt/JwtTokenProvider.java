@@ -83,6 +83,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
 
         return LoginResponseDto.builder()
+                .userId(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .imageUrl(member.getImageUrl())

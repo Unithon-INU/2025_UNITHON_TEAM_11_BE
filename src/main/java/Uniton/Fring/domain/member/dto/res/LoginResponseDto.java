@@ -11,17 +11,20 @@ import java.util.Date;
 @Schema(description = "로그인 응답 DTO")
 public class LoginResponseDto {
 
+    @Schema(description = "사용자 Id", example = "1")
+    private final Long userId;
+
     @Schema(description = "사용자 이메일", example = "dongkyun@gmail.com")
     private final String email;
 
     @Schema(description = "회원 프로필 이미지 URL", example = "http://example.com/profile.jpg")
-    private String imageUrl;
+    private final String imageUrl;
 
     @Schema(description = "회원 닉네임", example = "핑크솔트123")
-    private String nickname;
+    private final String nickname;
 
     @Schema(description = "회원 소개글", example = "핑크솔트로 구운 삼겹살을 좋아해요")
-    private String introduction;
+    private final String introduction;
 
     @Schema(description = "JWT Access Token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private final String accessToken;
