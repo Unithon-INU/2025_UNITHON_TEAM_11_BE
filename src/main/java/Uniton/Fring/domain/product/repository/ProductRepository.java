@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findTop10ByOrderByRatingDesc();
 
+    Page<Product> findByMemberIdOrderByCreatedAtDesc(Long memberId, Pageable pageable);
+
     // Product 엔티티에서 p라는 별칭으로 모든 컬럼을 조회
     // Product 테이블과 Review 테이블을 조인
     // GROUP BY를 통해 상품 단위로 묶고 집계 함수(COUNT)를 쓸 수 있게 함
