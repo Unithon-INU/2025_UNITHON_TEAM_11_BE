@@ -70,26 +70,26 @@ public class AiClient {
                     String.class
             );
 
-            String body = response.getBody();
-            String contentType = response.getHeaders().getContentType() != null
-                    ? response.getHeaders().getContentType().toString()
-                    : "";
+            String body = response.getBody() == null ? "" : response.getBody().trim();
+            if (body.isBlank()) return null;
 
-            if (body == null || body.isBlank()) return null;
-
-            // JSON 응답인 경우
-            if (contentType.contains("application/json")) {
-                try {
-                    TitleSuggestionResponseDto dto = objectMapper.readValue(
-                            body, TitleSuggestionResponseDto.class);
+            // 시도 1 : JSON 객체
+            try {
+                TitleSuggestionResponseDto dto =
+                        objectMapper.readValue(body, TitleSuggestionResponseDto.class);
+                if (dto.getGenerated_title() != null &&
+                        !dto.getGenerated_title().isBlank()) {
                     return dto.getGenerated_title();
-                } catch (JsonProcessingException e) {
-                    log.warn("AI title-suggest JSON 파싱 실패 → 원문 반환", e);
-                    return body;
                 }
-            }
+            } catch (JsonProcessingException ignore) { /* 계속 진행 */ }
 
-            // plain text인 경우
+            // 시도 2 : JSON 문자열
+            try {
+                String plain = objectMapper.readValue(body, String.class);
+                if (!plain.isBlank()) return plain;
+            } catch (JsonProcessingException ignore) { /* 계속 진행 */ }
+
+            // 시도 3 : 평문
             return body;
 
         } catch (RestClientException e) {
