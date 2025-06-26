@@ -3,9 +3,6 @@ package Uniton.Fring.domain.client;
 import Uniton.Fring.domain.client.dto.req.RelatedProductsRequestDto;
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
 import Uniton.Fring.domain.client.dto.res.RecommendedProductsResponseDto;
-import Uniton.Fring.domain.client.dto.res.TitleSuggestionResponseDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +24,6 @@ import java.util.List;
 public class AiClient {
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
 
     @Value("${ai.url.related-product}")
     private String relatedAiUrl;
@@ -73,24 +69,7 @@ public class AiClient {
             String body = response.getBody() == null ? "" : response.getBody().trim();
             if (body.isBlank()) return null;
 
-            // 시도 1 : JSON 객체
-            try {
-                TitleSuggestionResponseDto dto =
-                        objectMapper.readValue(body, TitleSuggestionResponseDto.class);
-                if (dto.getGenerated_title() != null &&
-                        !dto.getGenerated_title().isBlank()) {
-                    return dto.getGenerated_title();
-                }
-            } catch (JsonProcessingException ignore) { /* 계속 진행 */ }
-
-            // 시도 2 : JSON 문자열
-            try {
-                String plain = objectMapper.readValue(body, String.class);
-                if (!plain.isBlank()) return plain;
-            } catch (JsonProcessingException ignore) { /* 계속 진행 */ }
-
-            // 시도 3 : 평문
-            return body;
+            return body.isBlank() ? null : body;
 
         } catch (RestClientException e) {
             log.warn("AI title-suggest 실패", e);
