@@ -306,6 +306,8 @@ public class ProductService {
                     .toList();
         }
 
+        aiClientService.relatedProducts(userDetails, product.getId());
+
         MemberInfoResponseDto memberInfoResponseDto = MemberInfoResponseDto.fromMember(userDetails.getMember(), null);
 
         log.info("[농수산품 추가 성공]");
