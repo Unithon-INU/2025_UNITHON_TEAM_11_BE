@@ -30,6 +30,7 @@ public class AiClientService {
     private final RecommendationRepository recommendationRepository;
 
     // 연관 상품 조회
+    @Transactional
     public List<SimpleProductResponseDto> relatedProducts(UserDetailsImpl userDetails, Long productId) {
 
         log.info("[연관 상품 조회 요청] 상품: {}", productId);
@@ -57,6 +58,17 @@ public class AiClientService {
         }
 
         log.info("[AI 호출 성공] productIds= {}", ids);
+
+        // 캐시(Recommendation) 저장
+        int rank = 1;
+        for (Long id : ids) {
+            // 자기 자신 제외
+            if (id == null || id.equals(productId)) continue;
+            // 이미 있음
+            if (recommendationRepository.existsByProductIdAndRelatedId(productId,id)) continue;
+
+            recommendationRepository.save(Recommendation.builder().productId(productId).relatedId(id).rankOrder(rank++).build());
+        }
 
         // 상품 조회
         Map<Long, Product> productMap = productRepository.findAllById(ids)
