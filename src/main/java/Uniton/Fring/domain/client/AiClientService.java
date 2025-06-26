@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -75,6 +72,8 @@ public class AiClientService {
     // 캐싱
     private List<Product> fetchOrLoad(Long productId) {
 
+        log.info("[캐시 저장 요청]");
+
         // recommendation 테이블 확인
         List<Recommendation> cached = recommendationRepository.findByProductIdOrderByRankOrderAsc(productId);
 
@@ -93,14 +92,38 @@ public class AiClientService {
                     .name(product.getName())
                     .build();
 
+            log.info("[Ai 호출]");
+
             // AI 호출
             ids = aiClient.relatedProducts(relatedProductsRequestDto);
 
+            if (ids == null || ids.isEmpty()) {
+                log.warn("[AI 호출 결과 없음] 추천 상품 리스트가 비어있음, 캐시 저장 생략");
+                return List.of();
+            }
+
+            log.info("[Ai 호출 성공, 결과 존재] productIds= {}", ids);
+
             // 캐시 저장
+            Set<Long> already = new HashSet<>();
             int rank = 1;
             for (Long id : ids) {
-                recommendationRepository.save(Recommendation.builder().productId(productId).relatedId(id).rankOrder(rank++).build());
+                if (id == null || id.equals(productId) || !already.add(id)) continue;
+
+                // 중복 저장 방지 - DB에 이미 같은 productId + relatedId 가 존재하는지 확인
+                if (recommendationRepository.existsByProductIdAndRelatedId(productId, id)) {
+                    continue;
+                }
+
+                recommendationRepository.save(
+                        Recommendation.builder()
+                                .productId(productId)
+                                .relatedId(id)
+                                .rankOrder(rank++)
+                                .build());
             }
+
+            log.info("[캐시 저장 완료]");
         }
 
         if (ids.isEmpty()) return List.of();
@@ -108,6 +131,8 @@ public class AiClientService {
         Map<Long, Product> productMap = productRepository.findAllById(ids)
                 .stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        log.info("[상품 조회 완료]");
 
         return ids.stream()
                 .map(productMap::get)

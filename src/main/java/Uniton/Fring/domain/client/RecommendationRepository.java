@@ -8,4 +8,6 @@ public interface RecommendationRepository extends JpaRepository<Recommendation, 
 
     // 캐시 조회
     List<Recommendation> findByProductIdOrderByRankOrderAsc(Long productId);
+
+    boolean existsByProductIdAndRelatedId(Long productId, Long id);
 }
