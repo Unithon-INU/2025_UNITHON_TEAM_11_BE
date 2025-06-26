@@ -113,6 +113,7 @@ public class SecurityConfig {
             "/api/recipes/**",
             "/api/products/**",
             "/api/members/**",
+            "/api/ai/**",
     };
 
     private static final String[] FARMER_URIS = {
