@@ -38,6 +38,7 @@ public enum ErrorCode {
     NICKNAME_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "닉네임이 중복되었습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 401, "로그인이 실패하였습니다."),
     PASSWORD_SAME_AS_BEFORE(HttpStatus.BAD_REQUEST, 400, "기존과 동일한 비밀번호입니다."),
+    REGIS_NUM_DUPLICATED(HttpStatus.BAD_REQUEST, 400, "농장 등록 번호가 중복되었습니다."),
 
     // Like
     INVALID_LIKE_TARGET(HttpStatus.BAD_REQUEST, 400, "잘못된 좋아요 대상입니다."),

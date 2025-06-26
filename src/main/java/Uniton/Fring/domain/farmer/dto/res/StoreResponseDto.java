@@ -52,7 +52,7 @@ public class StoreResponseDto {
         this.isSeller = member.getRole() == MemberRole.FARMER;
         this.representativeName = member.getRepresentativeName();
         this.phoneNumber = member.getPhoneNumber();
-        this.registrationNumber = member.getRegistrationNumber();
+        this.registrationNumber = member.getRegisNum();
         this.zipcode = member.getZipcode();
         this.address = member.getAddress();
         this.addressDetail = member.getAddressDetail();

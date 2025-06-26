@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -80,35 +81,38 @@ public class MypageService {
 
         Long memberId = userDetails.getMember().getId();
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<RecipeLike> likes = recipeLikeRepository.findByMemberId(memberId, pageable);
+        Page<Recipe> recipePage = recipeRepository.findByMemberIdOrderByIdDesc(memberId, pageable);
 
-        List<Long> recipeIds = likes.stream().map(RecipeLike::getRecipeId).toList();
-        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+        List<Recipe> recipes = recipePage.getContent();
+        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
 
         // 리뷰 수 조회
-        List<Object[]> rawReviewCounts = reviewRepository.countByRecipeIds(recipeIds);
-        Map<Long, Integer> reviewCountMap = rawReviewCounts.stream()
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],
-                        row -> ((Long) row[1]).intValue()
-                ));
+        Map<Long,Integer> reviewCountMap =
+                reviewRepository.countByRecipeIds(recipeIds).stream()
+                        .collect(Collectors.toMap(
+                                row -> (Long) row[0],
+                                row -> ((Long) row[1]).intValue()));
+
+        // 좋아요 한 레시피 조회
+        Set<Long> likedIds = recipeLikeRepository
+                .findByMemberIdAndRecipeIdIn(memberId, recipeIds).stream()
+                .map(RecipeLike::getRecipeId)
+                .collect(Collectors.toSet());
 
         List<SimpleRecipeResponseDto> result = recipes.stream()
-                .map(recipe -> SimpleRecipeResponseDto.builder()
-                        .recipe(recipe)
-                        .isLiked(true)
-                        .reviewCount(reviewCountMap.getOrDefault(recipe.getId(), 0))
+                .map(r -> SimpleRecipeResponseDto.builder()
+                        .recipe(r)
+                        .isLiked(likedIds.contains(r.getId()))
+                        .reviewCount(reviewCountMap.getOrDefault(r.getId(), 0))
                         .build())
                 .toList();
 
         Boolean isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, memberId);
 
-        MypageDetailResponseDto mypageDetailResponseDto = MypageDetailResponseDto.builder()
-                .member(userDetails.getMember()).isLiked(isLikedMember).simpleRecipeList(result).build();
-
         log.info("[마이페이지 상세 조회 성공]");
 
-        return mypageDetailResponseDto;
+        return MypageDetailResponseDto.builder()
+                .member(userDetails.getMember()).isLiked(isLikedMember).simpleRecipeList(result).build();
     }
 
     @Transactional
@@ -270,18 +274,29 @@ public class MypageService {
 //
 //
 //    }
-//
+
 //    @Transactional
-//    public Void applyFarmer(UserDetailsImpl userDetails, ApplyFarmerRequestDto applyFarmerRequestDto) {
+//    public Void applyFarmer(UserDetailsImpl userDetails, ApplyFarmerRequestDto applyFarmerRequestDto,
+//                            MultipartFile registFile, MultipartFile passbook, MultipartFile certifidoc, MultipartFile profile) {
+//
+//        log.info("[입점 신청 요청]");
 //
 //
+//
+//        log.info("[입점 신청 성공]");
 //    }
-//
-//    @Transactional(readOnly = true)
-//    public Boolean checkRegisNumDuplicated(String regisNum) {
-//
-//
-//    }
+
+    @Transactional(readOnly = true)
+    public Boolean checkRegisNumDuplicated(String regisNum) {
+
+        log.info("[사업자 등록번호 / 농가확인번호 중복 확인] regisNum={}", regisNum);
+
+        if (memberRepository.existsByRegisNum(regisNum)) {
+            log.warn("[중복 등록 번호] regisNum={}", regisNum);
+            throw new CustomException(ErrorCode.REGIS_NUM_DUPLICATED);
+        }
+        return true;
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveOrUpdate(Long memberId, Long productId) {

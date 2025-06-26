@@ -24,6 +24,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Optional<Recipe> findTop1ByTitleContainingOrderByCreatedAtDesc(String keyword);
 
+    Page<Recipe> findByMemberIdOrderByIdDesc(Long memberId, Pageable pageable);
+
     // 키워드를 기반으로 유사도 정렬 쿼리문
     @Query(value = """
         SELECT * FROM recipe r

@@ -54,7 +54,7 @@ public class Member {
     private String phoneNumber;
 
     @Column(nullable = true)
-    private String registrationNumber;
+    private String regisNum;
 
     @Column(nullable = true)
     private String zipcode;
@@ -92,7 +92,7 @@ public class Member {
         this.introduction = updateStoreRequestDto.getIntroduction();
         this.representativeName = updateStoreRequestDto.getRepresentativeName();
         this.phoneNumber = updateStoreRequestDto.getPhoneNumber();
-        this.registrationNumber = updateStoreRequestDto.getRegistrationNumber();
+        this.regisNum = updateStoreRequestDto.getRegisNum();
         this.zipcode = updateStoreRequestDto.getZipcode();
         this.address = updateStoreRequestDto.getAddress();
         this.addressDetail = updateStoreRequestDto.getAddressDetail();

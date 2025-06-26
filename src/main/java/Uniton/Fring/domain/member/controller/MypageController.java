@@ -89,7 +89,7 @@ public class MypageController implements MypageApiSpecification {
 //        return ResponseEntity.ok(mypageService.getRecipeReviewHistory(userDetails, page));
 //    }
 //
-//    // 입점 신청
+    // 입점 신청
 //    @PostMapping(value = "/apply-farmer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    public ResponseEntity<Void> applyFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails,
 //                                            @RequestPart @Valid ApplyFarmerRequestDto applyFarmerRequestDto,
@@ -99,10 +99,10 @@ public class MypageController implements MypageApiSpecification {
 //                                            @RequestPart(value = "profile", required = false) MultipartFile profile) {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(mypageService.applyFarmer(userDetails, applyFarmerRequestDto, registFile, passbook, certifidoc, profile));
 //    }
-//
-//    // 사업자 등록번호 or 농가확인번호 중복 화인
-//    @GetMapping("/regisNum/{regisNum}")
-//    public ResponseEntity<Boolean> checkRegistNumDuplicated(@PathVariable String regisNum) {
-//        return ResponseEntity.status(HttpStatus.OK).body(mypageService.checkRegisNumDuplicated(regisNum));
-//    }
+
+    // 사업자 등록번호 or 농가확인번호 중복 화인
+    @GetMapping("/regisNum/{regisNum}")
+    public ResponseEntity<Boolean> checkRegistNumDuplicated(@PathVariable String regisNum) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.checkRegisNumDuplicated(regisNum));
+    }
 }

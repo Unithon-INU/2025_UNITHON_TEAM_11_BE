@@ -22,7 +22,7 @@ public class UpdateStoreRequestDto {
     private String phoneNumber;
 
     @Schema(description = "사업자 등록번호 혹은 농가확인번호", example = "12345678910")
-    private String registrationNumber;
+    private String regisNum;
 
     @Schema(description = "우편번호", example = "12345")
     private String zipcode;
