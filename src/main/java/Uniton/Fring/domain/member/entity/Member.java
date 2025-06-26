@@ -48,22 +48,22 @@ public class Member {
     private Boolean isRecipeMember = false;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String representativeName;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String phoneNumber;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String registrationNumber;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String zipcode;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String address;
 
     @Column(nullable = true)
-    private String imageUrl;
+    private String addressDetail;
 
     public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
@@ -88,7 +88,15 @@ public class Member {
     }
 
     public void updateStore(UpdateStoreRequestDto updateStoreRequestDto, String imageUrl) {
-
+        this.nickname = updateStoreRequestDto.getNickname();
+        this.introduction = updateStoreRequestDto.getIntroduction();
+        this.representativeName = updateStoreRequestDto.getRepresentativeName();
+        this.phoneNumber = updateStoreRequestDto.getPhoneNumber();
+        this.registrationNumber = updateStoreRequestDto.getRegistrationNumber();
+        this.zipcode = updateStoreRequestDto.getZipcode();
+        this.address = updateStoreRequestDto.getAddress();
+        this.addressDetail = updateStoreRequestDto.getAddressDetail();
+        this.imageUrl = imageUrl;
     }
 
     public void changeRoleToFarmer() {
