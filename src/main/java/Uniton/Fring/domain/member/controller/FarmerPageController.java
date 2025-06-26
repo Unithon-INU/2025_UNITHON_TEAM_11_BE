@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.member.controller;
 
+import Uniton.Fring.domain.member.api.FarmerPageApiSpecification;
 import Uniton.Fring.domain.member.dto.res.StoreItemsResponseDto;
 import Uniton.Fring.domain.member.service.FarmerPageService;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
-public class FarmerPageController {
+public class FarmerPageController implements FarmerPageApiSpecification {
 
     private final FarmerPageService farmerPageService;
 
