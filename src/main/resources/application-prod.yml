@@ -73,9 +73,6 @@ cloud:
 ai:
   base-url: ${AI_BASEURL}
 
-backend:
-  base-url: ${BACKEND_BASEURL}
-
 server:
   port: 8080
 

@@ -2,6 +2,7 @@ package Uniton.Fring.domain.client;
 
 import Uniton.Fring.domain.client.dto.req.RelatedProductsRequestDto;
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
+import Uniton.Fring.domain.client.dto.res.RecommendedProductsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,11 +35,17 @@ public class AiClient {
     public List<Long> relatedProducts(RelatedProductsRequestDto relatedProductsRequestDto) {
 
         try {
-            ResponseEntity<List<Long>> res = restTemplate.exchange(
-                    uri("/index_product_data"), HttpMethod.POST,
-                    new HttpEntity<>(relatedProductsRequestDto),
-                    new ParameterizedTypeReference<>() {});
-            return res.getBody() == null ? List.of() : res.getBody();
+            ResponseEntity<RecommendedProductsResponseDto> res =
+                    restTemplate.exchange(
+                            uri("/index_product_data"),
+                            HttpMethod.POST,
+                            new HttpEntity<>(relatedProductsRequestDto),
+                            new ParameterizedTypeReference<RecommendedProductsResponseDto>() {});
+
+            return res.getBody() == null
+                    ? List.of()
+                    : res.getBody().getRecommendedProductIds();
+
         } catch (RestClientException e) {
             log.warn("AI product-related 실패", e);
             return List.of();
@@ -51,7 +58,7 @@ public class AiClient {
             return restTemplate.postForObject(uri("/title-suggest"), titleSuggestionRequestDto, String.class);
         } catch (RestClientException e) {
             log.warn("AI title-suggest 실패", e);
-            return "우리 농산물 착한 가격!";
+            return null;
         }
     }
 }

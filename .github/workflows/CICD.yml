@@ -28,7 +28,6 @@ jobs:
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
           cloud.aws.s3.bucket: ${{ secrets.S3_BUCKET }}
           ai.base-url: ${{ secrets.AI_BASEURL }}
-          backend.base-url: ${{ secrets.BACKEND_BASEURL }}
 
       - name: Build with Gradle
         run: |
