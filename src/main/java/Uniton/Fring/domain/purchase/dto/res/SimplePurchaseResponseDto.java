@@ -49,7 +49,7 @@ public class SimplePurchaseResponseDto {
 
     @Builder
     private SimplePurchaseResponseDto(PurchaseItem purchaseItem, Purchase purchase, String sellerNickname, String status, Product product, Boolean isReviewed) {
-        this.id = purchaseItem.getId();
+        this.id = purchaseItem.getPurchaseId();
         this.productId = purchaseItem.getProductId();
         this.status = status;
         this.sellerNickname = sellerNickname;
