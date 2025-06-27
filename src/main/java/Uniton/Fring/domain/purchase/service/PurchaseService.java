@@ -154,7 +154,7 @@ public class PurchaseService {
             throw new CustomException(ErrorCode.PURCHASE_MEMBER_NOT_MATCH);
         }
 
-        purchaseRepository.delete(purchase);
+        purchase.cancelPurchase();
 
         log.info("[주문 취소 성공]");
     }

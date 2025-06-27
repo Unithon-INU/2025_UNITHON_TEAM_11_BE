@@ -66,6 +66,10 @@ public class Purchase {
         this.payMethod = payMethod;
     }
 
+    public void cancelPurchase() {
+        this.purchaseStatus = PurchaseStatus.CANCELED;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.purchaseDate = LocalDate.now();
