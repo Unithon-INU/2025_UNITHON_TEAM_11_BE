@@ -58,5 +58,20 @@ public interface InquiryApiSpecification {
     ResponseEntity<List<SimpleInquiryResponseDto>> getMyInquiries(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @RequestParam(defaultValue = "0") int page);
 
-
+    @Operation(
+            summary = "문의 내역 상세 조회",
+            description = "문의 내역을 상세 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "문의 내역 상세 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = InquiryResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<InquiryResponseDto> getInquiry(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                  @PathVariable Long inquiryId);
 }

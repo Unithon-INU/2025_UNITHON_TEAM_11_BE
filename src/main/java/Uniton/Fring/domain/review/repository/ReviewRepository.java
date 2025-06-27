@@ -24,7 +24,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findTop5ByProductIdOrderByCreatedAtDesc(Long productId);
 
-    List<Review> findByMemberIdAndPurchaseIdInAndProductIdIn(Long memberId, Collection<Long> purchaseIds, Collection<Long> productIds);
+    List<Review> findByMemberIdAndPurchaseIdIn(Long memberId, Collection<Long> purchaseIds);
 
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.recipeId = :recipeId")
     Double findAverageRatingByRecipeId(@Param("recipeId") Long recipeId);

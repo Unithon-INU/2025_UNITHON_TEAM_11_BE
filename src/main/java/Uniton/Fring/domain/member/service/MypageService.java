@@ -205,11 +205,12 @@ public class MypageService {
                 .stream()
                 .collect(Collectors.toMap(Member::getId, Member::getNickname));
 
-        List<Review> reviews = reviewRepository.findByMemberIdAndPurchaseIdInAndProductIdIn(
-                memberId, purchaseIds, productIds);
+        // 리뷰 조회: purchaseId 기준만 사용
+        List<Review> reviews = reviewRepository.findByMemberIdAndPurchaseIdIn(memberId, purchaseIds);
 
-        Set<String> reviewedKeys = reviews.stream()
-                .map(r -> r.getPurchaseId() + "-" + r.getProductId())
+        // 이미 리뷰가 있는 purchaseId 집합
+        Set<Long> reviewedPurchaseIds = reviews.stream()
+                .map(Review::getPurchaseId)
                 .collect(Collectors.toSet());
 
         // DTO 변환
@@ -218,7 +219,7 @@ public class MypageService {
                     Purchase purchase = purchaseMap.get(item.getPurchaseId());
                     Product product = productMap.get(item.getProductId());
                     String sellerNickame = sellerNameMap.get(product.getMemberId());
-                    boolean isReviewed = reviewedKeys.contains(item.getPurchaseId() + "-" + item.getProductId());
+                    boolean isReviewed = reviewedPurchaseIds.contains(item.getPurchaseId());
 
                     return SimplePurchaseResponseDto.builder()
                             .purchaseItem(item)

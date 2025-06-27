@@ -115,6 +115,7 @@ public class RecipeService {
 
         // 리뷰 페이지 조회
         Page<Review> reviewPage = reviewRepository.findByRecipeId(recipeId, reviewPageable);
+        Integer totalReviewCount = Math.toIntExact(reviewPage.getTotalElements());
 
         // 리뷰에서 memberId만 추출하고 중복 제거하여 리스트 생성
         List<Long> reviewMemberIds = reviewPage.getContent().stream()
@@ -200,6 +201,7 @@ public class RecipeService {
                 .isLiked(isLikedRecipe)
                 .recipe(recipe).recipeStep(recipeStepResponseDtos)
                 .reviews(reviewResponseDtoList)
+                .totalReviewCount(totalReviewCount)
                 .comments(commentResponseDtoList)
                 .build();
     }

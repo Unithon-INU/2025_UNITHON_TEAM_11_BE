@@ -32,6 +32,15 @@ public class Inquiry {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "answer_member_id", nullable = true)
+    private Long answerMemberId;
+
+    @Column(nullable = true)
+    private String answerTitle;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String answerContent;
+
     @ElementCollection
     @CollectionTable(name = "inquiry_image", joinColumns = @JoinColumn(name = "inquiry_id"))
     @Column(name = "image_url")
