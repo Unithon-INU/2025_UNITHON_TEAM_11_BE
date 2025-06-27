@@ -6,6 +6,7 @@ import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.repository.MemberRepository;
+import Uniton.Fring.domain.member.service.MypageService;
 import Uniton.Fring.domain.recipe.dto.req.RecipeRequestDto;
 import Uniton.Fring.domain.recipe.dto.req.RecipeStepRequestDto;
 import Uniton.Fring.domain.recipe.dto.res.RecipeInfoResponseDto;
@@ -21,6 +22,7 @@ import Uniton.Fring.domain.review.entity.Comment;
 import Uniton.Fring.domain.review.entity.Review;
 import Uniton.Fring.domain.review.repository.CommentRepository;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
+import Uniton.Fring.domain.review.service.ReviewService;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
@@ -52,10 +54,12 @@ public class RecipeService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeLikeRepository recipeLikeRepository;
     private final ReviewRepository reviewRepository;
-    private final MemberRepository memberRepository;
-    private final CommentRepository commentRepository;
-    private final MemberLikeRepository memberLikeRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final ReviewService reviewService;
+    private final MemberRepository memberRepository;
+    private final MemberLikeRepository memberLikeRepository;
+    private final MypageService mypageService;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public RecipeInfoResponseDto getRecipe(UserDetailsImpl userDetails, Long recipeId, int page) {
@@ -68,7 +72,10 @@ public class RecipeService {
         Pageable commmentPageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Long memberId;
-        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+        if (userDetails != null) {
+            memberId = userDetails.getMember().getId();
+            mypageService.recentRecipeSaveOrUpdate(memberId, recipeId);
+        } else {
             memberId = null;
         }
 
@@ -186,8 +193,6 @@ public class RecipeService {
                 })
                 .toList();
 
-        log.info("[레시피 댓글 리스트 응답 생성]");
-
         log.info("[레시피 상세 정보 조회 성공]");
 
         return RecipeInfoResponseDto.builder()
@@ -211,7 +216,7 @@ public class RecipeService {
 
         List<Recipe> bestRecipes = recipeRepository.findTop10ByOrderByRatingDesc();
 
-        Map<Long, Integer> reviewCountMap = getReviewCountMapFromRecipes(bestRecipes);
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(bestRecipes);
 
         List<SimpleRecipeResponseDto> bestRecipeResponseDtos = bestRecipes.stream()
                 .map(recipe -> {
@@ -245,7 +250,7 @@ public class RecipeService {
         Page<Recipe> recentRecipes = recipeRepository.findAll(pageable);
         log.info("레시피 8개 조회 완료");
 
-        Map<Long, Integer> reviewCountMap = getReviewCountMapFromRecipes(recentRecipes.getContent());
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(recentRecipes.getContent());
 
         List<SimpleRecipeResponseDto> recentRecipeResponseDtos = recentRecipes.stream()
                 .map(recipe -> {
@@ -434,18 +439,5 @@ public class RecipeService {
                 s3Service.delete(url);
             }
         }
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, Integer> getReviewCountMapFromRecipes(List<Recipe> recipes) {
-        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
-
-        List<Object[]> reviewCounts = reviewRepository.countReviewsByRecipeIds(recipeIds);
-
-        return reviewCounts.stream()
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],
-                        row -> ((Long) row[1]).intValue()
-                ));
     }
 }

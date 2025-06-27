@@ -19,6 +19,7 @@ import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.recipe.service.RecipeService;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
+import Uniton.Fring.domain.review.service.ReviewService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,7 @@ public class MainService {
     private final MemberLikeRepository memberLikeRepository;
     private final ProductLikeRepository productLikeRepository;
     private final RecipeService recipeService;
+    private final ReviewService reviewService;
 
     @Transactional(readOnly = true)
     public MainResponseDto mainInfo(UserDetailsImpl userDetails) {
@@ -73,7 +75,7 @@ public class MainService {
                     return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
                 }).toList();
 
-        Map<Long, Integer> reviewCountMap = recipeService.getReviewCountMapFromRecipes(bestRecipes);
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(bestRecipes);
 
         log.info("[메인] 평점 높은 레시피 목록 응답 생성");
         List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = bestRecipes.stream()
@@ -142,7 +144,7 @@ public class MainService {
                 }).toList();
 
         // 리뷰 수 추출
-        Map<Long, Integer> reviewCountMap = recipeService.getReviewCountMapFromRecipes(recipePage.getContent());
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(recipePage.getContent());
 
         List<SimpleRecipeResponseDto> recipeResponseDtos = recipePage.stream()
                 .map(recipe -> {
@@ -223,8 +225,8 @@ public class MainService {
         Recipe specialRecipe = recipeRepository.findTop1ByTitleContainingOrderByCreatedAtDesc("특별")
                 .orElse(null);
 
-        Map<Long, Integer> bestRecipeReviewCountMap = recipeService.getReviewCountMapFromRecipes(bestRecipes);
-        Map<Long, Integer> newRecipeReviewCountMap = recipeService.getReviewCountMapFromRecipes(newRecipes);
+        Map<Long, Integer> bestRecipeReviewCountMap = reviewService.getReviewCountMapFromRecipes(bestRecipes);
+        Map<Long, Integer> newRecipeReviewCountMap = reviewService.getReviewCountMapFromRecipes(newRecipes);
 
         log.info("[레시피 메인] 핫한 레시피 목록 응답 생성");
         List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = bestRecipes.stream()

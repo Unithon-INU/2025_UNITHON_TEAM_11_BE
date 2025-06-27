@@ -30,10 +30,16 @@ public class MemberController implements MemberApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(userDetails, keyword, page));
     }
 
-    // 유저 랭킹
+    // 레시피 유저 랭킹
     @GetMapping("/ranking")
     public ResponseEntity<List<SimpleMemberResponseDto>> getRankingRecipeMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingRecipeMember(userDetails));
+    }
+
+    // 판매자 유저 랭킹
+    @GetMapping("/ranking/product")
+    public ResponseEntity<List<SimpleMemberResponseDto>> getRankingFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getRankingFarmer(userDetails));
     }
 
     // 유저 정보 조회

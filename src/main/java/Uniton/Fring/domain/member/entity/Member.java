@@ -45,6 +45,9 @@ public class Member {
     @Column(nullable = false)
     private Boolean isRecipeMember = false;
 
+    @Column(nullable = false)
+    private Boolean isFarmer = false;
+
     public Member(SignupRequestDto signupRequestDto, String encodedPassword, String imageUrl) {
         this.email = signupRequestDto.getEmail();
         this.username = signupRequestDto.getUsername();

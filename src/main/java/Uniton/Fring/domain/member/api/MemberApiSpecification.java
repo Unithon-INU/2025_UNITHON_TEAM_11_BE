@@ -46,12 +46,12 @@ public interface MemberApiSpecification {
             @RequestParam(defaultValue = "0") int page);
 
     @Operation(
-            summary = "유저 랭킹 조회",
-            description = "유저를 좋아요 수 기준으로 상위 8위까지 조회합니다.",
+            summary = "레시피 유저 랭킹 조회",
+            description = "레시피 작성 유저를 좋아요 수 기준으로 상위 8위까지 조회합니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "유저 랭킹 조회 성공",
+                            description = "레시피 유저 랭킹 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
@@ -60,6 +60,22 @@ public interface MemberApiSpecification {
             }
     )
     ResponseEntity<List<SimpleMemberResponseDto>> getRankingRecipeMember(@AuthenticationPrincipal UserDetailsImpl userDetails);
+
+    @Operation(
+            summary = "판매자 유저 랭킹 조회",
+            description = "판매자 유저를 좋아요 수 기준으로 상위 8위까지 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "판매자 유저 랭킹 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleMemberResponseDto>> getRankingFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
     @Operation(
             summary = "유저 정보 조회",

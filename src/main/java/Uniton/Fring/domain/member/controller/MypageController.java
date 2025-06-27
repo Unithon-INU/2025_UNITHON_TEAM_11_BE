@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.member.controller;
 
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
+import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.member.api.MypageApiSpecification;
 import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
@@ -10,6 +11,7 @@ import Uniton.Fring.domain.member.dto.res.MypageReviewResponseDto;
 import Uniton.Fring.domain.member.service.MypageService;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +66,13 @@ public class MypageController implements MypageApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.getRecentViewedProducts(userDetails, page));
     }
 
+    // 최근 본 레시피
+    @GetMapping("/recent/recipes")
+    public ResponseEntity<List<SimpleRecipeResponseDto>> getRecentViewedRecipes(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                                 @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getRecentViewedRecipes(userDetails, page));
+    }
+
     // 전체 리뷰 내역
     @GetMapping("/reviews")
     public ResponseEntity<MypageReviewResponseDto> getMyReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -71,12 +80,12 @@ public class MypageController implements MypageApiSpecification {
         return ResponseEntity.ok(mypageService.getMyReview(userDetails, page));
     }
 
-//    // 문의 내역
-//    @GetMapping("/inquiries")
-//    public ResponseEntity<MypageResponseDto> getInquiryHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                                               @RequestParam(defaultValue = "0") int page) {
-//        return ResponseEntity.ok(mypageService.getInquiryHistory(userDetails, page));
-//    }
+    // 문의 내역
+    @GetMapping("/inquiries")
+    public ResponseEntity<List<InquiryResponseDto>> getMyInquiry(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                 @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(mypageService.getMyInquiry(userDetails, page));
+    }
 
     // 입점 신청
     @PostMapping(value = "/applyFarmer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

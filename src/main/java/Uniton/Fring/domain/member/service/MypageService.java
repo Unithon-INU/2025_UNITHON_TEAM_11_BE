@@ -3,6 +3,7 @@ package Uniton.Fring.domain.member.service;
 import Uniton.Fring.domain.farmer.Farmer;
 import Uniton.Fring.domain.farmer.FarmerRepository;
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
+import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.like.entity.RecipeLike;
 import Uniton.Fring.domain.like.entity.ReviewLike;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
@@ -28,11 +29,14 @@ import Uniton.Fring.domain.purchase.entity.PurchaseItem;
 import Uniton.Fring.domain.purchase.repository.PurchaseItemRepository;
 import Uniton.Fring.domain.purchase.repository.PurchaseRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
+import Uniton.Fring.domain.recipe.entity.RecentRecipeView;
 import Uniton.Fring.domain.recipe.entity.Recipe;
+import Uniton.Fring.domain.recipe.repository.RecentRecipeViewRepository;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
 import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
 import Uniton.Fring.domain.review.entity.Review;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
+import Uniton.Fring.domain.review.service.ReviewService;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
 import Uniton.Fring.global.s3.S3Service;
@@ -49,6 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,11 +70,13 @@ public class MypageService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final ProductLikeRepository productLikeRepository;
+    private final RecentProductViewRepository recentProductViewRepository;
     private final RecipeRepository recipeRepository;
     private final RecipeLikeRepository recipeLikeRepository;
+    private final RecentRecipeViewRepository recentRecipeViewRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
-    private final RecentProductViewRepository recentProductViewRepository;
+    private final ReviewService reviewService;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
     private final MemberLikeRepository memberLikeRepository;
@@ -225,7 +232,7 @@ public class MypageService {
     @Transactional(readOnly = true)
     public List<SimpleProductResponseDto> getRecentViewedProducts(UserDetailsImpl userDetails, int page) {
 
-        log.info("[마이페이지 최근 본 상품 조회 요청]");
+        log.info("[최근 본 상품 조회 요청] 회원: {}", userDetails.getMember().getNickname());
 
         Long memberId = userDetails.getMember().getId();
 
@@ -257,9 +264,53 @@ public class MypageService {
                 })
                 .toList();
 
-        log.info("[마이페이지 최근 본 상품 조회 성공]");
+        log.info("[최근 본 상품 조회 성공]");
 
         return simpleProductResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleRecipeResponseDto> getRecentViewedRecipes(UserDetailsImpl userDetails, int page) {
+
+        log.info("[최근 본 레시피 조회 요청], 회원: {}", userDetails.getMember().getNickname());
+
+        Long memberId = userDetails.getMember().getId();
+
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "viewedAt"));
+        Page<RecentRecipeView> views = recentRecipeViewRepository.findByMemberId(memberId, pageable);
+
+        // 조회된 뷰에서 레시피 ID 추출
+        List<Long> recipeIds = views.stream()
+                .map(RecentRecipeView::getRecipeId)
+                .distinct()
+                .toList();
+
+        // 한 번에 레시피 조회
+        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+
+        // recipeId -> Product 매핑
+        Map<Long, Recipe> recipeMap = recipes.stream()
+                .collect(Collectors.toMap(Recipe::getId, Function.identity()));
+
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(recipes);
+
+        // DTO 매핑 시 레시피 정보 주입
+        List<SimpleRecipeResponseDto> simpleRecipeResponseDtos = views.stream()
+                .map(view -> {
+                    Recipe recipe = recipeMap.get(view.getRecipeId());
+                    Boolean isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
+                    Integer reviewCount = reviewCountMap.getOrDefault(recipe.getId(), 0);
+                    return SimpleRecipeResponseDto.builder()
+                            .recipe(recipe)
+                            .isLiked(isLikedRecipe)
+                            .reviewCount(reviewCount)
+                            .build();
+                })
+                .toList();
+
+        log.info("[최근 본 레시피 조회 성공]");
+
+        return simpleRecipeResponseDtos;
     }
 
     @Transactional(readOnly = true)
@@ -314,11 +365,17 @@ public class MypageService {
         return MypageReviewResponseDto.builder().productReviews(productReviews).recipeReviews(recipeReviews).build();
     }
 
-//    @Transactional(readOnly = true)
-//    public MypageResponseDto getInquiryHistory(UserDetailsImpl userDetails, int page) {
-//
-//
-//    }
+    @Transactional(readOnly = true)
+    public List<InquiryResponseDto> getMyInquiry(UserDetailsImpl userDetails, int page) {
+
+        log.info("[나의 문의 내역 조회 요청]");
+
+        List<InquiryResponseDto> inquiryResponseDtos = new ArrayList<>();
+
+        log.info("[나의 문의 내역 조회 성공]");
+
+        return inquiryResponseDtos;
+    }
 
     @Transactional
     public StoreResponseDto applyFarmer(UserDetailsImpl userDetails, ApplyFarmerRequestDto applyFarmerRequestDto,
@@ -367,8 +424,14 @@ public class MypageService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdate(Long memberId, Long productId) {
+    public void recentProductSaveOrUpdate(Long memberId, Long productId) {
         recentProductViewRepository.saveOrUpdate(memberId, productId);
-        log.info("[최근 본 상품 리스트 추가 성공]");
+        log.info("[최근 본 상품 리스트 업데이트 성공]");
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void recentRecipeSaveOrUpdate(Long memberId, Long recipeId) {
+        recentRecipeViewRepository.saveOrUpdate(memberId, recipeId);
+        log.info("[최근 본 레시피 리스트 업데이트 성공]");
     }
 }

@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -105,5 +107,18 @@ public class ReviewService {
                 .isLiked(null)
                 .purchaseOption(null)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Integer> getReviewCountMapFromRecipes(List<Recipe> recipes) {
+        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
+
+        List<Object[]> reviewCounts = reviewRepository.countReviewsByRecipeIds(recipeIds);
+
+        return reviewCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()
+                ));
     }
 }

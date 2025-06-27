@@ -70,7 +70,7 @@ public class ProductService {
         Long memberId;
         if (userDetails != null) {
             memberId = userDetails.getMember().getId();
-            mypageService.saveOrUpdate(memberId, productId);
+            mypageService.recentProductSaveOrUpdate(memberId, productId);
         } else {
             memberId = null;
         }
