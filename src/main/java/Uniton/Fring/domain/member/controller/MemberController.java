@@ -61,8 +61,8 @@ public class MemberController implements MemberApiSpecification {
 
     // 회원탈퇴
     @DeleteMapping
-    public ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto) {
-        memberService.deleteMember(userDetails.getMember(),deleteMemberRequestDto);
+    public ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        memberService.deleteMember(userDetails.getMember());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

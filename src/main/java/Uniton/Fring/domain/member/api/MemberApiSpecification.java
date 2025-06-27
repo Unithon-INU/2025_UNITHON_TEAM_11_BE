@@ -1,6 +1,5 @@
 package Uniton.Fring.domain.member.api;
 
-import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -129,6 +127,6 @@ public interface MemberApiSpecification {
                     @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
             }
     )
-    ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DeleteMemberRequestDto deleteMemberRequestDto);
+    ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails);
 
 }

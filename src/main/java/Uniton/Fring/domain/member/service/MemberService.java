@@ -3,7 +3,6 @@ package Uniton.Fring.domain.member.service;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
-import Uniton.Fring.domain.member.dto.req.DeleteMemberRequestDto;
 import Uniton.Fring.domain.member.dto.res.MemberInfoResponseDto;
 import Uniton.Fring.domain.member.dto.res.SimpleMemberResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
@@ -235,7 +234,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(Member member, DeleteMemberRequestDto deleteMemberRequestDto) {
+    public void deleteMember(Member member) {
 
         log.info("[회원 탈퇴 요청 시작] email={}}", member.getEmail());
 
@@ -244,13 +243,6 @@ public class MemberService {
                     log.warn("[회원 정보 조회 실패] 사용자 없음: email={}", member.getEmail());
                     return new CustomException(ErrorCode.MEMBER_NOT_FOUND);
                 });
-
-        boolean matchPassword = passwordEncoder.matches(deleteMemberRequestDto.getPassword(), memberToDelete.getPassword());
-        if (!matchPassword) {
-            log.warn("[회원 탈퇴 실패] 비밀번호 불일치: email={}", member.getEmail());
-            throw new CustomException(ErrorCode.PASSWORD_NOT_CORRECT);
-        }
-        log.info("[비밀번호 확인 성공] 회원 탈퇴 진행 (nickname: {})", memberToDelete.getNickname());
 
         refreshTokenRepository.deleteByMemberId(memberToDelete.getId());
 
