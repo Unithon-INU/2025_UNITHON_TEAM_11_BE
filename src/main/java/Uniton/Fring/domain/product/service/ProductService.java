@@ -60,6 +60,36 @@ public class ProductService {
     private final AiClientService aiClientService;
 
     @Transactional(readOnly = true)
+    public List<SimpleProductResponseDto> searchProduct(UserDetailsImpl userDetails, String keyword, int page) {
+
+        log.info("[상품 검색 요청] keyword={}", keyword);
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
+        Pageable pageable = PageRequest.of(page, 10);
+
+        Page<Product> productPage = productRepository.findByNameContaining(keyword, pageable);
+
+        List<SimpleProductResponseDto> productResponseDtos = productPage.stream()
+                .map(product -> {
+                    Boolean isLikedProduct = null;
+
+                    if (memberId != null) {
+                        isLikedProduct = productLikeRepository.existsByMemberIdAndProductId(memberId, product.getId());
+                    }
+
+                    return SimpleProductResponseDto.builder().product(product).isLiked(isLikedProduct).build();
+                }).toList();
+
+        log.info("[메인 페이지 전체 검색 응답]");
+
+        return productResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
     public ProductInfoResponseDto getProduct(UserDetailsImpl userDetails, Long productId, int page) {
 
         log.info("[농수산 상세 조회 요청]");

@@ -62,6 +62,40 @@ public class RecipeService {
     private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
+    public List<SimpleRecipeResponseDto> searchRecipe(UserDetailsImpl userDetails, String keyword, int page) {
+
+        log.info("[레시피 검색 요청] keyword={}", keyword);
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
+        Pageable pageable = PageRequest.of(page, 10);
+
+        Page<Recipe> recipePage = recipeRepository.findByTitleContaining(keyword, pageable);
+
+        // 리뷰 수 추출
+        Map<Long, Integer> reviewCountMap = reviewService.getReviewCountMapFromRecipes(recipePage.getContent());
+
+        List<SimpleRecipeResponseDto> recipeResponseDtos = recipePage.stream()
+                .map(recipe -> {
+                    Boolean isLikedRecipe = null;
+                    Integer reviewCount = reviewCountMap.getOrDefault(recipe.getId(), 0);
+
+                    if (memberId != null) {
+                        isLikedRecipe = recipeLikeRepository.existsByMemberIdAndRecipeId(memberId, recipe.getId());
+                    }
+
+                    return SimpleRecipeResponseDto.builder().recipe(recipe).isLiked(isLikedRecipe).reviewCount(reviewCount).build();
+                }).toList();
+
+        log.info("[레시피 검색 성공]");
+
+        return recipeResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
     public RecipeInfoResponseDto getRecipe(UserDetailsImpl userDetails, Long recipeId, int page) {
 
         log.info("[레시피 상세 정보 조회 요청]");

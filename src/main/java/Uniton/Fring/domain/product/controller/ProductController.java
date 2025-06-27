@@ -24,6 +24,15 @@ public class ProductController implements ProductApiSpecification {
 
     private final ProductService productService;
 
+    // 상품 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<SimpleProductResponseDto>> searchProduct(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.searchProduct(userDetails, keyword, page));
+    }
+
     // 농수산품 상세 정보 조회
     @GetMapping("/{productId}")
     public ResponseEntity<ProductInfoResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,

@@ -23,6 +23,15 @@ public class RecipeController implements RecipeApiSpecification{
 
     private final RecipeService recipeService;
 
+    // 레시피 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<SimpleRecipeResponseDto>> searchRecipe(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeService.searchRecipe(userDetails, keyword, page));
+    }
+
     // 레시피 상세 조회
     @GetMapping("/{recipeId}")
     public ResponseEntity<RecipeInfoResponseDto> getRecipe(@AuthenticationPrincipal UserDetailsImpl userDetails,

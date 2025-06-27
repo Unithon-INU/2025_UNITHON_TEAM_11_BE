@@ -25,6 +25,25 @@ import java.util.List;
 public interface ProductApiSpecification {
 
     @Operation(
+            summary = "상품 검색",
+            description = "상품 검색 기능 (10개)<br><br>키워드를 포함한 상품 정보들을 반환합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "상품 검색 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleProductResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleProductResponseDto>> searchProduct(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
             summary = "농수산 상세 정보 조회",
             description = "농수산 상품 정보를 상세 조회합니다. <br>리뷰는 기본적으로 좋아요 순으로 3개가 반환됩니다. <br>(최신순 정렬은 &sort=createdAt,desc 사용)",
             parameters = @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),

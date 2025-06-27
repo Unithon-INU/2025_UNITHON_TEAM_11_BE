@@ -24,6 +24,25 @@ import java.util.List;
 public interface RecipeApiSpecification {
 
     @Operation(
+            summary = "레시피 검색",
+            description = "레시피 검색 기능 (10개)<br><br>키워드를 포함한 레시피 정보들을 반환합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "레시피 검색 응답 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleRecipeResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleRecipeResponseDto>> searchRecipe(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
             summary = "레시피 상세 정보 조회",
             description = "레시피를 아이디를 통해 조회합니다.",
             responses = {

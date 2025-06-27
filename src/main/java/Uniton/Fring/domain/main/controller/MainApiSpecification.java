@@ -35,7 +35,7 @@ public interface MainApiSpecification {
 
     @Operation(
             summary = "메인 페이지 전체 검색",
-            description = "메인 페이지의 검색 기능 <br><br>키워드를 포함한 회원, 농수산품, 레시피 정보들을 반환합니다.",
+            description = "메인 페이지의 검색 기능 (각각 3개 씩)<br><br>키워드를 포함한 회원, 농수산품, 레시피 정보들을 반환합니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
