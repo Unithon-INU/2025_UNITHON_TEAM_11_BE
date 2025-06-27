@@ -90,7 +90,10 @@ public class Product {
         this.description = addProductRequestDto.getDescription();
         this.descriptionImageUrl = descriptionImages;
         this.price = addProductRequestDto.getPrice();
-        this.discountRate = addProductRequestDto.getDiscountRatePercent() / 100.0;
+        double percent = addProductRequestDto.getDiscountRatePercent() != null
+                ? addProductRequestDto.getDiscountRatePercent()
+                : 0.0;
+        this.discountRate = percent / 100.0;
         this.rating = 0.0;
         this.totalStock = addProductRequestDto.getTotalStock();
         this.deliveryCompany = addProductRequestDto.getDeliveryCompany();

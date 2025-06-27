@@ -33,7 +33,6 @@ public class AddProductRequestDto {
     @Schema(description = "중량/용량", example = "30kg")
     private String volume;
 
-    @NotNull
     @Min(0)
     @Max(100)
     @Schema(description = "할인율 (%)", example = "30")
