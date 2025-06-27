@@ -399,6 +399,7 @@ public class MypageService {
                 .orElseGet(() -> Farmer.builder().memberId(member.getId()).build());
 
         member.updateMember(applyFarmerRequestDto.getMarketName(), applyFarmerRequestDto.getIntro(), profileImageUrl);
+        member.changeRoleToFarmer();
         farmer.applyFarmer(applyFarmerRequestDto, registFileUrl, passbookUrl, certifidocUrl);
         farmerRepository.save(farmer);
 
