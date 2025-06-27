@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -45,6 +46,12 @@ public class InquiryResponseDto {
     @Schema(description = "답변 내용", example = "안녕하세요 고객님.")
     private final AnswerResponseDto answer;
 
+    @Schema(description = "문의 날짜", example = "2025-01-01")
+    private final LocalDate inquiriedAt;
+
+    @Schema(description = "답변 날짜", example = "2025-01-02")
+    private final LocalDate repliedAt;
+
     @Builder
     private InquiryResponseDto(Inquiry inquiry, String memberNickname, String productImageUrl, AnswerResponseDto answer) {
         this.id = inquiry.getId();
@@ -56,5 +63,7 @@ public class InquiryResponseDto {
         this.content = inquiry.getContent();
         this.imageUrls = inquiry.getImageUrls();
         this.answer = answer;
+        this.inquiriedAt = inquiry.getCreatedAt();
+        this.repliedAt = inquiry.getUpdatedAt();
     }
 }
