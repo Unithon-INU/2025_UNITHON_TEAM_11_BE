@@ -1,7 +1,6 @@
 package Uniton.Fring.domain.client;
 
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
-import Uniton.Fring.domain.client.dto.res.ProductToChatbotReponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,21 +54,4 @@ public interface AiClientApiSpecification {
             }
     )
     ResponseEntity<String> suggestTitle(@RequestBody @Valid TitleSuggestionRequestDto dto);
-
-    @Operation(
-            summary = "챗봇 전달용 상품 정보 반환",
-            description = "AI 챗봇에 전달할 농수산품 정보를 반환합니다.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "챗봇 전달용 상품 정보 반환 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class)
-                            )
-                    )
-
-            }
-    )
-    ResponseEntity<ProductToChatbotReponseDto> getProductToChatBot(@PathVariable Long productId);
 }

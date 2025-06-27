@@ -1,6 +1,7 @@
 package Uniton.Fring.domain.inquiry;
 
 import Uniton.Fring.domain.inquiry.dto.req.InquiryRequestDto;
+import Uniton.Fring.domain.inquiry.dto.req.ReplyRequestDto;
 import Uniton.Fring.domain.inquiry.dto.res.AnswerResponseDto;
 import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.inquiry.dto.res.SimpleInquiryResponseDto;
@@ -45,14 +46,47 @@ public class InquiryService {
 
         log.info("[상품 문의 요청] 회원: {}", member.getUsername());
 
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("[농수산 조회 실패] 농수산 없음: productId={}", productId);
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
         List<String> imageUrls = s3Service.uploadImages(images, "inquiries");
 
         Inquiry inquiry = Inquiry.builder().memberId(member.getId()).productId(productId)
-                .inquiryRequestDto(inquiryRequestDto).imageUrls(imageUrls).build();
+                .inquiryRequestDto(inquiryRequestDto).imageUrls(imageUrls).answerMemberId(product.getMemberId()).build();
 
         inquiryRepository.save(inquiry);
 
         log.info("[상품 문의 성공] 문의: {}", inquiry.getId());
+
+        return InquiryResponseDto.builder().inquiry(inquiry).memberNickname(member.getNickname()).productImageUrl(null).answer(null).build();
+    }
+
+    @Transactional
+    public InquiryResponseDto reply(UserDetailsImpl userDetails, Long inquiryId, ReplyRequestDto replyRequestDto) {
+
+        Member member = userDetails.getMember();
+
+        log.info("[문의 답변 요청] 회원: {}", member.getUsername());
+
+        Inquiry inquiry = inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> {
+                    log.warn("[문의 조회 실패] 문의 없음: inquiryId={}", inquiryId);
+                    return new CustomException(ErrorCode.INQUIRY_NOT_FOUND);
+                });
+
+        if (!inquiry.getAnswerMemberId().equals(member.getId())) {
+            log.warn("[문의 답변 실패] 권한 없음: member={}, answerMemberId={}", member.getUsername(), inquiry.getAnswerMemberId());
+            throw new CustomException(ErrorCode.INQUIRY_MEMBER_NOT_MATCH);
+        }
+
+        inquiry.replyInquiry(replyRequestDto.getTitle(), replyRequestDto.getContent());
+
+        inquiryRepository.save(inquiry);
+
+        log.info("[문의 답변 성공] 문의: {}", inquiry.getId());
 
         return InquiryResponseDto.builder().inquiry(inquiry).memberNickname(member.getNickname()).productImageUrl(null).answer(null).build();
     }
@@ -88,6 +122,7 @@ public class InquiryService {
         return inquiryResponseDtos;
     }
 
+    @Transactional(readOnly = true)
     public InquiryResponseDto getInquiry(UserDetailsImpl userDetails, Long inquiryId) {
 
         Member member = userDetails.getMember();
@@ -95,12 +130,12 @@ public class InquiryService {
 
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> {
-                    log.warn("[문의 정보 조회 실패] 문의 없음: inquiryId={}", inquiryId);
+                    log.warn("[문의 상세 정보 조회 실패] 문의 없음: inquiryId={}", inquiryId);
                     return new CustomException(ErrorCode.INQUIRY_NOT_FOUND);
                 });
 
         if (!inquiry.getMemberId().equals(member.getId())) {
-            log.warn("[문의 정보 조회 실패] 권한 없음: member={}, inquiryMemberId={}", member.getUsername(), inquiry.getMemberId());
+            log.warn("[문의 상세 정보 조회 실패] 권한 없음: member={}, inquiryMemberId={}", member.getUsername(), inquiry.getMemberId());
             throw new CustomException(ErrorCode.INQUIRY_MEMBER_NOT_MATCH);
         }
 
@@ -125,6 +160,71 @@ public class InquiryService {
                 .productImageUrl(product.getMainImageUrl()).answer(answerResponseDto).build();
 
         log.info("[문의 상세 조회 성공]");
+
+        return inquiryResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleInquiryResponseDto> getReceivedInquiries(UserDetailsImpl userDetails, int page) {
+
+        Member member = userDetails.getMember();
+        log.info("[받은 문의 내역 조회 요청], 회원: {}", member.getUsername());
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Inquiry> inquiryPage = inquiryRepository.findByAnswerMemberId(member.getId(), pageable);
+        List<Inquiry> inquiries = inquiryPage.getContent();
+
+        if (inquiries.isEmpty()) {
+            log.info("[받은 문의 내역 조회] 결과 없음");
+            return List.of();
+        }
+
+        List<Long> productIds = inquiries.stream().map(Inquiry::getProductId).distinct().toList();
+
+        Map<Long, String> productImageMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, Product::getMainImageUrl));
+
+        List<SimpleInquiryResponseDto> inquiryResponseDtos = inquiries.stream()
+                .map(inquiry ->
+                        SimpleInquiryResponseDto.builder()
+                                .inquiry(inquiry).imageUrl(productImageMap.get(inquiry.getProductId())).build()
+                ).toList();
+
+        log.info("[받은 문의 내역 조회 성공]");
+
+        return inquiryResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public InquiryResponseDto getReceivedInquiry(UserDetailsImpl userDetails, Long inquiryId) {
+
+        Member member = userDetails.getMember();
+        log.info("[받은 문의 상세 조회 요청], 회원: {}", member.getUsername());
+
+        Inquiry inquiry = inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> {
+                    log.warn("[받은 문의 상세 정보 조회 실패] 문의 없음: inquiryId={}", inquiryId);
+                    return new CustomException(ErrorCode.INQUIRY_NOT_FOUND);
+                });
+
+        if (!inquiry.getAnswerMemberId().equals(member.getId())) {
+            log.warn("[받은 문의 상세 정보 조회 실패] 권한 없음: member={}, inquiryMemberId={}", member.getUsername(), inquiry.getMemberId());
+            throw new CustomException(ErrorCode.INQUIRY_MEMBER_NOT_MATCH);
+        }
+
+        Product product = productRepository.findById(inquiry.getProductId())
+                .orElseThrow(() -> {
+                    log.warn("[상품 정보 조회 실패] 상품 없음: productId={}", inquiry.getProductId());
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        AnswerResponseDto answerResponseDto = AnswerResponseDto.builder().inquiry(inquiry).member(member).build();
+
+        InquiryResponseDto inquiryResponseDto = InquiryResponseDto.builder()
+                .inquiry(inquiry).memberNickname(member.getNickname())
+                .productImageUrl(product.getMainImageUrl()).answer(answerResponseDto).build();
+
+        log.info("[받은 문의 상세 조회 성공]");
 
         return inquiryResponseDto;
     }

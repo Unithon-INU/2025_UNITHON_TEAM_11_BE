@@ -32,7 +32,7 @@ public class Inquiry {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "answer_member_id", nullable = true)
+    @Column(name = "answer_member_id", nullable = false)
     private Long answerMemberId;
 
     @Column(nullable = true)
@@ -56,12 +56,18 @@ public class Inquiry {
     private LocalDate updatedAt;
 
     @Builder
-    private Inquiry(Long memberId, Long productId, InquiryRequestDto inquiryRequestDto, List<String> imageUrls) {
+    private Inquiry(Long memberId, Long productId, InquiryRequestDto inquiryRequestDto, List<String> imageUrls, Long answerMemberId) {
         this.memberId = memberId;
         this.productId = productId;
         this.title = inquiryRequestDto.getTitle();
         this.content = inquiryRequestDto.getContent();
         this.imageUrls = imageUrls;
+        this.answerMemberId = answerMemberId;
+    }
+
+    public void replyInquiry(String answerTitle, String answerContent) {
+        this.answerTitle = answerTitle;
+        this.answerContent = answerContent;
     }
 
     @PrePersist

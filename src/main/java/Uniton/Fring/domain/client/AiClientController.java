@@ -1,7 +1,6 @@
 package Uniton.Fring.domain.client;
 
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
-import Uniton.Fring.domain.client.dto.res.ProductToChatbotReponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -31,11 +30,5 @@ public class AiClientController implements AiClientApiSpecification{
     @PostMapping("/products/title-suggest")
     public ResponseEntity<String> suggestTitle(@RequestBody @Valid TitleSuggestionRequestDto titleSuggestionRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(aiClientService.suggestTitle(titleSuggestionRequestDto));
-    }
-
-    // 챗봇 농산물 정보 전달
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<ProductToChatbotReponseDto> getProductToChatBot(@PathVariable Long productId) {
-        return ResponseEntity.status(HttpStatus.OK).body(aiClientService.getProductToChatBot(productId));
     }
 }

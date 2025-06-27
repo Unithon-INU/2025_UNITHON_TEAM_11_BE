@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 
     Page<Inquiry> findByMemberId(Long memberId, Pageable pageable);
+
+    Page<Inquiry> findByAnswerMemberId(Long answerMemberId, Pageable pageable);
 }

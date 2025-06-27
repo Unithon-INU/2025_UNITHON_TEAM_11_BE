@@ -121,6 +121,8 @@ public class SecurityConfig {
     };
 
     private static final String[] FARMERPAGE_URIS = {
-            "/api/farmerpage/**"
+            "/api/farmerpage/**",
+            "/api/inquiries/received/**",
+            "/api/inquiries/reply/**"
     };
 }
