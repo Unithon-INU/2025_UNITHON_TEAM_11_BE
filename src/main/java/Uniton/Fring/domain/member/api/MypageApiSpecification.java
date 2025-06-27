@@ -9,6 +9,7 @@ import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageReviewResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
+import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -113,6 +114,25 @@ public interface MypageApiSpecification {
     )
     ResponseEntity<List<SimpleProductResponseDto>> getRecentViewedProducts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
+            summary = "최근 본 레시피",
+            description = "회원이 최근 본 레시피들을 반환합니다. (한 번에 6개)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "최근 본 레시피들 반환 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleRecipeResponseDto.class, type = "array")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<List<SimpleRecipeResponseDto>> getRecentViewedRecipes(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                         @RequestParam(defaultValue = "0") int page);
+
+
 
     @Operation(
             summary = "나의 리뷰 내역 조회",

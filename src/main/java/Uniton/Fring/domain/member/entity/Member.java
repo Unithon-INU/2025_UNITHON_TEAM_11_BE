@@ -72,6 +72,7 @@ public class Member {
 
     public void changeRoleToFarmer() {
         this.role = MemberRole.FARMER;
+        this.isFarmer = true;
     }
 
     public void updatePassword(String newEncodedPassword) {
