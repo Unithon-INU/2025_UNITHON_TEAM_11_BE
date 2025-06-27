@@ -65,7 +65,7 @@ public class MemberService {
         // Pageable은 springframework import
         Pageable pageable = PageRequest.of(page, 10);
 
-        Page<Member> members = memberRepository.findByNicknameContaining(keyword, pageable);
+        Page<Member> members = memberRepository.searchRecipeMembers(keyword, pageable);
 
         List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
                 .map(member -> {
