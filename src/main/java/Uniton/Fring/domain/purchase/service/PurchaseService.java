@@ -1,5 +1,6 @@
 package Uniton.Fring.domain.purchase.service;
 
+import Uniton.Fring.domain.cart.CartRepository;
 import Uniton.Fring.domain.cart.dto.req.ProductItemRequestDto;
 import Uniton.Fring.domain.delivery.Delivery;
 import Uniton.Fring.domain.delivery.DeliveryService;
@@ -41,6 +42,7 @@ public class PurchaseService {
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
     private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
     private final JdbcTemplate jdbc;
     private final DeliveryService deliveryService;
 
@@ -120,6 +122,12 @@ public class PurchaseService {
         }
 
         log.info("[상품 주문 성공] purchaseId={}", purchase.getId());
+
+        List<Long> purchasedProductIds = requestItems.stream()
+                .map(ProductItemRequestDto::getProductId).distinct().toList();
+        cartRepository.deleteByMemberIdAndProductIdIn(buyer.getId(), purchasedProductIds);
+
+        log.info("[장바구니에서 해당 상품 삭제] purchaseId={}", purchase.getId());
 
         return PurchaseResponseDto.builder()
                 .purchase(purchase)
