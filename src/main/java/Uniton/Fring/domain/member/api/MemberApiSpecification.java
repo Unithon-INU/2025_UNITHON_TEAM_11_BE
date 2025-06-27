@@ -22,8 +22,8 @@ import java.util.List;
 public interface MemberApiSpecification {
 
     @Operation(
-            summary = "유저 검색",
-            description = "검색어(keyword)를 이용해 유저를 페이징 형태로 검색합니다. (기본 size = 10)",
+            summary = "레시피 유저 검색",
+            description = "검색어(keyword)를 이용해 레시피 유저를 페이징 형태로 검색합니다. (기본 size = 10)",
             parameters = {
                     @Parameter(name = "keyword", description = "검색어", required = true),
                     @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
@@ -31,7 +31,7 @@ public interface MemberApiSpecification {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "유저 검색 성공",
+                            description = "레시피 유저 검색 성공",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
@@ -40,7 +40,31 @@ public interface MemberApiSpecification {
                     @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터 (예: keyword 누락, 잘못된 page/size 형식 등)")
             }
     )
-    ResponseEntity<List<SimpleMemberResponseDto>> searchMember(
+    ResponseEntity<List<SimpleMemberResponseDto>> searchRecipeMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
+            summary = "판매자 유저 검색",
+            description = "검색어(keyword)를 이용해 판매자 유저를 페이징 형태로 검색합니다. (기본 size = 10)",
+            parameters = {
+                    @Parameter(name = "keyword", description = "검색어", required = true),
+                    @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0")
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "판매자 유저 검색 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SimpleMemberResponseDto.class, type = "array")
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터 (예: keyword 누락, 잘못된 page/size 형식 등)")
+            }
+    )
+    ResponseEntity<List<SimpleMemberResponseDto>> searchFarmerMember(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page);

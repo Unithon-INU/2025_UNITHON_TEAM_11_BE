@@ -23,11 +23,20 @@ public class MemberController implements MemberApiSpecification {
 
     // 유저 검색
     @GetMapping("/search")
-    public ResponseEntity<List<SimpleMemberResponseDto>> searchMember(
+    public ResponseEntity<List<SimpleMemberResponseDto>> searchRecipeMember(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchMember(userDetails, keyword, page));
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchRecipeMember(userDetails, keyword, page));
+    }
+
+    // 판매자 유저 검색
+    @GetMapping("/search/farmer")
+    public ResponseEntity<List<SimpleMemberResponseDto>> searchFarmerMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.searchFarmerMember(userDetails, keyword, page));
     }
 
     // 레시피 유저 랭킹

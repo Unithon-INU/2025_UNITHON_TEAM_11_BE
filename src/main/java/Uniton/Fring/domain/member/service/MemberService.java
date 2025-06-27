@@ -15,7 +15,6 @@ import Uniton.Fring.domain.product.repository.ProductRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
-import Uniton.Fring.domain.recipe.service.RecipeService;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.domain.review.service.ReviewService;
 import Uniton.Fring.global.exception.CustomException;
@@ -49,11 +48,10 @@ public class MemberService {
     private final MemberLikeRepository memberLikeRepository;
     private final ProductLikeRepository productLikeRepository;
     private final RecipeLikeRepository recipeLikeRepository;
-    private final RecipeService recipeService;
     private final ReviewService reviewService;
 
     @Transactional(readOnly = true)
-    public List<SimpleMemberResponseDto> searchMember(UserDetailsImpl userDetails, String keyword, int page) {
+    public List<SimpleMemberResponseDto> searchRecipeMember(UserDetailsImpl userDetails, String keyword, int page) {
 
         log.info("[레시피 유저 검색 요청] keyword={}", keyword);
 
@@ -79,6 +77,37 @@ public class MemberService {
                 }).toList();
 
         log.info("[레시피 유저 검색 요청 성공] keyword={}", keyword);
+
+        return simpleMemberResponseDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleMemberResponseDto> searchFarmerMember(UserDetailsImpl userDetails, String keyword, int page) {
+
+        log.info("[판매자 유저 검색 요청] keyword={}", keyword);
+
+        Long memberId;
+        if (userDetails != null) { memberId = userDetails.getMember().getId(); } else {
+            memberId = null;
+        }
+
+        // Pageable은 springframework import
+        Pageable pageable = PageRequest.of(page, 10);
+
+        Page<Member> members = memberRepository.searchFarmerMembers(keyword, pageable);
+
+        List<SimpleMemberResponseDto> simpleMemberResponseDtos = members.stream()
+                .map(member -> {
+                    Boolean isLikedMember = null;
+
+                    if (memberId != null) {
+                        isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+                    }
+
+                    return SimpleMemberResponseDto.builder().member(member).isLikedMember(isLikedMember).build();
+                }).toList();
+
+        log.info("[판매자 유저 검색 요청 성공] keyword={}", keyword);
 
         return simpleMemberResponseDtos;
     }
