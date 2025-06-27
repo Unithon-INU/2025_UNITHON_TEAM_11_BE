@@ -1,7 +1,6 @@
 package Uniton.Fring.domain.member.controller;
 
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
-import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.member.api.MypageApiSpecification;
 import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
@@ -75,16 +74,9 @@ public class MypageController implements MypageApiSpecification {
 
     // 전체 리뷰 내역
     @GetMapping("/reviews")
-    public ResponseEntity<MypageReviewResponseDto> getMyReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<MypageReviewResponseDto> getMyReviews(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                        @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(mypageService.getMyReview(userDetails, page));
-    }
-
-    // 문의 내역
-    @GetMapping("/inquiries")
-    public ResponseEntity<List<InquiryResponseDto>> getMyInquiry(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                 @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(mypageService.getMyInquiry(userDetails, page));
+        return ResponseEntity.ok(mypageService.getMyReviews(userDetails, page));
     }
 
     // 입점 신청

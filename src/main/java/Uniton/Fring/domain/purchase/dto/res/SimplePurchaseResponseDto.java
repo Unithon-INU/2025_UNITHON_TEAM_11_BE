@@ -17,6 +17,9 @@ public class SimplePurchaseResponseDto {
     @Schema(description = "주문 ID", example = "1")
     private final Long id;
 
+    @Schema(description = "상품 ID", example = "1")
+    private final Long productId;
+
     @Schema(description = "상품 준비 상태", example = "상품 준비 중")
     private final String status;
 
@@ -41,9 +44,13 @@ public class SimplePurchaseResponseDto {
     @Schema(description = "주문 일자", example = "2025-01-01")
     private final LocalDate purchaseDate;
 
+    @Schema(description = "리뷰 작성 여부", example = "true")
+    private final Boolean isReviewed;
+
     @Builder
-    private SimplePurchaseResponseDto(PurchaseItem purchaseItem, Purchase purchase, String sellerNickname, String status, Product product) {
+    private SimplePurchaseResponseDto(PurchaseItem purchaseItem, Purchase purchase, String sellerNickname, String status, Product product, Boolean isReviewed) {
         this.id = purchaseItem.getId();
+        this.productId = purchaseItem.getProductId();
         this.status = status;
         this.sellerNickname = sellerNickname;
         this.productName = product.getName();
@@ -52,5 +59,6 @@ public class SimplePurchaseResponseDto {
         this.price = purchaseItem.getProductPrice();
         this.imageUrl = product.getMainImageUrl();
         this.purchaseDate = purchase.getPurchaseDate();
+        this.isReviewed = isReviewed;
     }
 }

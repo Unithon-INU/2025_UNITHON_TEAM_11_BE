@@ -41,7 +41,7 @@ public class Purchase {
     private String payMethod;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.PENDING;
+    private PurchaseStatus purchaseStatus = PurchaseStatus.PENDING;
 
     @Column(name = "purchase_date", nullable = false, updatable = false)
     private LocalDate purchaseDate;

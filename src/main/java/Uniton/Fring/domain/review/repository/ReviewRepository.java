@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
@@ -22,6 +23,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     int countByProductId(Long productId);
 
     List<Review> findTop5ByProductIdOrderByCreatedAtDesc(Long productId);
+
+    List<Review> findByMemberIdAndPurchaseIdInAndProductIdIn(Long memberId, Collection<Long> purchaseIds, Collection<Long> productIds);
 
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.recipeId = :recipeId")
     Double findAverageRatingByRecipeId(@Param("recipeId") Long recipeId);

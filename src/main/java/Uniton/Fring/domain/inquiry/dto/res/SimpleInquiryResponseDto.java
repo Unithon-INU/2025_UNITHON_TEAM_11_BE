@@ -7,11 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @Schema(description = "문의 정보 응답 DTO")
-public class InquiryResponseDto {
+public class SimpleInquiryResponseDto {
 
     @NotNull
     @Schema(description = "문의 Id", example = "1")
@@ -30,19 +30,24 @@ public class InquiryResponseDto {
     private final String title;
 
     @NotBlank
-    @Schema(description = "문의 내용", example = "저는 맛이 없으면 안먹어요.")
-    private final String content;
+    @Schema(description = "상태", example = "답변완료")
+    private final String status;
+
+    @NotBlank
+    @Schema(description = "날짜", example = "2025-01--1")
+    private final LocalDate date;
 
     @Schema(description = "문의 이미지")
-    private final List<String> imageUrls;
+    private final String imageUrl;
 
     @Builder
-    private InquiryResponseDto(Inquiry inquiry) {
+    private SimpleInquiryResponseDto(Inquiry inquiry, String imageUrl) {
         this.id = inquiry.getId();
         this.memberId = inquiry.getMemberId();
         this.productId = inquiry.getProductId();
         this.title = inquiry.getTitle();
-        this.content = inquiry.getContent();
-        this.imageUrls = inquiry.getImageUrls();
+        this.status = inquiry.getStatus().getDescription();
+        this.date = inquiry.getCreatedAt();
+        this.imageUrl = imageUrl;
     }
 }

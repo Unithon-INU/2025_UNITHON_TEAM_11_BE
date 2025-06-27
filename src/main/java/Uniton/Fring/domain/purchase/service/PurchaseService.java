@@ -58,10 +58,14 @@ public class PurchaseService {
         DeliveryRequestDto deliveryDto = purchaseRequestDto.getDeliveryRequestDto();
         Delivery delivery = deliveryService.saveOrGet(deliveryDto, buyer.getId());
 
+        log.info("배송정보저장완료");
+
         // 주문 번호 생성
         int seq = nextSeqToday();
         String orderNo = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
                 + "-" + String.format("%06d", seq);
+
+        log.info("주문번호생성완료");
 
         // Purchase 저장
         Purchase purchase = purchaseRepository.save(Purchase.builder()
@@ -110,7 +114,7 @@ public class PurchaseService {
                     .purchaseItem(item)
                     .purchase(purchase)
                     .sellerNickname(seller.getNickname())
-                    .status(purchase.getStatus().getDescription())
+                    .status(purchase.getPurchaseStatus().getDescription())
                     .product(product)
                     .build());
         }
@@ -126,19 +130,18 @@ public class PurchaseService {
 
     @Transactional
     public int nextSeqToday() {
-        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE); // 20250627
 
-        Integer seq = jdbc.queryForObject(
-                "SELECT seq_no FROM purchase_seq WHERE seq_date = ? FOR UPDATE",
-                Integer.class, today);
+        // 없으면 INSERT, 있으면 seq_no + 1
+        jdbc.update("""
+            INSERT INTO purchase_seq (seq_date, seq_no)
+            VALUES (?, 1)
+            ON DUPLICATE KEY UPDATE seq_no = seq_no + 1
+        """, today);
 
-        if (seq == null) {
-            jdbc.update("INSERT INTO purchase_seq (seq_date, seq_no) VALUES (?, 1)", today);
-            return 1;
-        } else {
-            jdbc.update("UPDATE purchase_seq SET seq_no = seq_no + 1 WHERE seq_date = ?", today);
-            return jdbc.queryForObject("SELECT seq_no FROM purchase_seq WHERE seq_date = ?", Integer.class, today);
-        }
+        // 방금 갱신된 값을 읽어와서 돌려줌
+        return jdbc.queryForObject(
+                "SELECT seq_no FROM purchase_seq WHERE seq_date = ?", Integer.class, today);
     }
 
 //    @Transactional

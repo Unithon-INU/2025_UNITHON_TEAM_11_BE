@@ -1,7 +1,6 @@
 package Uniton.Fring.domain.member.api;
 
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
-import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
@@ -132,8 +131,6 @@ public interface MypageApiSpecification {
     ResponseEntity<List<SimpleRecipeResponseDto>> getRecentViewedRecipes(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                          @RequestParam(defaultValue = "0") int page);
 
-
-
     @Operation(
             summary = "나의 리뷰 내역 조회",
             description = "회원 본인의 리뷰 내역을 조회합니다. (한 번에 5개) <br><br>상품 리뷰와 레시피 리뷰를 분리해서 전달합니다.",
@@ -148,25 +145,8 @@ public interface MypageApiSpecification {
                     )
             }
     )
-    ResponseEntity<MypageReviewResponseDto> getMyReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    ResponseEntity<MypageReviewResponseDto> getMyReviews(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @RequestParam(defaultValue = "0") int page);
-
-    @Operation(
-            summary = "나의 문의 내역 조회",
-            description = "회원 본인의 문의 내역을 조회합니다. (한 번에 10개)",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "나의 문의 내역 조회 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = InquiryResponseDto.class, type = "array")
-                            )
-                    )
-            }
-    )
-    ResponseEntity<List<InquiryResponseDto>> getMyInquiry(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                          @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "입점 신청",

@@ -1,4 +1,4 @@
-package Uniton.Fring.domain.inquiry;
+package Uniton.Fring.domain.inquiry.entity;
 
 import Uniton.Fring.domain.inquiry.dto.req.InquiryRequestDto;
 import jakarta.persistence.*;
@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -36,6 +37,15 @@ public class Inquiry {
     @Column(name = "image_url")
     private List<String> imageUrls;
 
+    @Enumerated(EnumType.STRING)
+    private InquiryStatus status = InquiryStatus.UNANSWERED;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDate updatedAt;
+
     @Builder
     private Inquiry(Long memberId, Long productId, InquiryRequestDto inquiryRequestDto, List<String> imageUrls) {
         this.memberId = memberId;
@@ -43,5 +53,16 @@ public class Inquiry {
         this.title = inquiryRequestDto.getTitle();
         this.content = inquiryRequestDto.getContent();
         this.imageUrls = imageUrls;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDate.now();
     }
 }

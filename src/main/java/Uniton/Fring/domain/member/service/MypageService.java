@@ -3,7 +3,6 @@ package Uniton.Fring.domain.member.service;
 import Uniton.Fring.domain.farmer.Farmer;
 import Uniton.Fring.domain.farmer.FarmerRepository;
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
-import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
 import Uniton.Fring.domain.like.entity.RecipeLike;
 import Uniton.Fring.domain.like.entity.ReviewLike;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
@@ -53,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -207,19 +205,28 @@ public class MypageService {
                 .stream()
                 .collect(Collectors.toMap(Member::getId, Member::getNickname));
 
+        List<Review> reviews = reviewRepository.findByMemberIdAndPurchaseIdInAndProductIdIn(
+                memberId, purchaseIds, productIds);
+
+        Set<String> reviewedKeys = reviews.stream()
+                .map(r -> r.getPurchaseId() + "-" + r.getProductId())
+                .collect(Collectors.toSet());
+
         // DTO 변환
         List<SimplePurchaseResponseDto> simplePurchaseResponseDtos = items.stream()
                 .map(item -> {
                     Purchase purchase = purchaseMap.get(item.getPurchaseId());
                     Product product = productMap.get(item.getProductId());
                     String sellerNickame = sellerNameMap.get(product.getMemberId());
+                    boolean isReviewed = reviewedKeys.contains(item.getPurchaseId() + "-" + item.getProductId());
 
                     return SimplePurchaseResponseDto.builder()
                             .purchaseItem(item)
                             .purchase(purchase)
                             .sellerNickname(sellerNickame)
-                            .status(purchase.getStatus().getDescription())
+                            .status(purchase.getPurchaseStatus().getDescription())
                             .product(product)
+                            .isReviewed(isReviewed)
                             .build();
                 })
                 .toList();
@@ -314,7 +321,7 @@ public class MypageService {
     }
 
     @Transactional(readOnly = true)
-    public MypageReviewResponseDto getMyReview(UserDetailsImpl userDetails, int page) {
+    public MypageReviewResponseDto getMyReviews(UserDetailsImpl userDetails, int page) {
 
         Member member = userDetails.getMember();
         Long memberId = member.getId();
@@ -363,18 +370,6 @@ public class MypageService {
         log.info("[나의 리뷰 조회 성공]");
 
         return MypageReviewResponseDto.builder().productReviews(productReviews).recipeReviews(recipeReviews).build();
-    }
-
-    @Transactional(readOnly = true)
-    public List<InquiryResponseDto> getMyInquiry(UserDetailsImpl userDetails, int page) {
-
-        log.info("[나의 문의 내역 조회 요청]");
-
-        List<InquiryResponseDto> inquiryResponseDtos = new ArrayList<>();
-
-        log.info("[나의 문의 내역 조회 성공]");
-
-        return inquiryResponseDtos;
     }
 
     @Transactional

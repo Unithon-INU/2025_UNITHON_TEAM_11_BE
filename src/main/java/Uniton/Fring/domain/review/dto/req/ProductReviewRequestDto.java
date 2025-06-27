@@ -20,4 +20,7 @@ public class ProductReviewRequestDto {
 
     @Schema(description = "후기", example = "정말 신선해요 !!")
     private String content;
+
+    @Schema(description = "주문 아이디", example = "1")
+    private Long purchaseId;
 }

@@ -1,7 +1,9 @@
-package Uniton.Fring.domain.inquiry;
+package Uniton.Fring.domain.inquiry.controller;
 
+import Uniton.Fring.domain.inquiry.InquiryService;
 import Uniton.Fring.domain.inquiry.dto.req.InquiryRequestDto;
 import Uniton.Fring.domain.inquiry.dto.res.InquiryResponseDto;
+import Uniton.Fring.domain.inquiry.dto.res.SimpleInquiryResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,19 @@ public class InquiryController implements InquiryApiSpecification {
                                                          @RequestPart @Valid InquiryRequestDto inquiryRequestDto,
                                                          @RequestPart("images") List<MultipartFile> images) {
         return ResponseEntity.status(HttpStatus.CREATED).body(inquiryService.inquire(userDetails, productId, inquiryRequestDto, images));
+    }
+
+    // 문의 내역 조회
+    @GetMapping
+    public ResponseEntity<List<SimpleInquiryResponseDto>> getMyInquiries(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                         @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(inquiryService.getMyInquiries(userDetails, page));
+    }
+
+    // 상세 문의 내역 조회
+    @GetMapping("/{inquiryId}")
+    public ResponseEntity<InquiryResponseDto> getInquiry(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                         @PathVariable Long inquiryId) {
+        return ResponseEntity.ok(inquiryService.getInquiry(userDetails, inquiryId));
     }
 }

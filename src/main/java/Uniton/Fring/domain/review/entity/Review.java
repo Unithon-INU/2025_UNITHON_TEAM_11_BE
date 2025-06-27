@@ -27,6 +27,9 @@ public class Review {
     @Column(name = "product_id", nullable = true)
     private Long productId;
 
+    @Column(name = "purchase_id", nullable = true)
+    private Long purchaseId;
+
     @Column(name = "recipe_id", nullable = true)
     private Long recipeId;
 
@@ -54,9 +57,10 @@ public class Review {
     private Integer likeCount = 0;
 
     @Builder
-    private Review(Long memberId, Long productId, Long recipeId, String content, Integer rating, List<String> imageUrls, String purchaseOption) {
+    private Review(Long memberId, Long productId, Long purchaseId, Long recipeId, String content, Integer rating, List<String> imageUrls, String purchaseOption) {
         this.memberId = memberId;
         this.productId = productId;
+        this.purchaseId = purchaseId;
         this.recipeId = recipeId;
         this.content = content;
         this.rating = rating;
@@ -65,11 +69,11 @@ public class Review {
     }
 
     public static Review fromProductReview(Long memberId, ProductReviewRequestDto dto, List<String> imageUrls, String purchaseOption) {
-        return new Review(memberId, dto.getProductId(), null, dto.getContent(), dto.getRating(), imageUrls, purchaseOption);
+        return new Review(memberId, dto.getProductId(), dto.getPurchaseId() ,null, dto.getContent(), dto.getRating(), imageUrls, purchaseOption);
     }
 
     public static Review fromRecipeReview(Long memberId, RecipeReviewRequestDto dto, List<String> imageUrls) {
-        return new Review(memberId, null, dto.getRecipeId(), dto.getContent(), dto.getRating(), imageUrls, null);
+        return new Review(memberId, null, null, dto.getRecipeId(), dto.getContent(), dto.getRating(), imageUrls, null);
     }
 
     @PrePersist
