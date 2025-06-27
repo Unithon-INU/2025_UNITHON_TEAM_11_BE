@@ -13,8 +13,11 @@ import java.util.List;
 @Schema(description = "전체 검색 응답 DTO")
 public class SearchAllResponseDto {
 
-    @Schema(description = "회원 목록 응답", example = "하루포케, 아이와, 장발장")
-    private final List<SimpleMemberResponseDto> members;
+    @Schema(description = "레시피 회원 목록 응답", example = "하루포케, 아이와, 장발장")
+    private final List<SimpleMemberResponseDto> recipeMembers;
+
+    @Schema(description = "판매자 회원 목록 응답", example = "하루포케, 아이와, 장발장")
+    private final List<SimpleMemberResponseDto> farmerMembers;
 
     @Schema(description = "상품 목록 응답", example = "계란, 브로콜리, 아보카도")
     private final List<SimpleProductResponseDto> products;
@@ -23,8 +26,9 @@ public class SearchAllResponseDto {
     private final List<SimpleRecipeResponseDto> recipes;
 
     @Builder
-    private SearchAllResponseDto(List<SimpleMemberResponseDto> members, List<SimpleProductResponseDto> products, List<SimpleRecipeResponseDto> recipes) {
-        this.members = members;
+    private SearchAllResponseDto(List<SimpleMemberResponseDto> recipeMembers,List<SimpleMemberResponseDto> farmerMembers ,List<SimpleProductResponseDto> products, List<SimpleRecipeResponseDto> recipes) {
+        this.recipeMembers = recipeMembers;
+        this.farmerMembers = farmerMembers;
         this.products = products;
         this.recipes = recipes;
     }

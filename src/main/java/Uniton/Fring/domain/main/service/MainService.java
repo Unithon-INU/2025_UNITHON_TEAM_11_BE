@@ -115,13 +115,28 @@ public class MainService {
             memberId = null;
         }
 
-        Pageable pageable = PageRequest.of(page, 3);
+        Pageable recipePageable = PageRequest.of(page, 6);
+        Pageable recipeMemberPageable = PageRequest.of(page, 8);
+        Pageable productPageable = PageRequest.of(page, 6);
+        Pageable farmerPageable = PageRequest.of(page, 8);
 
-        Page<Member> memberPage = memberRepository.findByNicknameContaining(keyword, pageable);
-        Page<Product> productPage = productRepository.findByNameContaining(keyword, pageable);
-        Page<Recipe> recipePage = recipeRepository.findByTitleContaining(keyword, pageable);
+        Page<Member> recipeMemberPage = memberRepository.searchRecipeMembers(keyword, recipeMemberPageable);
+        Page<Member> farmerMemberPage = memberRepository.searchFarmerMembers(keyword, farmerPageable);
+        Page<Product> productPage = productRepository.findByNameContaining(keyword, productPageable);
+        Page<Recipe> recipePage = recipeRepository.findByTitleContaining(keyword, recipePageable);
 
-        List<SimpleMemberResponseDto> memberResponseDtos = memberPage.stream()
+        List<SimpleMemberResponseDto> recipeMemberResponseDtos = recipeMemberPage.stream()
+                .map(member -> {
+                    Boolean isLikedMember = null;
+
+                    if (memberId != null) {
+                        isLikedMember = memberLikeRepository.existsByMemberIdAndLikedMemberId(memberId, member.getId());
+                    }
+
+                    return SimpleMemberResponseDto.builder().member(member).isLikedMember(isLikedMember).build();
+                }).toList();
+
+        List<SimpleMemberResponseDto> farmerMemberResponseDtos = farmerMemberPage.stream()
                 .map(member -> {
                     Boolean isLikedMember = null;
 
@@ -161,7 +176,8 @@ public class MainService {
         log.info("[메인 페이지 전체 검색 응답]");
 
         return SearchAllResponseDto.builder()
-                .members(memberResponseDtos)
+                .recipeMembers(recipeMemberResponseDtos)
+                .farmerMembers(farmerMemberResponseDtos)
                 .products(productResponseDtos)
                 .recipes(recipeResponseDtos)
                 .build();
