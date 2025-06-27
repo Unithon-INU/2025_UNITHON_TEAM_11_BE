@@ -16,6 +16,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByProductId(Long productId, Pageable pageable);
     Page<Review> findByRecipeId(Long recipeId, Pageable pageable);
 
+    Page<Review> findByMemberIdAndProductIdIsNotNull(Long memberId, Pageable pageable);
+    Page<Review> findByMemberIdAndRecipeIdIsNotNull(Long memberId, Pageable pageable);
+
     int countByProductId(Long productId);
 
     List<Review> findTop5ByProductIdOrderByCreatedAtDesc(Long productId);

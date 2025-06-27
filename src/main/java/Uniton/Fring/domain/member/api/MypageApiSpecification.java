@@ -5,6 +5,7 @@ import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
+import Uniton.Fring.domain.member.dto.res.MypageReviewResponseDto;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
@@ -111,6 +112,23 @@ public interface MypageApiSpecification {
     )
     ResponseEntity<List<SimpleProductResponseDto>> getRecentViewedProducts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                            @RequestParam(defaultValue = "0") int page);
+
+    @Operation(
+            summary = "나의 리뷰 내역 조회",
+            description = "회원 본인의 리뷰 내역을 조회합니다. (한 번에 5개) <br><br>상품 리뷰와 레시피 리뷰를 분리해서 전달합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "나의 리뷰 내역 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MypageReviewResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<MypageReviewResponseDto> getMyReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestParam(defaultValue = "0") int page);
 
     @Operation(
             summary = "입점 신청",

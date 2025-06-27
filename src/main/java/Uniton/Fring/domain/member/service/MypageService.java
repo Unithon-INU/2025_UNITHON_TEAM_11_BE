@@ -4,13 +4,16 @@ import Uniton.Fring.domain.farmer.Farmer;
 import Uniton.Fring.domain.farmer.FarmerRepository;
 import Uniton.Fring.domain.farmer.dto.res.StoreResponseDto;
 import Uniton.Fring.domain.like.entity.RecipeLike;
+import Uniton.Fring.domain.like.entity.ReviewLike;
 import Uniton.Fring.domain.like.repository.MemberLikeRepository;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.like.repository.RecipeLikeRepository;
+import Uniton.Fring.domain.like.repository.ReviewLikeRepository;
 import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
+import Uniton.Fring.domain.member.dto.res.MypageReviewResponseDto;
 import Uniton.Fring.domain.member.entity.Member;
 import Uniton.Fring.domain.member.enums.MemberRole;
 import Uniton.Fring.domain.member.repository.MemberRepository;
@@ -27,6 +30,8 @@ import Uniton.Fring.domain.purchase.repository.PurchaseRepository;
 import Uniton.Fring.domain.recipe.dto.res.SimpleRecipeResponseDto;
 import Uniton.Fring.domain.recipe.entity.Recipe;
 import Uniton.Fring.domain.recipe.repository.RecipeRepository;
+import Uniton.Fring.domain.review.dto.res.ReviewResponseDto;
+import Uniton.Fring.domain.review.entity.Review;
 import Uniton.Fring.domain.review.repository.ReviewRepository;
 import Uniton.Fring.global.exception.CustomException;
 import Uniton.Fring.global.exception.ErrorCode;
@@ -49,6 +54,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -62,6 +68,7 @@ public class MypageService {
     private final RecipeRepository recipeRepository;
     private final RecipeLikeRepository recipeLikeRepository;
     private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
     private final RecentProductViewRepository recentProductViewRepository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
@@ -255,28 +262,60 @@ public class MypageService {
         return simpleProductResponseDtos;
     }
 
-//    @Transactional(readOnly = true)
-//    public MypageResponseDto getAllReviewHistory(UserDetailsImpl userDetails, int page) {
-//
-//        log.info("[마이페이지 전체 리뷰 내역 조회 요청]");
-//
-//        log.info("[마이페이지 전체 리뷰 내역 조회 성공]");
-//    }
-//
+    @Transactional(readOnly = true)
+    public MypageReviewResponseDto getMyReview(UserDetailsImpl userDetails, int page) {
+
+        Member member = userDetails.getMember();
+        Long memberId = member.getId();
+        log.info("[나의 리뷰 조회 요청] 회원: {}", member.getUsername());
+
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 상품 리뷰
+        Page<Review> productReviewPage = reviewRepository.findByMemberIdAndProductIdIsNotNull(memberId, pageable);
+
+        // 레시피 리뷰
+        Page<Review> recipeReviewPage = reviewRepository.findByMemberIdAndRecipeIdIsNotNull(memberId, pageable);
+
+        // 두 페이지 좋아요 여부
+        List<Long> allReviewIds = Stream
+                .concat(productReviewPage.getContent().stream(), recipeReviewPage.getContent().stream())
+                .map(Review::getId)
+                .toList();
+
+        // 좋아요 수집
+        Set<Long> likedReviewIds = reviewLikeRepository
+                .findByMemberIdAndReviewIdIn(memberId, allReviewIds)
+                .stream()
+                .map(ReviewLike::getReviewId)
+                .collect(Collectors.toSet());
+
+        List<ReviewResponseDto> productReviews = productReviewPage.getContent().stream()
+                .map(productReview -> ReviewResponseDto.builder()
+                        .review(productReview)
+                        .memberInfo(null)
+                        .isLiked(likedReviewIds.contains(productReview.getId()))
+                        .purchaseOption(productReview.getPurchaseOption())
+                        .build())
+                .toList();
+
+
+        List<ReviewResponseDto> recipeReviews = recipeReviewPage.getContent().stream()
+                .map(recipeReview -> ReviewResponseDto.builder()
+                        .review(recipeReview)
+                        .memberInfo(null)
+                        .isLiked(likedReviewIds.contains(recipeReview.getId()))
+                        .purchaseOption(null)
+                        .build())
+                .toList();
+
+        log.info("[나의 리뷰 조회 성공]");
+
+        return MypageReviewResponseDto.builder().productReviews(productReviews).recipeReviews(recipeReviews).build();
+    }
+
 //    @Transactional(readOnly = true)
 //    public MypageResponseDto getInquiryHistory(UserDetailsImpl userDetails, int page) {
-//
-//
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public MypageResponseDto getProductReviewHistory(UserDetailsImpl userDetails, int page) {
-//
-//
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public MypageResponseDto getRecipeReviewHistory(UserDetailsImpl userDetails, int page) {
 //
 //
 //    }

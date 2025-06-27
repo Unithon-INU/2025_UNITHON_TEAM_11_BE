@@ -6,6 +6,7 @@ import Uniton.Fring.domain.member.dto.req.ApplyFarmerRequestDto;
 import Uniton.Fring.domain.member.dto.req.MypageRequestDto;
 import Uniton.Fring.domain.member.dto.res.MypageDetailResponseDto;
 import Uniton.Fring.domain.member.dto.res.MypageResponseDto;
+import Uniton.Fring.domain.member.dto.res.MypageReviewResponseDto;
 import Uniton.Fring.domain.member.service.MypageService;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
 import Uniton.Fring.domain.purchase.dto.res.SimplePurchaseResponseDto;
@@ -63,34 +64,20 @@ public class MypageController implements MypageApiSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.getRecentViewedProducts(userDetails, page));
     }
 
-//    // 전체 리뷰 내역
-//    @GetMapping("/reviews")
-//    public ResponseEntity<MypageResponseDto> getAllReviewHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                                                 @RequestParam(defaultValue = "0") int page) {
-//        return ResponseEntity.ok(mypageService.getAllReviewHistory(userDetails, page));
-//    }
-//
+    // 전체 리뷰 내역
+    @GetMapping("/reviews")
+    public ResponseEntity<MypageReviewResponseDto> getMyReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                       @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(mypageService.getMyReview(userDetails, page));
+    }
+
 //    // 문의 내역
 //    @GetMapping("/inquiries")
 //    public ResponseEntity<MypageResponseDto> getInquiryHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
 //                                                               @RequestParam(defaultValue = "0") int page) {
 //        return ResponseEntity.ok(mypageService.getInquiryHistory(userDetails, page));
 //    }
-//
-//    // 상품 리뷰 내역
-//    @GetMapping("/reviews/products")
-//    public ResponseEntity<MypageResponseDto> getProductReviewHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                                                     @RequestParam(defaultValue = "0") int page) {
-//        return ResponseEntity.ok(mypageService.getProductReviewHistory(userDetails, page));
-//    }
-//
-//    // 레시피 리뷰 내역
-//    @GetMapping("/reviews/recipes")
-//    public ResponseEntity<MypageResponseDto> getRecipeReviewHistory(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                                                    @RequestParam(defaultValue = "0") int page) {
-//        return ResponseEntity.ok(mypageService.getRecipeReviewHistory(userDetails, page));
-//    }
-//
+
     // 입점 신청
     @PostMapping(value = "/applyFarmer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<StoreResponseDto> applyFarmer(@AuthenticationPrincipal UserDetailsImpl userDetails,
