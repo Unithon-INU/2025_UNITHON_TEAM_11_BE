@@ -2,6 +2,7 @@ package Uniton.Fring.domain.client;
 
 import Uniton.Fring.domain.client.dto.req.RelatedProductsRequestDto;
 import Uniton.Fring.domain.client.dto.req.TitleSuggestionRequestDto;
+import Uniton.Fring.domain.client.dto.res.ProductToChatbotReponseDto;
 import Uniton.Fring.domain.like.entity.ProductLike;
 import Uniton.Fring.domain.like.repository.ProductLikeRepository;
 import Uniton.Fring.domain.product.dto.res.SimpleProductResponseDto;
@@ -102,6 +103,9 @@ public class AiClientService {
 
     @Transactional(readOnly = true)
     public List<SimpleProductResponseDto> findCachedRelatedProducts(UserDetailsImpl userDetails, Long productId) {
+
+        log.info("[연관된 상품 캐시 조회 요청]");
+
         List<Long> ids = recommendationRepository
                 .findByProductIdOrderByRankOrderAsc(productId)
                 .stream().map(Recommendation::getRelatedId).toList();
@@ -117,6 +121,8 @@ public class AiClientService {
                 .map(ProductLike::getProductId)
                 .collect(Collectors.toSet());
 
+        log.info("[연관된 상품 캐시 조회 성공]");
+
         return ids.stream()
                 .map(map::get)
                 .filter(Objects::nonNull)
@@ -125,5 +131,21 @@ public class AiClientService {
                         .isLiked(liked.contains(p.getId()))
                         .build())
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ProductToChatbotReponseDto getProductToChatBot(Long productId) {
+
+        log.info("[챗봇 전달용 상품 정보 요청]");
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("[농수산 조회 실패] 농수산 없음: productId={}", productId);
+                    return new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        log.info("[챗봇 전달용 상품 정보 성공]");
+
+        return ProductToChatbotReponseDto.builder().product(product).build();
     }
 }
