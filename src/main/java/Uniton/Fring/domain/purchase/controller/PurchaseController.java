@@ -1,18 +1,15 @@
 package Uniton.Fring.domain.purchase.controller;
 
-import Uniton.Fring.domain.purchase.service.PurchaseService;
 import Uniton.Fring.domain.purchase.dto.req.PurchaseRequestDto;
 import Uniton.Fring.domain.purchase.dto.res.PurchaseResponseDto;
+import Uniton.Fring.domain.purchase.service.PurchaseService;
 import Uniton.Fring.global.security.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,10 +25,11 @@ public class PurchaseController implements PurchaseApiSpecification{
         return ResponseEntity.status(HttpStatus.CREATED).body(purchaseService.purchase(userDetails, purchaseRequestDto));
     }
 
-//    // 구매 취소
-//    @PutMapping("/{purchaseId}")
-//    public ResponseEntity<CartInfoResponseDto> cancelPurchase(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long purchaseId,
-//                                                              @Valid @RequestBody CancelPurchaseRequestDto cancelPurchaseRequestDto) {
-//        return ResponseEntity.status(HttpStatus.OK).body(purchaseService.cancelPurchase(userDetails, purchaseId, cancelPurchaseRequestDto));
-//    }
+    // 주문 취소
+    @PutMapping("/{purchaseId}")
+    public ResponseEntity<Void> cancelPurchase(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              @PathVariable Long purchaseId) {
+        purchaseService.cancelPurchase(userDetails, purchaseId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

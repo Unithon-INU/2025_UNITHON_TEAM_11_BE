@@ -137,6 +137,29 @@ public class PurchaseService {
     }
 
     @Transactional
+    public void cancelPurchase(UserDetailsImpl userDetails, Long purchaseId) {
+
+        log.info("[주문 취소 요청]");
+
+        Member member = userDetails.getMember();
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> {
+                    log.warn("[주문 취소 실패] 주문 내역을 찾을 수 없습니다. purchaseId: {}", purchaseId);
+                    return new CustomException(ErrorCode.PURCHASE_NOT_FOUND);
+                });
+
+        if (!purchase.getMemberId().equals(member.getId())) {
+            log.warn("[주문 취소 실패] 사용자 권한 없음: memberId={}, purchaseOwnerId={}", member.getId(), purchase.getMemberId());
+            throw new CustomException(ErrorCode.PURCHASE_MEMBER_NOT_MATCH);
+        }
+
+        purchaseRepository.delete(purchase);
+
+        log.info("[주문 취소 성공]");
+    }
+
+    @Transactional
     public int nextSeqToday() {
         String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE); // 20250627
 
@@ -151,27 +174,4 @@ public class PurchaseService {
         return jdbc.queryForObject(
                 "SELECT seq_no FROM purchase_seq WHERE seq_date = ?", Integer.class, today);
     }
-
-//    @Transactional
-//    public void cancelPurchase(UserDetailsImpl userDetails, Long purchaseId) {
-//
-//        log.info("[주문 취소 요청]");
-//
-//        Member member = userDetails.getMember();
-//
-//        Purchase purchase = purchaseRepository.findById(purchaseId)
-//                .orElseThrow(() -> {
-//                    log.warn("[주문 취소 실패] 주문 내역을 찾을 수 없습니다. purchaseId: {}", purchaseId);
-//                    return new CustomException(ErrorCode.PURCHASE_NOT_FOUND);
-//                });
-//
-//        if (!purchase.getMemberId().equals(member.getId())) {
-//            log.warn("[주문 취소 실패] 사용자 권한 없음: memberId={}, purchaseOwnerId={}", member.getId(), purchase.getMemberId());
-//            throw new CustomException(ErrorCode.PURCHASE_MEMBER_NOT_MATCH);
-//        }
-//
-//        cartRepository.deleteAll(carts);
-//
-//        log.info("[주문 취소 성공]");
-//    }
 }

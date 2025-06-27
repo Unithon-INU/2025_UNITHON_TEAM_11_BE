@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Purchase", description = "구매 관련 API")
@@ -32,4 +33,21 @@ public interface PurchaseApiSpecification {
     )
     ResponseEntity<PurchaseResponseDto> purchase(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                  @Valid @RequestBody PurchaseRequestDto purchaseRequestDto);
+
+    @Operation(
+            summary = "주문 취소",
+            description = "주문을 취소합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "주문 취소",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = PurchaseResponseDto.class)
+                            )
+                    )
+            }
+    )
+    ResponseEntity<Void> cancelPurchase(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @PathVariable Long purchaseId);
 }
