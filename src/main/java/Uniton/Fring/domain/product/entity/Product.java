@@ -83,12 +83,11 @@ public class Product {
     @Column(nullable = false)
     private Integer likeCount = 0;
 
-    public Product(Long memberId, AddProductRequestDto addProductRequestDto, String mainImageUrl, List<String> descriptionImages) {
+    public Product(Long memberId, AddProductRequestDto addProductRequestDto, String mainImageUrl) {
         this.memberId = memberId;
         this.name = addProductRequestDto.getName();
         this.mainImageUrl = mainImageUrl;
         this.description = addProductRequestDto.getDescription();
-        this.descriptionImageUrl = descriptionImages;
         this.price = addProductRequestDto.getPrice();
         double percent = addProductRequestDto.getDiscountRatePercent() != null
                 ? addProductRequestDto.getDiscountRatePercent()

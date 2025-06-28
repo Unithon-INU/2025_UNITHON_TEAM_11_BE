@@ -128,8 +128,7 @@ public interface ProductApiSpecification {
     )
     ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                       @RequestPart @Valid AddProductRequestDto addProductRequestDto,
-                                                      @RequestPart("mainImage") MultipartFile mainImage,
-                                                      @RequestPart("descriptionImages") List<MultipartFile> descriptionImages);
+                                                      @RequestPart("mainImage") MultipartFile mainImage);
 
     @Operation(
             summary = "농수산품 수정",

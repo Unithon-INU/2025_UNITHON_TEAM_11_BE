@@ -308,18 +308,13 @@ public class ProductService {
 
     @Transactional
     public ProductInfoResponseDto addProduct(UserDetailsImpl userDetails, AddProductRequestDto addProductRequestDto,
-                                             MultipartFile mainImage, List<MultipartFile> descriptionImages) {
+                                             MultipartFile mainImage) {
 
         log.info("[농수산품 추가 요청]");
 
-        Pair<String, List<String>> imageData = s3Service.uploadMainAndDescriptionImages(
-                mainImage, descriptionImages,
-                "products", "productDescriptions");
+        String mainImageUrl = s3Service.uploadFile(mainImage, "products");
 
-        String mainImageUrl = imageData.getFirst();
-        List<String> productDescriptionImages = imageData.getSecond();
-
-        Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl, productDescriptionImages);
+        Product product = new Product(userDetails.getMember().getId(),addProductRequestDto , mainImageUrl);
         productRepository.save(product);
 
         List<ProductOptionResponseDto> productOptionResponseDtos = new ArrayList<>();

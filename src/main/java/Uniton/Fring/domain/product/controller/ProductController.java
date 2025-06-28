@@ -62,9 +62,8 @@ public class ProductController implements ProductApiSpecification {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductInfoResponseDto> addProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @RequestPart @Valid AddProductRequestDto addProductRequestDto,
-                                                             @RequestPart("mainImage") MultipartFile mainImage,
-                                                             @RequestPart("descriptionImages") List<MultipartFile> descriptionImages) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto, mainImage, descriptionImages));
+                                                             @RequestPart("mainImage") MultipartFile mainImage) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.addProduct(userDetails, addProductRequestDto, mainImage));
     }
 
     // 농수산품 수정
